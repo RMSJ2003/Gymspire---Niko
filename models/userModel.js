@@ -1,6 +1,11 @@
+const crypto = require('crypto');
+
 const mongoose = require('mongoose');
-const { type } = require('os');
+const {
+    type
+} = require('os');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -50,18 +55,14 @@ const userSchema = new mongoose.Schema({
         enum: ['online', 'offline'],
         default: 'offline'
     },
-    friends: [
-        {
-            type: mongoose.Schema.ObjectId,
-            ref: 'User'
-        }
-    ],
-    friendRequests: [
-        {
-            type: mongoose.Schema.ObjectId,
-            ref: 'User'
-        }
-    ],
+    friends: [{
+        type: mongoose.Schema.ObjectId,
+        ref: 'User'
+    }],
+    friendRequests: [{
+        type: mongoose.Schema.ObjectId,
+        ref: 'User'
+    }],
     quote: {
         type: String,
         trim: true // *is this really needed?
@@ -69,5 +70,76 @@ const userSchema = new mongoose.Schema({
     beforeImgUrl: String,
     beforeWeight: Number,
     afterImgUrl: String,
-    afterWeight: Number
+    afterWeight: Number,
+    passwordChangedAt: Date, // The value of this field will change when someone change the password.
+    passwordResetToken: String,
+    passwordResetExpires: Date, // timer do reset the password
 });
+
+// START OF COMMENT FOR IMPORTING DEV DATA
+
+userSchema.pre('save', async function (next) {
+    // We only want to encrypt the password if the password field
+    // has actually been updated or when it's new.
+    if (!this.isModified('password')) return next();
+
+    this.password = await bcrypt.hash(this.password, 13);
+
+    this.passwordConfirm = undefined;
+
+    next();
+});
+
+// Reset Password Middleware
+userSchema.pre('save', function (next) {
+    // If not modified OR the document is new, then return right away and proceed to the middleware
+    if (!this.isModified('password') || this.isNew) return next();
+
+    this.passwordChangedAt = Date.now() - 1000; // update last update date
+    next();
+});
+
+// END OF COMMENT FOR IMPORTING DEV DATA
+
+// Query middleware
+// Regular Expressino (RegEx) /^find/ means a string that starts with "find"
+userSchema.pre(/^find/, function (next) {
+    // "this" points to the current query
+    this.find({
+        active: {
+            $ne: false
+        }
+    });
+    next();
+});
+
+userSchema.methods.correctPassword = async function (
+    candidatePassword,
+    userPassword
+) {
+    return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+    // resetToken should be cryptographically strong as the password hash
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    this.passwordResetToken = crypto
+        .createHash('sha256') // type of hash
+        .update(resetToken) // which string?
+        .digest('hex'); // type of string
+
+    // We are logging the resetToken as an object cuz this way, we'll se the variable name along with its value
+    console.log({
+        resetToken
+    }, this.passwordResetToken);
+
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    return resetToken;
+};
+
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;
