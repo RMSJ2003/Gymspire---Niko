@@ -50,6 +50,9 @@ const userSchema = new mongoose.Schema({
         maxlength: [20, 'Username must be at most 20 characters'],
         match: [/^[a-zA-Z0-9._-]+$/, 'Username may only contain letters, numbers, dots, underscores, and hyphens']
     },
+    pfpUrl: {
+        type: String
+    },
     activeStatus: {
         type: String,
         enum: ['online', 'offline'],
@@ -74,6 +77,11 @@ const userSchema = new mongoose.Schema({
     passwordChangedAt: Date, // The value of this field will change when someone change the password.
     passwordResetToken: String,
     passwordResetExpires: Date, // timer do reset the password
+    active: {
+        type: Boolean,
+        default: true,
+        select: false
+    }
 });
 
 // START OF COMMENT FOR IMPORTING DEV DATA
@@ -119,6 +127,24 @@ userSchema.methods.correctPassword = async function (
 ) {
     return await bcrypt.compare(candidatePassword, userPassword);
 };
+
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+    // just finished this middleware functin - continue
+    if (this.passwordChangedAt) {
+        // The second param of parseInt is the base, which we set to base 10 number
+        // returns the seconds
+        // We used parse function to turn ms to s
+        // returns the date as seconds since Jan 1, 1970 (UNIX epoch).
+        const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+        console.log(changedTimestamp, JWTTimestamp);
+
+        return JWTTimestamp < changedTimestamp;
+        // e.g. iat (issued at / created at) is at time 100 and we changed password at time 200
+    }
+
+    return false; 
+};
+
 
 userSchema.methods.createPasswordResetToken = function () {
     // resetToken should be cryptographically strong as the password hash

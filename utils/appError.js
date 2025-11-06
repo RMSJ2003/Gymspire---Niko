@@ -6,8 +6,10 @@ class AppError extends Error {
 
         this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
 
-        this.isOperational = true;
+        this.isOperational = true; // Operational errors means trusted/known errors
 
         Error.captureStackTrace(this, this.constructor);
     }
 }
+
+module.exports = AppError;

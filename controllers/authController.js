@@ -1,6 +1,10 @@
+const crypto = require('crypto');
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require("../models/userModel");
 const sendEmail = require('./../utils/email');
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 
 const signToken = id => {
     // .sign(<payload>, <secret>, <options>)
@@ -13,7 +17,6 @@ const signToken = id => {
 
 const createSendToken = (user, statusCode, res) => {
     const token = signToken(user._id);
-    0
 
     const cookieOptions = {
         expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 100),
@@ -33,51 +36,97 @@ const createSendToken = (user, statusCode, res) => {
     });
 };
 
-exports.signup = async (req, res, next) => {
+
+exports.signup = catchAsync(async (req, res, next) => {
     const newUser = await User.create({
         email: req.body.email,
         password: req.body.password,
-        passwordConfirm: req.body.passwordConfirm
+        passwordConfirm: req.body.passwordConfirm,
+        username: req.body.username,
+        pfpUrl: req.body.pfpUrl,
+        userType: req.body.userType,
+        quote: req.body.quote,
+        beforeImgUrl: req.body.beforeImgUrl,
+        beforeWeight: req.body.beforeWeight
     });
 
     createSendToken(newUser, 201, res);
-};
+});
 
-exports.login = async (req, res, next) => {
+exports.login = catchAsync(async (req, res, next) => {
     const {
         email,
         password
     } = req.body;
 
-    if (!email || !password) {
-        console.error('Please provide email and password!');
-        // Add error
-    }
+    // 1) Checks if email and password exists
+    if (!email || !password) return next(new AppError('Please provide email and password', 400));
 
+    // 2) Check if the user exists && password is correct
+    // If we want a field (password) that has select property set to false (in schema)
+    // we add .select(+<name of field>)
     const user = await User.findOne({
         email
     }).select('+password');
-
+    
+    // user is an object .correctPassword is in the userModel.js (check for details)
     if (!user || !await user.correctPassword(password, user.password)) {
-        console.error('Incorrect email or password');
-        // Add error
+        return next(new AppError('Incorrect email or password', 401)); // 401 means unauthorized
     }
 
     createSendToken(user, 200, res);
-};
+});
+
+exports.protect = catchAsync(async (req, res, next) => {
+    // 1) Getting token and check if it exists 
+    let token;
+
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        token = req.headers.authorization.split(' ')[1]; // Getting the value of token cuz
+        // the authorization looks like this:
+        // Authorization: Bearer <token>
+    }
+
+    if (!token) return next(
+        new AppError('Your are not logged in! Please log in to get access',
+            401)
+    );
+
+    // 2) Validate the token
+    // Decoding the token
+    // Promisifying .verify function 
+    // The promisify(jwt.verify) part will promisify the jwt.verify
+    // The (token, process.env.JWT_SECRET) part will call the promisified jwt.verify
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+    // 3) Check if user still exists
+    const currentUser = await User.findById(decoded.id);
+
+    if (!currentUser) return next(
+        new AppError('The user belonging to this token does no longer exist.', 401)
+    );
+
+    // 4) Check if user changed password after the JWT (token) was issued
+    // .iat means issued at, and .exp means (expire)(not used in this code)
+    if (currentUser.changedPasswordAfter(decoded.iat)) return next(
+        new AppError('User currently changed password! Please login again.', 401)
+    );
+
+    // Grant access to the protected route.
+    req.user = currentUser;
+    next();
+});
 
 // CHANGING PASSWORD FUNCTIONALITIES - START
 
-exports.forgotPassword = async (req, res, next) => {
+exports.forgotPassword = catchAsync(async (req, res, next) => {
     const user = await User.findOne({
         email: req.body.email
     });
 
-    // FIX THIS - COPY THE ORIGNAL
-    if (!user) {
-        console.error('There is no user with that email.');
-        return;
-    }
+    if (!user) return next(
+        new AppError('There is no user with that email address.', 404)
+    );
 
     const resetToken = user.createPasswordResetToken();
 
@@ -125,6 +174,34 @@ exports.forgotPassword = async (req, res, next) => {
         return;
         // return apperror
     }
-};
+});
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+    // 1) Get user based on the given token
+    // req.params come from the URL
+
+    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+
+    const user = await User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpires: {
+            $gt: Date.now()
+        }
+    });
+
+    // 2} If token has not expired, and there is a user, set the new password.
+    if (!user) next(new AppError('Token is invalid or has expired', 400));
+
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+
+    // Since we already updated the password, we can now remove the rest token fields
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+
+    await user.save();
+
+    createSendToken(user, 200, res);
+});
 
 // CHANGING PASSWORD FUNCTIONALITIES - END

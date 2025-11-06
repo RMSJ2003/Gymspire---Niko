@@ -1,36 +1,44 @@
+const catchAsync = require('./../utils/catchAsync');
 const APIFeatures = require('../utils/apiFeatures');
-// Add catchAsync later
+const AppError = require('./../utils/appError');
 
-exports.deleteOne = Model => async (req, res, next) => {
+exports.deleteOne = Model => catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
 
-    // Add error
-    if (!doc) console.error('No document found with that ID', 404);
+    if (!doc) return next(new AppError('No document found with that ID', 404));
 
     res.status(204).json({
         status: 'success',
         data: null
     });
-};
+});
 
-exports.updateOne = Model => async (req, res, next) => {
+exports.updateOne = Model => catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
         runValidators: true
     });
 
-    if (!doc) {
-        console.error('No document found with that ID!');
-        return;
-    };
+    if (!doc) return next(new AppError('No document found with that ID', 404));
 
     res.status(200).json({
         status: 'success',
         data: { doc }
     });
-};
+});
 
-exports.getAll = Model => async (req, res, next) => {
+exports.getOne = Model => catchAsync(async (req, res, next) => {
+    const doc = await Model.findById(req.params.id);
+
+    if (!doc) return next(new AppError('No document found with that ID', 404));
+
+    res.status(200).json({
+        status: 'success',
+        data: doc
+    });
+});
+
+exports.getAll = Model => catchAsync(async (req, res, next) => {
     let filter = {};
 
     const features = new APIFeatures(Model.find(filter), req.query);
@@ -44,4 +52,4 @@ exports.getAll = Model => async (req, res, next) => {
             data: doc
         }
     });
-};
+});
