@@ -1,5 +1,7 @@
 const crypto = require('crypto');
-const { promisify } = require('util');
+const {
+    promisify
+} = require('util');
 const jwt = require('jsonwebtoken');
 const User = require("../models/userModel");
 const sendEmail = require('./../utils/email');
@@ -68,7 +70,7 @@ exports.login = catchAsync(async (req, res, next) => {
     const user = await User.findOne({
         email
     }).select('+password');
-    
+
     // user is an object .correctPassword is in the userModel.js (check for details)
     if (!user || !await user.correctPassword(password, user.password)) {
         return next(new AppError('Incorrect email or password', 401)); // 401 means unauthorized
@@ -88,8 +90,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     }
 
     if (!token) return next(
-        new AppError('Your are not logged in! Please log in to get access',
-            401)
+        new AppError('Your are not logged in! Please log in to get access', 401)
     );
 
     // 2) Validate the token

@@ -17,12 +17,23 @@ router
     .patch('/resetPassword/:token', authController.resetPassword);
 
 // USED authController.protect -------------------------- START
+// Only logged in user can access these routes:
 
 router.use(authController.protect);
+
+router.post('/sendFriendRequest/:friendId', userController.sendFriendRequest);
+
+router.get(
+    '/me', 
+    userController.getMe,
+    userController.getUser
+);
 
 router.patch('/updateMe', userController.updateMe);
 
 router.delete('/deleteMe', userController.deleteMe);
+
+router.delete('/removeFriend/:friendId', userController.removeFriend);
 
 router
     .route('/')
