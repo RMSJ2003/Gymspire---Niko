@@ -37,6 +37,11 @@ router.delete('/removeFriend/:friendId', userController.removeFriend);
 router.get('/getOnlineFriends', userController.getOnlineFriends);
 
 router
+    .route('/message/:friendId')
+    .get(userController.getMessages)
+    .post(userController.sendMessage);
+
+router
     .route('/')
     .get(userController.getAllUsers);
 

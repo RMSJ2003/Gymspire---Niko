@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const Message = require('../models/messageModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
@@ -215,6 +216,79 @@ exports.getOnlineFriends = catchAsync(async (req, res, next) => {
         results: onlineFriends.length,
         data: {
             onlineFriends
+        }
+    });
+});
+
+exports.sendMessage = catchAsync(async (req, res, next) => {
+    const senderId = req.user.id;
+    const receiverId = req.params.friendId;
+    const {
+        text
+    } = req.body;
+
+    // Check if receiver exists 
+    const receiver = await User.findById(receiverId);
+
+    if (!receiver) return next(new AppError('User not found', 404));
+
+    // Check friendship
+    const sender = await User.findById(senderId);
+
+    if (!sender.friends.includes(receiverId))
+        return next(new AppError('You can only message your friends', 400));
+
+    // Save message
+    const message = await Message.create({
+        senderId,
+        receiverId,
+        text
+    });
+
+    // Emit to friend if online (Socket.IO)
+    if (req.io) {
+        const receiverSocketId = req.io.onlineUsers.get(receiverId);
+
+        if (receiverSocketId) {
+            req.io.to(receiverSocketId).emit('receive-message', {
+                senderId,
+                text
+            });
+        }
+    }
+
+    res.status(201).json({
+        status: 'success',
+        data: {
+            message
+        }
+    });
+});
+
+exports.getMessages = catchAsync(async (req, res, next) => {
+    const userId = req.user.id;
+    const friendId = req.params.friendId;
+
+    console.log('Current user: ', userId);
+    console.log('Friend: ', friendId);
+    
+    const messages = await Message.find({
+        $or: [{
+                senderId: userId,
+                receiverId: friendId
+            },
+            {
+                senderId: friendId,
+                receiverId: userId
+            }
+        ]
+    }).sort('createdAt');
+
+    res.status(200).json({
+        status: 'success',
+        results: messages.length,
+        data: {
+            messages
         }
     });
 });
