@@ -35,7 +35,7 @@ router.patch('/declineFriendRequest/:requesterId', userController.declineFriendR
 router.delete('/removeFriend/:friendId', userController.removeFriend);
 
 router.get('/getOnlineFriends', userController.getOnlineFriends);
-
+ 
 router
     .route('/message/:friendId')
     .get(userController.getMessages)
