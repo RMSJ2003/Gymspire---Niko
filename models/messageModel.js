@@ -4,16 +4,16 @@ const messageSchema = new mongoose.Schema({
     senderId: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',
-        required: true
+        required: [true, 'A message must have a sender.']
     },
     receiverId: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',
-        required: true
+        required: [true, 'A message must have a receiver.']
     },
     text: {
         type: String,   
-        required: true
+        required: [true, 'A message must have a text.']
     }, 
     createdAt: {
         type: Date, 
