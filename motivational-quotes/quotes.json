@@ -1,0 +1,282 @@
+[
+  {
+    "id": 1,
+    "text": "I hated every minute of training, but I said, 'Don’t quit. Suffer now and live the rest of your life as a champion.'",
+    "author": "Muhammad Ali",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 2,
+    "text": "We are what we repeatedly do. Excellence, then, is not an act but a habit.",
+    "author": "Aristotle",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 3,
+    "text": "The body achieves what the mind believes.",
+    "author": "Napoleon Hill",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 4,
+    "text": "The hard days are the best because that’s when champions are made.",
+    "author": "Dana Vollmer",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 5,
+    "text": "If you don’t find the time, you don’t get the results.",
+    "author": "Arnold Schwarzenegger",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 6,
+    "text": "Push harder than yesterday if you want a different tomorrow.",
+    "author": "Vincent Williams Sr.",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 7,
+    "text": "The real workout starts when you want to stop.",
+    "author": "Ronnie Coleman",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 8,
+    "text": "Take care of your body. It’s the only place you have to live.",
+    "author": "Jim Rohn",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 9,
+    "text": "I’ve failed over and over again in my life, and that is why I succeed.",
+    "author": "Michael Jordan",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 10,
+    "text": "Once you are exercising regularly, the hardest thing is to stop.",
+    "author": "Erin Gray",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 11,
+    "text": "The secret of getting ahead is getting started.",
+    "author": "Mark Twain",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 12,
+    "text": "Exercise should be regarded as a tribute to the heart.",
+    "author": "Gene Tunney",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 13,
+    "text": "You’re going to have to let it hurt.",
+    "author": "Joe Manganiello",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 14,
+    "text": "Most people fail not because of lack of desire, but lack of commitment.",
+    "author": "Vince Lombardi",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 15,
+    "text": "You miss 100% of the shots you don’t take.",
+    "author": "Wayne Gretzky",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 16,
+    "text": "If something stands between you and your success, move it.",
+    "author": "Dwayne \"The Rock\" Johnson",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 17,
+    "text": "All progress takes place outside the comfort zone.",
+    "author": "Michael John Bobak",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 18,
+    "text": "Just believe in yourself… at some point, you will.",
+    "author": "Venus Williams",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 19,
+    "text": "The harder you work, the more prepared you are.",
+    "author": "Carli Lloyd",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 20,
+    "text": "Continuous improvement is better than delayed perfection.",
+    "author": "Mark Twain",
+    "category": "streak",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 21,
+    "text": "Enduring means accepting things as they are, and then looking ahead.",
+    "author": "Rafael Nadal",
+    "category": "comeback",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 22,
+    "text": "If you want something you’ve never had, you must be willing to do something you’ve never done.",
+    "author": "Thomas Jefferson",
+    "category": "comeback",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 23,
+    "text": "Continuous improvement is better than delayed perfection.",
+    "author": "Mark Twain",
+    "category": "comeback",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 24,
+    "text": "Once you learn to quit, it becomes a habit.",
+    "author": "Vince Lombardi",
+    "category": "comeback",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 25,
+    "text": "It’s hard to beat a person who never gives up.",
+    "author": "Babe Ruth",
+    "category": "comeback",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 26,
+    "text": "Do something today that your future self will thank you for.",
+    "author": "Sean Patrick Flanery",
+    "category": "comeback",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 27,
+    "text": "Success is usually the culmination of controlling failure.",
+    "author": "Sylvester Stallone",
+    "category": "comeback",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 28,
+    "text": "Confidence comes from discipline and training.",
+    "author": "Robert Kiyosaki",
+    "category": "comeback",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 29,
+    "text": "What hurts today makes you stronger tomorrow.",
+    "author": "Jay Cutler",
+    "category": "comeback",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 30,
+    "text": "Strength does not come from physical capacity. It comes from an indomitable will.",
+    "author": "Mahatma Gandhi",
+    "category": "comeback",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 31,
+    "text": "You must expect things of yourself before you can do them.",
+    "author": "Michael Jordan",
+    "category": "comeback",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 32,
+    "text": "If you fail to prepare, you’re prepared to fail.",
+    "author": "Mark Spitz",
+    "category": "comeback",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 33,
+    "text": "Motivation is what gets you started. Habit is what keeps you going.",
+    "author": "Jim Ryun",
+    "category": "comeback",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 34,
+    "text": "A champion is someone who gets up when they can’t.",
+    "author": "Jack Dempsey",
+    "category": "comeback",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 35,
+    "text": "The difference between the impossible and the possible lies in determination.",
+    "author": "Tommy Lasorda",
+    "category": "comeback",
+    "reference": "https://www.futurefit.co.uk/blog/gym-motivational-quotes/"
+  },
+  {
+    "id": 36,
+    "text": "It’s never too late to become the person you want to be.",
+    "author": "George Eliot",
+    "category": "comeback",
+    "reference": "https://www.brainyquote.com/quotes/george_eliot_385912"
+  },
+  {
+    "id": 37,
+    "text": "Fall seven times, stand up eight.",
+    "author": "Japanese Proverb",
+    "category": "comeback",
+    "reference": "https://www.brainyquote.com/quotes/japanese_proverb_384141"
+  },
+  {
+    "id": 38,
+    "text": "You don’t have to be great to start, but you have to start to be great.",
+    "author": "Zig Ziglar",
+    "category": "comeback",
+    "reference": "https://www.brainyquote.com/quotes/zig_ziglar_380780"
+  },
+  {
+    "id": 39,
+    "text": "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+    "author": "Winston Churchill",
+    "category": "comeback",
+    "reference": "https://www.brainyquote.com/quotes/winston_churchill_122083"
+  },
+  {
+    "id": 40,
+    "text": "Start where you are. Use what you have. Do what you can.",
+    "author": "Arthur Ashe",
+    "category": "comeback",
+    "reference": "https://www.brainyquote.com/quotes/arthur_ashe_100926"
+  }
+]
