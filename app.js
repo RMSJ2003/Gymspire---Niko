@@ -1,7 +1,7 @@
 const express = require('express');
 
 const userRouter = require('./routes/userRoutes');
-const workoutSplitRoutes = require('./routes/workoutSplitRoutes');
+const workoutPlanRoutes = require('./routes/workoutPlanRoutes');
 
 const app = express();
 
@@ -10,6 +10,6 @@ app.use(express.json({
 }));
 
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/workout-split', workoutSplitRoutes);
+app.use('/api/v1/workout-plan', workoutPlanRoutes);
 
 module.exports = app;

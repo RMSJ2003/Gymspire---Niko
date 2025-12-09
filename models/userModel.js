@@ -53,19 +53,6 @@ const userSchema = new mongoose.Schema({
     pfpUrl: {
         type: String
     },
-    activeStatus: {
-        type: String,
-        enum: ['online', 'offline'],
-        default: 'offline'
-    },
-    friends: [{
-        type: mongoose.Schema.ObjectId,
-        ref: 'User'
-    }],
-    friendRequests: [{
-        type: mongoose.Schema.ObjectId,
-        ref: 'User'
-    }],
     quote: {
         type: String,
         trim: true // *is this really needed?

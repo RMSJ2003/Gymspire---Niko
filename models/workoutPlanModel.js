@@ -16,6 +16,6 @@ const workoutPlanSchema = new mongoose.Schema({
     ]
 });
 
-const WorkoutSplit = mongoose.model('WorkoutSplit', workoutPlanSchema);
+const WorkoutPlan = mongoose.model('WorkoutPlan', workoutPlanSchema);
 
-module.exports = WorkoutSplit;
+module.exports = WorkoutPlan;

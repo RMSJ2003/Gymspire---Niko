@@ -1,5 +1,4 @@
 const User = require('../models/userModel');
-const Message = require('../models/messageModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
