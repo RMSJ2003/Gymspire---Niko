@@ -62,6 +62,7 @@ exports.assignExercisesToMuscles = catchAsync(async (req, res, next) => {
         const ex = r.data.data;
 
         return {
+            exerciseId: ex.exerciseId,
             name: ex.name,
             gifURL: ex.gifUrl,
             target: ex.targetMuscles[0],
@@ -70,11 +71,26 @@ exports.assignExercisesToMuscles = catchAsync(async (req, res, next) => {
     });
 
     // 4) Update the database
-    const workoutPlan = await WorkoutPlan.findOneAndUpdate(
-        {userId: req.user._id} ,
-        { exercises: exercises },
-        { new: true, upsert: true, runValidators: true }
-    );
+    const workoutPlan = await WorkoutPlan.findOneAndUpdate({
+        userId: req.user._id
+    }, {
+        exercises: exercises
+    }, {
+        new: true,
+        upsert: true,
+        runValidators: true
+    });
+
+    res.status(200).json({
+        status: 'success',
+        data: workoutPlan
+    });
+});
+
+exports.getCurrentUserWorkoutPlan = catchAsync(async (req, res, next) => {    
+    const workoutPlan = await WorkoutPlan.findOne({userId: req.user._id});
+
+    // Exercises will then be display to the UI for the users to edit
 
     res.status(200).json({
         status: 'success',

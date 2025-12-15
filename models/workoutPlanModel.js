@@ -7,11 +7,15 @@ const workoutPlanSchema = new mongoose.Schema({
         required: true
     },
     exercises: [{
+        exerciseId: {
+            type: String,
+            required: true
+        },
         name: {
             type: String,
             required: true
         },
-        gifUrl: {
+        gifURL: {
             type: String,
             required: true
         },

@@ -10,6 +10,8 @@ router.get('/getAllExercises', workoutPlanController.getAllExercises);
 
 router.post('/assignExercisesToMuscles', workoutPlanController.assignExercisesToMuscles);
 
+router.get('/myWorkoutPlan', workoutPlanController.getCurrentUserWorkoutPlan);
+
 module.exports = router;
 
 // note:
