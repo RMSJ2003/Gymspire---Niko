@@ -40,6 +40,23 @@ const createSendToken = (user, statusCode, res) => {
 
 
 exports.signup = catchAsync(async (req, res, next) => {
+    const { email } = req.body;
+
+    // Validate iACADEMY email
+    const allowedDomains = ['@iacademy.ph', '@iacademy.edu.ph'];
+    const isValidEmail = allowedDomains.some(domain =>
+        email.toLowerCase().endsWith(domain)
+    );
+
+    if (!isValidEmail) {
+        return next(
+            new AppError(
+                'Only iACADEMY emails (@iacademy.ph or @iacademy.edu.ph) are allowed.',
+                400
+            )
+        );
+    }
+
     const newUser = await User.create({
         email: req.body.email,
         password: req.body.password,

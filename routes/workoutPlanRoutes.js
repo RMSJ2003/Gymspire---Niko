@@ -8,6 +8,8 @@ router.use(authController.protect);
 
 router.get('/getAllExercises', workoutPlanController.getAllExercises);
 
+router.post('/assignExercisesToMuscles', workoutPlanController.assignExercisesToMuscles);
+
 module.exports = router;
 
 // note:
