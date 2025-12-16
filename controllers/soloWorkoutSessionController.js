@@ -38,20 +38,123 @@ exports.getMusclesToWorkout = catchAsync(async (req, res, next) => {
 
     // 5) Extract muscles trained yesterday
     const trainedMusclesYesterday = yesterdayWorkoutLog ?
-        yesterdayWorkoutLog.exercises.map(ex => ex.target) :
-        [];
+        yesterdayWorkoutLog.exercises.map(ex => ex.target) : [];
 
     // 6) Filter muscles NOT trained yesterday
     const musclesToWorkout = workoutPlan.exercises.filter(ex =>
         !trainedMusclesYesterday.includes(ex.target)
     );
 
-  // 7) Send result to frontend
+    // 7) Send result to frontend
     res.status(200).json({
         status: 'success',
         data: {
             musclesToWorkout,
             trainedMusclesYesterday
         }
+    });
+});
+
+
+
+// TEST EACH ERROR OF setMusclesToWorkout
+// Then test the success
+
+exports.setMusclesToWorkout = catchAsync(async (req, res, next) => {
+    const { targets } = req.body;
+
+    if (!targets || !targets.length) {
+        return next(new AppError('Please select at least one muscle group', 400));
+    }
+
+    // 1) Get user's workout plan
+    const workoutPlan = await WorkoutPlan.findOne({
+        userId: req.user._id
+    });
+
+    if (!workoutPlan) {
+        return next(new AppError('No workout plan found for this user', 404));
+    }
+
+    // 🔒 2) ENFORCE: cannot train same muscle as yesterday
+    const startOfYesterday = new Date();
+    startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+    startOfYesterday.setHours(0, 0, 0, 0);
+
+    const endOfYesterday = new Date();
+    endOfYesterday.setDate(endOfYesterday.getDate() - 1);
+    endOfYesterday.setHours(23, 59, 59, 999);
+
+    const yesterdayWorkoutLog = await WorkoutLog.findOne({
+        workoutPlanId: workoutPlan._id,
+        date: {
+            $gte: startOfYesterday,
+            $lt: endOfYesterday
+        }
+    });
+
+    if (yesterdayWorkoutLog) {
+        const trainedMusclesYesterday = yesterdayWorkoutLog.exercises.map(
+            ex => ex.target
+        );
+
+        const invalidTargets = targets.filter(t =>
+            trainedMusclesYesterday.includes(t)
+        );
+
+        if (invalidTargets.length) {
+            return next(
+                new AppError(
+                    `You already trained these muscles yesterday: ${invalidTargets.join(', ')}`,
+                    400
+                )
+            );
+        }
+    }
+
+    // 3) Filter exercises based on selected targets
+    const selectedExercises = workoutPlan.exercises
+        .filter(ex => targets.includes(ex.target))
+        .map(ex => ({
+            name: ex.name,
+            target: ex.target,
+            set: [] // EMPTY sets initially
+        }));
+
+    if (!selectedExercises.length) {
+        return next(new AppError('No matching exercises found for selected muscles', 400));
+    }
+
+    // 4) Ensure only ONE workout log per day
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+
+    const existingLog = await WorkoutLog.findOne({
+        workoutPlanId: workoutPlan._id,
+        date: {
+            $gte: startOfToday,
+            $lt: endOfToday
+        }
+    });
+
+    if (existingLog) {
+        return next(new AppError('Workout already started today', 400));
+    }
+
+    // 5) Create workout log
+    const workoutLog = await WorkoutLog.create({
+        workoutPlanId: workoutPlan._id,
+        date: new Date(),
+        status: 'ongoing',
+        exercises: selectedExercises
+    });
+
+    // 6) Send response
+    res.status(201).json({
+        status: 'success',
+        data: workoutLog
     });
 });

@@ -9,6 +9,6 @@ router.use(authController.protect);
 router
     .route('/musclesToWorkout')
     .get(soloWorkoutSessionController.getMusclesToWorkout)
-    // .post(); // this is where user already chosen muscles to worout the system will receive it
+    .post(soloWorkoutSessionController.setMusclesToWorkout); // this is where user already chosen muscles to worout the system will receive it
 
 module.exports = router;
