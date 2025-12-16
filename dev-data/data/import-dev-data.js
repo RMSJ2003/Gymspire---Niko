@@ -2,7 +2,8 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const User = require('../../models/userModel');
-const Message = require('../../models/messageModel');
+const WorkoutPlan = require('../../models/workoutPlanModel');
+const WorkoutLog = require('../../models/workoutLogModel');
 
 dotenv.config({
     path: './config.env'
@@ -28,7 +29,8 @@ async function main() {
 // READ JSON FILE 
 // __dirname contains the absolute path of the directory where the current JavaScript file is located
 const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'));
-const messages = JSON.parse(fs.readFileSync(`${__dirname}/messages.json`, 'utf-8'));
+const workoutLogs = JSON.parse(fs.readFileSync(`${__dirname}/workoutLogs.json`, 'utf-8'));
+const workoutPlans = JSON.parse(fs.readFileSync(`${__dirname}/workoutPlan.json`, 'utf-8'));
 
 // IMPORT DATA INTO DB
 const importData = async () => {
@@ -36,7 +38,10 @@ const importData = async () => {
         await User.create(users, {
             validateBeforeSave: false
         });
-        await Message.create(messages, {
+        await WorkoutLog.create(workoutLogs, {
+            validateBeforeSave: false
+        });
+        await WorkoutPlan.create(workoutPlans, {
             validateBeforeSave: false
         });
         console.log('Data successfully loaded!');
@@ -50,7 +55,8 @@ const importData = async () => {
 const deleteData = async () => {
     try {
         await User.deleteMany();
-        await Message.deleteMany();
+        await WorkoutLog.deleteMany();
+        await WorkoutPlan.deleteMany();
         console.log('Data successfully deleted!');
         process.exit();
     } catch (err) {

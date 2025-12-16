@@ -1,0 +1,111 @@
+[
+    {
+        "_id": "693fd6c18ac1c3ab2dff9d2e",
+        "workoutPlanId": "693fd6c18ac1c3ab2dff9d2d",
+        "exercises": [
+            {
+                "name": "dumbbell bench press",
+                "target": "pectorals",
+                "set": [
+                    {
+                        "setNumber": 1,
+                        "weight": 50,
+                        "unit": "LB",
+                        "reps": 10
+                    },
+                    {
+                        "setNumber": 2,
+                        "weight": 45,
+                        "unit": "LB",
+                        "reps": 11
+                    },
+                    {
+                        "setNumber": 3,
+                        "weight": 45,
+                        "unit": "LB",
+                        "reps": 8
+                    }
+                ]
+            },
+            {
+                "name": "dumbbell bent over row",
+                "target": "upper back",
+                "set": [
+                    {
+                        "setNumber": 1,
+                        "weight": 45,
+                        "unit": "LB",
+                        "reps": 10
+                    },
+                    {
+                        "setNumber": 2,
+                        "weight": 40,
+                        "unit": "LB",
+                        "reps": 11
+                    },
+                    {
+                        "setNumber": 3,
+                        "weight": 40,
+                        "unit": "LB",
+                        "reps": 8
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "_id": "673fd6c18ac1c3ab2dff9d2b",
+        "workoutPlanId": "693fd6c18ac1c3ab2dff9d2d",
+        "date": "2025-12-15T00:00:00.000Z",
+        "exercises": [
+            {
+                "name": "dumbbell bench press",
+                "target": "pectorals",
+                "set": [
+                    {
+                        "setNumber": 1,
+                        "weight": 50,
+                        "unit": "LB",
+                        "reps": 10
+                    },
+                    {
+                        "setNumber": 2,
+                        "weight": 45,
+                        "unit": "LB",
+                        "reps": 11
+                    },
+                    {
+                        "setNumber": 3,
+                        "weight": 45,
+                        "unit": "LB",
+                        "reps": 8
+                    }
+                ]
+            },
+            {
+                "name": "dumbbell bent over row",
+                "target": "upper back",
+                "set": [
+                    {
+                        "setNumber": 1,
+                        "weight": 45,
+                        "unit": "LB",
+                        "reps": 10
+                    },
+                    {
+                        "setNumber": 2,
+                        "weight": 40,
+                        "unit": "LB",
+                        "reps": 11
+                    },
+                    {
+                        "setNumber": 3,
+                        "weight": 40,
+                        "unit": "LB",
+                        "reps": 8
+                    }
+                ]
+            }
+        ]
+    }
+]

@@ -64,11 +64,6 @@ const userSchema = new mongoose.Schema({
     passwordChangedAt: Date, // The value of this field will change when someone change the password.
     passwordResetToken: String,
     passwordResetExpires: Date, // timer do reset the password
-    active: {
-        type: Boolean,
-        default: true,
-        select: false
-    }
 });
 
 // START OF COMMENT FOR IMPORTING DEV DATA

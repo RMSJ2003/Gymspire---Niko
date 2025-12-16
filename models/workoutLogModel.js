@@ -27,16 +27,37 @@ const workoutLogSchema = new mongoose.Schema({
         set: [{
             setNumber: {
                 type: Number,
-                required: true
+                required: true,
+                min: [1, 'Set Number must be 1 to 3'],
+                max: [3, 'Set Number must be 1 to 3'],
             },
             weight: {
                 type: Number,
                 required: true
             },
+            unit: {
+                type: String,
+                enum: ['LB', 'KG'],
+                default: 'LB'
+            },
             reps: {
                 type: Number,
-                required: true
+                required: true,
+                min: [8, 'Reps must be 8 to 12'],
+                max: [12, 'Reps must be 8 to 12'],
+                // Add a rounding 
             },
         }]
     }]
 });
+
+// Ensure each exercise has unique set numbers
+workoutLogSchema.path('exercises').validate(function (exercises) {
+    return exercises.every(ex => {
+        const setNumbers = ex.set.map(s => s.setNumber);
+        return setNumbers.length === new Set(setNumbers).size;
+    });
+}, 'Duplicate setNumber found. Each setNumber must be unique per exercise.');
+
+const WorkoutLog = mongoose.model('WorkoutLog', workoutLogSchema);
+module.exports = WorkoutLog;

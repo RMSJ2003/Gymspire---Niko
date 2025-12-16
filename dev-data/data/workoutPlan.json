@@ -1,0 +1,152 @@
+[
+    {
+        "_id": "693fd6c18ac1c3ab2dff9d2d",
+        "userId": "5c8a1d5b0190b214360dc057",
+        "exercises": [
+            {
+                "exerciseId": "SpYC0Kp",
+                "name": "dumbbell bench press",
+                "gifURL": "https://static.exercisedb.dev/media/SpYC0Kp.gif",
+                "target": "pectorals",
+                "instructions": [
+                    "Step:1 Lie flat on a bench with your feet flat on the ground and your back pressed against the bench.",
+                    "Step:2 Hold a dumbbell in each hand, with your palms facing forward and your arms extended above your chest.",
+                    "Step:3 Lower the dumbbells slowly to the sides of your chest, keeping your elbows at a 90-degree angle.",
+                    "Step:4 Pause for a moment, then push the dumbbells back up to the starting position, fully extending your arms.",
+                    "Step:5 Repeat for the desired number of repetitions."
+                ]
+            },
+            {
+                "exerciseId": "BJ0Hz5L",
+                "name": "dumbbell bent over row",
+                "gifURL": "https://static.exercisedb.dev/media/BJ0Hz5L.gif",
+                "target": "upper back",
+                "instructions": [
+                    "Step:1 Stand with your feet shoulder-width apart, knees slightly bent, and hold a dumbbell in each hand with your palms facing your body.",
+                    "Step:2 Bend forward at the hips, keeping your back straight and your core engaged.",
+                    "Step:3 Let your arms hang straight down towards the floor, with your elbows slightly bent.",
+                    "Step:4 Pull the dumbbells up towards your chest, squeezing your shoulder blades together.",
+                    "Step:5 Pause for a moment at the top, then slowly lower the dumbbells back down to the starting position.",
+                    "Step:6 Repeat for the desired number of repetitions."
+                ]
+            },
+            {
+                "exerciseId": "hxyTtWj",
+                "name": "dumbbell seated lateral raise",
+                "gifURL": "https://static.exercisedb.dev/media/hxyTtWj.gif",
+                "target": "delts",
+                "instructions": [
+                    "Step:1 Sit on a bench with your feet flat on the ground and a dumbbell in each hand, resting on your thighs.",
+                    "Step:2 Keep your back straight and core engaged.",
+                    "Step:3 Raise the dumbbells to your sides with a slight bend in your elbows, until your arms are parallel to the ground.",
+                    "Step:4 Pause for a moment at the top, then slowly lower the dumbbells back down to the starting position.",
+                    "Step:5 Repeat for the desired number of repetitions."
+                ]
+            },
+            {
+                "exerciseId": "PdmaD0N",
+                "name": "dumbbell standing triceps extension",
+                "gifURL": "https://static.exercisedb.dev/media/PdmaD0N.gif",
+                "target": "triceps",
+                "instructions": [
+                    "Step:1 Stand with your feet shoulder-width apart and hold a dumbbell in one hand.",
+                    "Step:2 Raise the dumbbell overhead, keeping your arm straight.",
+                    "Step:3 Bend your elbow and lower the dumbbell behind your head, keeping your upper arm stationary.",
+                    "Step:4 Extend your arm back up to the starting position.",
+                    "Step:5 Repeat for the desired number of repetitions."
+                ]
+            },
+            {
+                "exerciseId": "xiA6lRr",
+                "name": "dumbbell seated bicep curl",
+                "gifURL": "https://static.exercisedb.dev/media/xiA6lRr.gif",
+                "target": "biceps",
+                "instructions": [
+                    "Step:1 Sit on a bench with your feet flat on the ground and hold a dumbbell in each hand, palms facing up.",
+                    "Step:2 Keep your back straight and your elbows close to your torso.",
+                    "Step:3 Exhale and curl the dumbbells up towards your shoulders, contracting your biceps.",
+                    "Step:4 Pause for a moment at the top, then inhale and slowly lower the dumbbells back down to the starting position.",
+                    "Step:5 Repeat for the desired number of repetitions."
+                ]
+            },
+            {
+                "exerciseId": "D1xYJAU",
+                "name": "dumbbell over bench wrist curl",
+                "gifURL": "https://static.exercisedb.dev/media/D1xYJAU.gif",
+                "target": "forearms",
+                "instructions": [
+                    "Step:1 Sit on a bench with your forearms resting on the bench and your palms facing up, holding a dumbbell in each hand.",
+                    "Step:2 Allow your wrists to hang over the edge of the bench.",
+                    "Step:3 Slowly curl your wrists upward, squeezing your forearms at the top of the movement.",
+                    "Step:4 Pause for a moment, then slowly lower your wrists back down to the starting position.",
+                    "Step:5 Repeat for the desired number of repetitions."
+                ]
+            },
+            {
+                "exerciseId": "p9cCe2r",
+                "name": "spell caster",
+                "gifURL": "https://static.exercisedb.dev/media/p9cCe2r.gif",
+                "target": "abs",
+                "instructions": [
+                    "Step:1 Stand with your feet shoulder-width apart and hold a dumbbell in one hand.",
+                    "Step:2 Bend your knees slightly and hinge forward at the waist, keeping your back straight.",
+                    "Step:3 Extend your arm with the dumbbell towards the opposite foot, rotating your torso as you do so.",
+                    "Step:4 Return to the starting position and repeat on the other side.",
+                    "Step:5 Continue alternating sides for the desired number of repetitions."
+                ]
+            },
+            {
+                "exerciseId": "yn8yg1r",
+                "name": "dumbbell goblet squat",
+                "gifURL": "https://static.exercisedb.dev/media/yn8yg1r.gif",
+                "target": "quads",
+                "instructions": [
+                    "Step:1 Stand with your feet shoulder-width apart, holding a dumbbell vertically against your chest with both hands.",
+                    "Step:2 Keeping your chest up and core engaged, lower your body down into a squat position by pushing your hips back and bending your knees.",
+                    "Step:3 Continue lowering until your thighs are parallel to the ground, or as low as you can comfortably go.",
+                    "Step:4 Pause for a moment at the bottom, then push through your heels to return to the starting position.",
+                    "Step:5 Repeat for the desired number of repetitions."
+                ]
+            },
+            {
+                "exerciseId": "FkBIE6a",
+                "name": "dumbbell lying femoral",
+                "gifURL": "https://static.exercisedb.dev/media/FkBIE6a.gif",
+                "target": "hamstrings",
+                "instructions": [
+                    "Step:1 Lie flat on your back with your legs extended and a dumbbell resting on your lower abdomen.",
+                    "Step:2 Bend your knees and bring the dumbbell towards your glutes, keeping your feet flat on the ground.",
+                    "Step:3 Pause for a moment at the top, then slowly lower the dumbbell back to the starting position.",
+                    "Step:4 Repeat for the desired number of repetitions."
+                ]
+            },
+            {
+                "exerciseId": "BmrwWzo",
+                "name": "dumbbell sumo pull through",
+                "gifURL": "https://static.exercisedb.dev/media/BmrwWzo.gif",
+                "target": "glutes",
+                "instructions": [
+                    "Step:1 Stand with your feet wider than shoulder-width apart, toes pointed outwards.",
+                    "Step:2 Hold a dumbbell with both hands in front of your body, arms extended.",
+                    "Step:3 Bend your knees and lower your hips down into a squat position, keeping your back straight.",
+                    "Step:4 Lower the dumbbell down between your legs, keeping your arms straight.",
+                    "Step:5 Drive through your heels and extend your hips forward, pulling the dumbbell up and in front of your body.",
+                    "Step:6 Squeeze your glutes at the top of the movement, then lower the dumbbell back down between your legs.",
+                    "Step:7 Repeat for the desired number of repetitions."
+                ]
+            },
+            {
+                "exerciseId": "dPmaUaU",
+                "name": "dumbbell standing calf raise",
+                "gifURL": "https://static.exercisedb.dev/media/dPmaUaU.gif",
+                "target": "calves",
+                "instructions": [
+                    "Step:1 Stand with your feet shoulder-width apart, holding a dumbbell in each hand.",
+                    "Step:2 Raise your heels off the ground as high as possible, using your calves.",
+                    "Step:3 Pause for a moment at the top, then slowly lower your heels back down to the starting position.",
+                    "Step:4 Repeat for the desired number of repetitions."
+                ]
+            }
+        ]
+    }
+]
