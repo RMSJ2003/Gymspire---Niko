@@ -31,6 +31,17 @@ const workoutLogSchema = new mongoose.Schema({
                 min: [1, 'Set Number must be 1 to 3'],
                 max: [3, 'Set Number must be 1 to 3'],
             },
+            type: {
+                type: String,
+                enum: ['warmup', 'working'],
+                validate: {
+                    validator: function (v) {
+                        // only require type for NEW structured workouts
+                        return v !== undefined;
+                    },
+                    message: 'A set must have a type (warmup or working)'
+                }
+            },
             weight: {
                 type: Number,
                 required: true
@@ -47,6 +58,13 @@ const workoutLogSchema = new mongoose.Schema({
                 max: [12, 'Reps must be 8 to 12'],
                 // Add a rounding 
             },
+            restSeconds: {
+                type: Number,
+                validate: {
+                    validator: v => v !== undefined,
+                    message: 'A set must have a restSeconds (rest duration in seconds)'
+                }
+            }
         }]
     }]
 });

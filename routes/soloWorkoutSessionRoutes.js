@@ -11,4 +11,11 @@ router
     .get(soloWorkoutSessionController.getMusclesToWorkout)
     .post(soloWorkoutSessionController.setMusclesToWorkout); // this is where user already chosen muscles to worout the system will receive it
 
+router
+    .post('/:workoutLogId/start', soloWorkoutSessionController.startSoloWorkoutSession)
+
+router
+    .route('/:workoutLogId/exercises/:exerciseIndex/sets/:setNumber')
+    .patch(soloWorkoutSessionController.updateWorkoutSet);
+
 module.exports = router;

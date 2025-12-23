@@ -55,13 +55,10 @@ exports.getMusclesToWorkout = catchAsync(async (req, res, next) => {
     });
 });
 
-
-
-// TEST EACH ERROR OF setMusclesToWorkout
-// Then test the success
-
 exports.setMusclesToWorkout = catchAsync(async (req, res, next) => {
-    const { targets } = req.body;
+    const {
+        targets
+    } = req.body;
 
     if (!targets || !targets.length) {
         return next(new AppError('Please select at least one muscle group', 400));
@@ -154,6 +151,125 @@ exports.setMusclesToWorkout = catchAsync(async (req, res, next) => {
 
     // 6) Send response
     res.status(201).json({
+        status: 'success',
+        data: workoutLog
+    });
+});
+
+// The weight of the warm up sets wil be calculated in the frontend.
+// This prepares the workout structure before the user lifts.
+exports.startSoloWorkoutSession = catchAsync(async (req, res, next) => {
+    const {
+        workoutLogId
+    } = req.params;
+
+    const workoutLog = await WorkoutLog.findById(workoutLogId);
+
+    if (!workoutLog) {
+        return next(new AppError('Workout session not found', 404));
+    }
+
+    // GUARD: prevent starting twice
+    if (
+        workoutLog.exercises.length &&
+        workoutLog.exercises[0].set.length > 0
+    ) {
+        return next(
+            new AppError('Workout already started', 400)
+        );
+    }
+
+    // Build warmup + working sets
+    workoutLog.exercises.forEach(ex => {
+        ex.set = [
+            // Warm-ups
+            {
+                setNumber: 1,
+                type: 'warmup',
+                restSeconds: 60
+            },
+            {
+                setNumber: 2,
+                type: 'warmup',
+                restSeconds: 60
+            },
+            {
+                setNumber: 3,
+                type: 'warmup',
+                restSeconds: 180
+            },
+
+            // Working sets
+            {
+                setNumber: 4,
+                type: 'working',
+                restSeconds: 240
+            },
+            {
+                setNumber: 5,
+                type: 'working',
+                restSeconds: 240
+            },
+            {
+                setNumber: 6,
+                type: 'working',
+                restSeconds: 240
+            },
+        ]
+    });
+
+    await workoutLog.save();
+
+    res.status(200).json({
+        status: 'success',
+        data: workoutLog
+    });
+});
+
+exports.updateWorkoutSet = catchAsync(async (req, res, next) => {
+    const {workoutLogId, exerciseIndex, setNumber} = req.params;
+    const {weight, reps, unit} = req.body;
+
+    const workoutLog = await WorkoutLog.findById(workoutLogId);
+    if (!workoutLog) return next(
+        new AppError('Workout session not found', 404)
+    );
+
+    const exercise = workoutLog.exercises[exerciseIndex];
+    if (!exercise) return next(
+        new AppError('Exercise not found', 404)
+    );
+
+    console.log(exercise);
+
+    const set = exercise.set.find(s => s.setNumber === Number(setNumber));
+    if (!set) return next(
+        new AppError('Set not found', 404)
+    );
+
+    set.weight = weight;
+    set.reps = reps;
+    set.unit = unit || 'LB';
+
+    await workoutLog.save();
+
+    res.status(200).json({
+        status: 'success',
+        data: workoutLog
+    });
+});
+
+exports.finishWorkoutSession = catchAsync(async (req, res, next) => {
+    const workoutLog = await WorkoutLog.findById(req.params.id);
+
+    if (!workoutLog) return next(
+        new AppError('Workout not found', 404)
+    );
+
+    workoutLog.status = 'done';
+    await workoutLog.save();
+
+    res.status(200).json({
         status: 'success',
         data: workoutLog
     });
