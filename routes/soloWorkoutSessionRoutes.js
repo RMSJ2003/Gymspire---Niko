@@ -18,4 +18,6 @@ router
     .route('/:workoutLogId/exercises/:exerciseIndex/sets/:setNumber')
     .patch(soloWorkoutSessionController.updateWorkoutSet);
 
+router.patch('/:workoutLogId/finish', soloWorkoutSessionController.finishWorkoutSession);
+
 module.exports = router;

@@ -12,7 +12,7 @@ const workoutLogSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['ongoing', 'done'],
+        enum: ['not yet started', 'ongoing', 'done'],
         default: 'ongoing'
     },
     exercises: [{
@@ -28,8 +28,8 @@ const workoutLogSchema = new mongoose.Schema({
             setNumber: {
                 type: Number,
                 required: true,
-                min: [1, 'Set Number must be 1 to 3'],
-                max: [3, 'Set Number must be 1 to 3'],
+                min: [1, 'Set Number must be 1 to 6'],
+                max: [6, 'Set Number must be 1 to 6'],
             },
             type: {
                 type: String,
@@ -49,14 +49,34 @@ const workoutLogSchema = new mongoose.Schema({
             unit: {
                 type: String,
                 enum: ['LB', 'KG'],
-                default: 'LB'
+                default: 'LB',
+                required: true
             },
             reps: {
                 type: Number,
                 required: true,
-                min: [8, 'Reps must be 8 to 12'],
-                max: [12, 'Reps must be 8 to 12'],
-                // Add a rounding 
+                validate: [{
+                        validator: Number.isInteger,
+                        message: 'Reps must be a whole number'
+                    },
+                    {
+                        validator: function (v) {
+                            // allow 0 ONLY before workout starts
+                            if (v === 0) return true;
+
+                            if (this.type === 'warmup') {
+                                return v === 4;
+                            }
+
+                            if (this.type === 'working') {
+                                return v >= 8 && v <= 12;
+                            }
+
+                            return true;
+                        },
+                        message: 'Invalid number of reps for this set type'
+                    }
+                ]
             },
             restSeconds: {
                 type: Number,

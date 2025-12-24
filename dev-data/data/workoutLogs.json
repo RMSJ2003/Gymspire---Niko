@@ -2,28 +2,60 @@
     {
         "_id": "693fd6c18ac1c3ab2dff9d2e",
         "workoutPlanId": "693fd6c18ac1c3ab2dff9d2d",
+        "date": "2025-12-21T00:00:00.000Z",
+        "status": "done",
         "exercises": [
-            {
+           {
                 "name": "dumbbell bench press",
                 "target": "pectorals",
                 "set": [
                     {
                         "setNumber": 1,
-                        "weight": 50,
+                        "type": "warmup",
+                        "weight": 20,
                         "unit": "LB",
-                        "reps": 10
+                        "reps": 4,
+                        "restSeconds": 60
                     },
                     {
                         "setNumber": 2,
-                        "weight": 45,
+                        "type": "warmup",
+                        "weight": 40,
                         "unit": "LB",
-                        "reps": 11
+                        "reps": 4,
+                        "restSeconds": 60
                     },
                     {
                         "setNumber": 3,
-                        "weight": 45,
+                        "type": "warmup",
+                        "weight": 60,
                         "unit": "LB",
-                        "reps": 8
+                        "reps": 4,
+                        "restSeconds": 180
+                    },
+                    {
+                        "setNumber": 4,
+                        "type": "working",
+                        "weight": 80,
+                        "unit": "LB",
+                        "reps": 12,
+                        "restSeconds": 240
+                    },
+                    {
+                        "setNumber": 5,
+                        "type": "working",
+                        "weight": 80,
+                        "unit": "LB",
+                        "reps": 8,
+                        "restSeconds": 240
+                    },
+                    {
+                        "setNumber": 6,
+                        "type": "working",
+                        "weight": 70,
+                        "unit": "LB",
+                        "reps": 10,
+                        "restSeconds": 240
                     }
                 ]
             },
@@ -33,21 +65,51 @@
                 "set": [
                     {
                         "setNumber": 1,
-                        "weight": 45,
+                        "type": "warmup",
+                        "weight": 20,
                         "unit": "LB",
-                        "reps": 10
+                        "reps": 4,
+                        "restSeconds": 60
                     },
                     {
                         "setNumber": 2,
+                        "type": "warmup",
                         "weight": 40,
                         "unit": "LB",
-                        "reps": 11
+                        "reps": 4,
+                        "restSeconds": 60
                     },
                     {
                         "setNumber": 3,
-                        "weight": 40,
+                        "type": "warmup",
+                        "weight": 60,
                         "unit": "LB",
-                        "reps": 8
+                        "reps": 4,
+                        "restSeconds": 180
+                    },
+                    {
+                        "setNumber": 4,
+                        "type": "working",
+                        "weight": 80,
+                        "unit": "LB",
+                        "reps": 12,
+                        "restSeconds": 240
+                    },
+                    {
+                        "setNumber": 5,
+                        "type": "working",
+                        "weight": 80,
+                        "unit": "LB",
+                        "reps": 8,
+                        "restSeconds": 240
+                    },
+                    {
+                        "setNumber": 6,
+                        "type": "working",
+                        "weight": 70,
+                        "unit": "LB",
+                        "reps": 10,
+                        "restSeconds": 240
                     }
                 ]
             }
@@ -56,7 +118,8 @@
     {
         "_id": "673fd6c18ac1c3ab2dff9d2b",
         "workoutPlanId": "693fd6c18ac1c3ab2dff9d2d",
-        "date": "2025-12-15T00:00:00.000Z",
+        "date": "2025-12-21T00:00:00.000Z",
+        "status": "done",
         "exercises": [
             {
                 "name": "dumbbell bench press",
@@ -64,21 +127,51 @@
                 "set": [
                     {
                         "setNumber": 1,
-                        "weight": 50,
+                        "type": "warmup",
+                        "weight": 25,
                         "unit": "LB",
-                        "reps": 10
+                        "reps": 4,
+                        "restSeconds": 60
                     },
                     {
                         "setNumber": 2,
-                        "weight": 45,
+                        "type": "warmup",
+                        "weight": 50,
                         "unit": "LB",
-                        "reps": 11
+                        "reps": 4,
+                        "restSeconds": 60
                     },
                     {
                         "setNumber": 3,
-                        "weight": 45,
+                        "type": "warmup",
+                        "weight": 75,
                         "unit": "LB",
-                        "reps": 8
+                        "reps": 4,
+                        "restSeconds": 180
+                    },
+                    {
+                        "setNumber": 4,
+                        "type": "working",
+                        "weight": 100,
+                        "unit": "LB",
+                        "reps": 12,
+                        "restSeconds": 240
+                    },
+                    {
+                        "setNumber": 5,
+                        "type": "working",
+                        "weight": 100,
+                        "unit": "LB",
+                        "reps": 8,
+                        "restSeconds": 240
+                    },
+                    {
+                        "setNumber": 6,
+                        "type": "working",
+                        "weight": 90,
+                        "unit": "LB",
+                        "reps": 10,
+                        "restSeconds": 240
                     }
                 ]
             },
@@ -88,21 +181,51 @@
                 "set": [
                     {
                         "setNumber": 1,
-                        "weight": 45,
+                        "type": "warmup",
+                        "weight": 25,
                         "unit": "LB",
-                        "reps": 10
+                        "reps": 4,
+                        "restSeconds": 60
                     },
                     {
                         "setNumber": 2,
-                        "weight": 40,
+                        "type": "warmup",
+                        "weight": 50,
                         "unit": "LB",
-                        "reps": 11
+                        "reps": 4,
+                        "restSeconds": 60
                     },
                     {
                         "setNumber": 3,
-                        "weight": 40,
+                        "type": "warmup",
+                        "weight": 75,
                         "unit": "LB",
-                        "reps": 8
+                        "reps": 4,
+                        "restSeconds": 180
+                    },
+                    {
+                        "setNumber": 4,
+                        "type": "working",
+                        "weight": 100,
+                        "unit": "LB",
+                        "reps": 12,
+                        "restSeconds": 240
+                    },
+                    {
+                        "setNumber": 5,
+                        "type": "working",
+                        "weight": 100,
+                        "unit": "LB",
+                        "reps": 8,
+                        "restSeconds": 240
+                    },
+                    {
+                        "setNumber": 6,
+                        "type": "working",
+                        "weight": 90,
+                        "unit": "LB",
+                        "reps": 10,
+                        "restSeconds": 240
                     }
                 ]
             }
