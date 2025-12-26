@@ -1,10 +1,14 @@
 const mongoose = require('mongoose');
 
 const workoutLogSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+        required: true
+    },
     workoutPlanId: {
         type: mongoose.Schema.ObjectId,
         ref: 'WorkoutPlan',
-        required: true
     },
     date: {
         type: Date,

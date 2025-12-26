@@ -17,7 +17,7 @@ exports.getAllExercises = catchAsync(async (req, res, next) => {
         axios.get(baseURL, {
             params: {
                 offset: 0,
-                limit: 100,
+                limit: 500,
                 muscles: muscle,
                 equipment: 'dumbbell'
             }

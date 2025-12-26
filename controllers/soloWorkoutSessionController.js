@@ -322,8 +322,7 @@ exports.updateWorkoutSet = catchAsync(async (req, res, next) => {
     }
 
     // 2️⃣ Verify ownership
-    const workoutPlan = await WorkoutPlan.findById(workoutLog.workoutPlanId);
-    if (!workoutPlan || workoutPlan.userId.toString() !== req.user._id.toString()) {
+    if (workoutLog.userId.toString() !== req.user._id.toString()) {
         return next(new AppError('You are not allowed to modify this workout', 403));
     }
 

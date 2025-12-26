@@ -4,6 +4,7 @@ const userRouter = require('./routes/userRoutes');
 const workoutPlanRouter = require('./routes/workoutPlanRoutes');
 const soloWorkoutSessionRouter = require('./routes/soloWorkoutSessionRoutes');
 const prRouter = require('./routes/prRoutes');
+const sharedWorkoutSessionRouter = require('./routes/sharedWorkoutSessionRoutes');
 
 const app = express();
 
@@ -15,5 +16,6 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/workout-plans', workoutPlanRouter);
 app.use('/api/v1/solo-workout-sessions', soloWorkoutSessionRouter);
 app.use('/api/v1/prs', prRouter);
+app.use('/api/v1/shared-workout-sessions', sharedWorkoutSessionRouter);
 
 module.exports = app;
