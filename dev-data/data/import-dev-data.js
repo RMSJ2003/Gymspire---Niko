@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const User = require('../../models/userModel');
 const WorkoutPlan = require('../../models/workoutPlanModel');
 const WorkoutLog = require('../../models/workoutLogModel');
+const SharedWorkoutChallenge = require('../../models/sharedWorkoutChallengeModel');
 
 dotenv.config({
     path: './config.env'
@@ -31,6 +32,7 @@ async function main() {
 const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'));
 const workoutLogs = JSON.parse(fs.readFileSync(`${__dirname}/workoutLogs.json`, 'utf-8'));
 const workoutPlans = JSON.parse(fs.readFileSync(`${__dirname}/workoutPlan.json`, 'utf-8'));
+const sharedWorkoutChallenge = JSON.parse(fs.readFileSync(`${__dirname}/sharedWorkoutChallenge.json`, 'utf-8'));
 
 // IMPORT DATA INTO DB
 const importData = async () => {
@@ -42,6 +44,9 @@ const importData = async () => {
             validateBeforeSave: false
         });
         await WorkoutPlan.create(workoutPlans, {
+            validateBeforeSave: false
+        });
+        await SharedWorkoutChallenge.create(sharedWorkoutChallenge, {
             validateBeforeSave: false
         });
         console.log('Data successfully loaded!');
@@ -57,6 +62,7 @@ const deleteData = async () => {
         await User.deleteMany();
         await WorkoutLog.deleteMany();
         await WorkoutPlan.deleteMany();
+        await SharedWorkoutChallenge.deleteMany();
         console.log('Data successfully deleted!');
         process.exit();
     } catch (err) {

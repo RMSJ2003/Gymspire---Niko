@@ -1,0 +1,61 @@
+[
+    {
+        "_id": "663fd6c18ac1c3ab2dff9d2f",
+        "name": "Palakasan challenge",
+        "joinCode": "TaraWorkout",
+        "participants": [
+            "5c8a1d5b0190b214360dc057",
+            "5c8a1d5b0190b214360dc060",
+            "5c8a1d5b0190b214360dc061"
+        ],
+        "startTime": "2025-12-26T00:00:00.000Z",
+        "endTime": "2025-12-27T00:00:00.000Z",
+        "status": "ongoing",
+        "exercises": [
+            {
+                "name": "dumbbell bench press",
+                "target": "pectorals"
+            },
+            {
+                "name": "dumbbell bent over row",
+                "target": "upper back"
+            },
+            {
+                "name": "dumbbell seated lateral raise",
+                "target": "delts"
+            },
+            {
+                "name": "dumbbell standing triceps extension",
+                "target": "triceps"
+            },
+            {
+                "name": "dumbbell seated bicep curl",
+                "target": "biceps"
+            },
+            {
+                "name": "dumbbell over bench wrist curl",
+                "target": "forearms"
+            },
+            {
+                "name": "spell caster",
+                "target": "abs"
+            },
+            {
+                "name": "dumbbell goblet squat",
+                "target": "quads"
+            },
+            {
+                "name": "dumbbell lying femoral",
+                "target": "hamstrings"
+            },
+            {
+                "name": "dumbbell sumo pull through",
+                "target": "glutes"
+            },
+            {
+                "name": "dumbbell standing calf raise",
+                "target": "calves"
+            }
+        ]
+    }
+]

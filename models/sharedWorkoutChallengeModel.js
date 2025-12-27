@@ -1,6 +1,15 @@
 const mongoose = require('mongoose');
 
 const sharedWorkoutChallengeSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    joinCode: {
+        type: String,
+        unique: true,
+        required: true
+    },
     participants: [
         {
             type: mongoose.Schema.ObjectId,
@@ -15,17 +24,17 @@ const sharedWorkoutChallengeSchema = new mongoose.Schema({
         type: Date, 
         required: true
     },
+    status: {
+        type: String,
+        enum: ['upcoming', 'ongoing', 'finished'],
+        default: 'upcoming'
+    },
     exercises: [
         {
             name: String,
             target: String
         }
-    ],
-    status: {
-        type: String,
-        enum: ['upcoming', 'ongoing', 'finished'],
-        default: 'upcoming'
-    }
+    ]
 });
 
 const SharedWorkoutChallenge = mongoose.model('SharedWorkoutChallenge', sharedWorkoutChallengeSchema)

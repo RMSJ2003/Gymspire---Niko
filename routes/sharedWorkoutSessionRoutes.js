@@ -6,7 +6,14 @@ const router = express.Router();
 
 router.use(authController.protect);
 
-router.get('/test', sharedWorkoutSessionController.test);
+router.post('/:joinCode', sharedWorkoutSessionController.joinChallenge);
+
+router
+    .route('/')
+    .post( // Create challenge: target muscles sent via body
+        authController.restrictTo('admin', 'judge'),
+        sharedWorkoutSessionController.createChallenge
+    );
 
 module.exports = router;
 

@@ -302,7 +302,6 @@ exports.startSoloWorkoutSession = catchAsync(async (req, res, next) => {
     });
 });
 
-
 exports.updateWorkoutSet = catchAsync(async (req, res, next) => {
     const {
         workoutLogId,
@@ -320,6 +319,10 @@ exports.updateWorkoutSet = catchAsync(async (req, res, next) => {
     if (!workoutLog) {
         return next(new AppError('Workout session not found', 404));
     }
+
+    if (!workoutLog.workoutPlanId && workoutLog.challengeId) return next(
+        new AppError('You are currently in solo mode and not allowed to modify a shared workout', 403)
+    );
 
     // 2️⃣ Verify ownership
     if (workoutLog.userId.toString() !== req.user._id.toString()) {

@@ -2,9 +2,9 @@
     {
         "_id": "693fd6c18ac1c3ab2dff9d2e",
         "userId": "5c8a1d5b0190b214360dc057",
-        "workoutPlanId": "693fd6c18ac1c3ab2dff9d2d",
-        "date": "2025-12-21T00:00:00.000Z",
-        "status": "done",
+        "challengeId": "663fd6c18ac1c3ab2dff9d2f",
+        "date": "2025-12-26T00:00:00.000Z",
+        "status": "ongoing",
         "exercises": [
            {
                 "name": "dumbbell bench press",
