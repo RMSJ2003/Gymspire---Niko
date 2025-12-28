@@ -1,10 +1,10 @@
 const systemExercises = require('../dev-data/data/systemExercises');
-const WorkoutPlan = require('../models/workoutPlanModel');
 const WorkoutLog = require('../models/workoutLogModel');
 const SharedWorkoutChallenge = require('../models/sharedWorkoutChallengeModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const generateJoinCode = require('../utils/generateJoinCode');
+const { enforceMuscleRest } = require('../services/restRule.service');
 
 // Note: you will create a workoutLog with challengeId in this function
 exports.createChallenge = catchAsync(async (req, res, next) => {
@@ -59,30 +59,26 @@ exports.createChallenge = catchAsync(async (req, res, next) => {
 });
 
 exports.joinChallenge = catchAsync(async (req, res, next) => {
-    const {
-        joinCode
-    } = req.params;
+    const { joinCode } = req.params;
 
     // ------------------------------------------------------------------
-    // 1) Validate join code (challenge must exist)
+    // STEP 1: Validate join code (challenge must exist)
     // ------------------------------------------------------------------
-    const challenge = await SharedWorkoutChallenge.findOne({
-        joinCode
-    });
+    const challenge = await SharedWorkoutChallenge.findOne({ joinCode });
 
     if (!challenge) {
         return next(new AppError('Invalid join code', 404));
     }
 
     // ------------------------------------------------------------------
-    // 2) Prevent joining if challenge already started or finished
+    // STEP 2: Prevent joining if challenge already started or finished
     // ------------------------------------------------------------------
     if (challenge.status !== 'upcoming') {
         return next(new AppError('Challenge already started', 409));
     }
 
     // ------------------------------------------------------------------
-    // 3) Prevent duplicate join
+    // STEP 3: Prevent duplicate join
     // ------------------------------------------------------------------
     const alreadyJoined = challenge.participants.some(
         id => id.toString() === req.user._id.toString()
@@ -93,68 +89,35 @@ exports.joinChallenge = catchAsync(async (req, res, next) => {
     }
 
     // ------------------------------------------------------------------
-    // 4) Ensure user has a workout plan (business rule prerequisite)
-    // ------------------------------------------------------------------
-    const workoutPlan = await WorkoutPlan.findOne({
-        userId: req.user._id
-    });
-
-    if (!workoutPlan) {
-        return next(
-            new AppError(
-                'You must create a workout plan before joining a challenge',
-                409
-            )
-        );
-    }
-
-    // ------------------------------------------------------------------
-    // 5) FETCH LAST WORKOUT (ANY TYPE: plan OR challenge)
-    //     This replaces "yesterday" logic entirely
+    // STEP 4: Fetch user's most recent workout (solo OR challenge)
     // ------------------------------------------------------------------
     const lastWorkoutLog = await WorkoutLog.findOne({
         userId: req.user._id
-    }).sort({
-        date: -1
-    }); // most recent workout
+    }).sort({ date: -1 });
 
     // ------------------------------------------------------------------
-    // 6) ENFORCE 24-HOUR REST RULE (muscle-specific)
+    // STEP 5: Extract challenge muscle targets
+    // (these are the muscles the challenge will train)
     // ------------------------------------------------------------------
-    if (lastWorkoutLog) {
-        // Calculate hours since last workout
-        const hoursSinceLastWorkout =
-            (Date.now() - lastWorkoutLog.date.getTime()) / 36e5;
+    const challengeTargets = challenge.exercises.map(
+        ex => ex.target
+    );
 
-        // Only enforce rule if last workout was within 24 hours
-        if (hoursSinceLastWorkout < 24) {
-            // Muscles trained in the last workout
-            const trainedMuscles = lastWorkoutLog.exercises.map(
-                ex => ex.target
-            );
-
-            // Overlap between challenge targets and recently trained muscles
-            const challengeTargets = challenge.exercises.map(ex => ex.target);
-
-            const invalidTargets = challengeTargets.filter(t =>
-                trainedMuscles.includes(t)
-            );
-
-            if (invalidTargets.length) {
-                return next(
-                    new AppError(
-                        `You trained these muscles ${Math.floor(
-                            hoursSinceLastWorkout
-                        )} hours ago: ${invalidTargets.join(', ')}`,
-                        409
-                    )
-                );
-            }
-        }
+    // ------------------------------------------------------------------
+    // STEP 6: Enforce 24-hour muscle rest rule
+    // Uses shared domain service
+    // ------------------------------------------------------------------
+    try {
+        enforceMuscleRest({
+            lastWorkoutLog,
+            targets: challengeTargets
+        });
+    } catch (err) {
+        return next(new AppError(err.message, 409));
     }
 
     // ------------------------------------------------------------------
-    // 7) SUCCESSFUL JOIN
+    // STEP 7: Successful join
     // ------------------------------------------------------------------
     challenge.participants.push(req.user._id);
     await challenge.save();

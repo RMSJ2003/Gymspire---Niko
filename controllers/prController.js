@@ -1,4 +1,3 @@
-const WorkoutPlan = require('../models/workoutPlanModel');
 const WorkoutLog = require('../models/workoutLogModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
@@ -8,19 +7,11 @@ exports.getExercisePR = catchAsync(async (req, res, next) => {
         exerciseName
     } = req.params;
 
-    // 1) Get user's workout plan
-    const workoutPlan = await WorkoutPlan.findOne({
-        userId: req.user._id
-    });
-    if (!workoutPlan) return next(
-        new AppError('Workout plan not found')
-    );
-
-    // 2) Aggregate PR
+    // 1) Aggregate
     const records = await WorkoutLog.aggregate([
         {
             $match: {
-                workoutPlanId: workoutPlan._id,
+                userId: req.user._id,
                 status: 'done'
             }
         },

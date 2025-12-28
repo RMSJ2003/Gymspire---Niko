@@ -2,62 +2,50 @@ const WorkoutLog = require('../models/workoutLogModel');
 const WorkoutPlan = require('../models/workoutPlanModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
+const {
+    enforceMuscleRest
+} = require('../services/restRule.service');
 
 exports.getMusclesToWorkout = catchAsync(async (req, res, next) => {
-    // 1) Fetch current user's workout plan 
-    const workoutPlan = await WorkoutPlan.findOne({
+    // ======================================================
+    // STEP 1: Fetch the user's most recent workout (any type)
+    // ======================================================
+    const lastWorkoutLog = await WorkoutLog.findOne({
         userId: req.user._id
+    }).sort({
+        date: -1
     });
 
-    if (!workoutPlan) {
-        return next(new AppError('No workout plan found for this user', 404));
-    }
+    // ======================================================
+    // STEP 2: Extract muscles trained in the last workout
+    // (empty array if no previous workout exists)
+    // ======================================================
+    const trainedMuscles = lastWorkoutLog ?
+        lastWorkoutLog.exercises.map(ex => ex.target) :
+        [];
 
-    // 2) Get workoutPlanId
-    const workoutPlanId = workoutPlan._id;
-
-    // 3) Define yesterday's date range
-    const startOfYesterday = new Date();
-    startOfYesterday.setDate(startOfYesterday.getDate() - 1);
-    startOfYesterday.setHours(0, 0, 0, 0);
-
-    const endOfYesterday = new Date();
-    endOfYesterday.setDate(endOfYesterday.getDate() - 1);
-    endOfYesterday.setHours(23, 59, 59, 999);
-
-    // 4) Find yesterday's workout log
-    const yesterdayWorkoutLog = await WorkoutLog.findOne({
-        workoutPlanId,
-        date: {
-            $gte: startOfYesterday,
-            $lt: endOfYesterday
-        }
-    });
-
-    console.log('Yesterday workout log:', yesterdayWorkoutLog);
-
-    // 5) Extract muscles trained yesterday
-    const trainedMusclesYesterday = yesterdayWorkoutLog ?
-        yesterdayWorkoutLog.exercises.map(ex => ex.target) : [];
-
-    // 6) Filter muscles NOT trained yesterday
-    const musclesToWorkout = workoutPlan.exercises.filter(ex =>
-        !trainedMusclesYesterday.includes(ex.target)
+    // ======================================================
+    // STEP 3: Filter muscles that are NOT in recovery
+    // ======================================================
+    const musclesToWorkout = req.workoutPlan.exercises.filter(ex =>
+        !trainedMuscles.includes(ex.target)
     );
 
-    // 7) Send result to frontend
+    // ======================================================
+    // STEP 4: Send response
+    // ======================================================
     res.status(200).json({
         status: 'success',
         data: {
             musclesToWorkout,
-            trainedMusclesYesterday
+            trainedMuscles
         }
     });
 });
 
 exports.setMusclesToWorkout = catchAsync(async (req, res, next) => {
     // ================================
-    // STEP 0: Validate request body
+    // STEP 1: Validate request body
     // ================================
     const {
         targets
@@ -70,29 +58,14 @@ exports.setMusclesToWorkout = catchAsync(async (req, res, next) => {
     }
 
     // ================================
-    // STEP 1: Get user's workout plan
-    // ================================
-    const workoutPlan = await WorkoutPlan.findOne({
-        userId: req.user._id
-    });
-
-    if (!workoutPlan) {
-        return next(
-            new AppError('No workout plan found for this user', 404)
-        );
-    }
-
-    // ================================
-    // STEP 2: AUTO-FINISH previous workouts
-    // Rule: Only ONE ongoing workout can exist.
-    // If there is any ongoing workout before today,
-    // automatically mark it as "done".
+    // STEP 2: Auto-finish old ongoing workouts
+    // Rule: Only one ongoing workout may exist
     // ================================
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
 
     await WorkoutLog.updateMany({
-        workoutPlanId: workoutPlan._id,
+        userId: req.user._id,
         status: 'ongoing',
         date: {
             $lt: startOfToday
@@ -104,46 +77,33 @@ exports.setMusclesToWorkout = catchAsync(async (req, res, next) => {
     });
 
     // ================================
-    // STEP 3: ENFORCE rest rule
-    // Cannot train muscles worked yesterday
+    // STEP 3: Fetch most recent workout
+    // (solo OR challenge)
     // ================================
-    const startOfYesterday = new Date(startOfToday);
-    startOfYesterday.setDate(startOfYesterday.getDate() - 1);
-
-    const endOfYesterday = new Date(startOfYesterday);
-    endOfYesterday.setHours(23, 59, 59, 999);
-
-    const yesterdayWorkoutLog = await WorkoutLog.findOne({
-        workoutPlanId: workoutPlan._id,
-        date: {
-            $gte: startOfYesterday,
-            $lt: endOfYesterday
-        }
+    const lastWorkoutLog = await WorkoutLog.findOne({
+        userId: req.user._id
+    }).sort({
+        date: -1
     });
 
-    if (yesterdayWorkoutLog) {
-        const trainedMusclesYesterday = yesterdayWorkoutLog.exercises.map(
-            ex => ex.target
-        );
-
-        const invalidTargets = targets.filter(t =>
-            trainedMusclesYesterday.includes(t)
-        );
-
-        if (invalidTargets.length) {
-            return next(
-                new AppError(
-                    `You already trained these muscles yesterday: ${invalidTargets.join(', ')}`,
-                    400
-                )
-            );
-        }
+    // ================================
+    // STEP 4: Enforce 24-hour muscle rest rule
+    // Uses shared domain service
+    // ================================
+    try {
+        enforceMuscleRest({
+            lastWorkoutLog,
+            targets
+        });
+    } catch (err) {
+        return next(new AppError(err.message, 409));
     }
 
     // ================================
-    // STEP 3.5: Validate targets strictly
+    // STEP 5: Validate targets strictly
+    // (must exist in user's workout plan)
     // ================================
-    const validTargets = workoutPlan.exercises.map(ex => ex.target);
+    const validTargets = req.workoutPlan.exercises.map(ex => ex.target);
 
     const invalidTargets = targets.filter(
         t => !validTargets.includes(t)
@@ -159,10 +119,10 @@ exports.setMusclesToWorkout = catchAsync(async (req, res, next) => {
     }
 
     // ================================
-    // STEP 4: Prepare selected exercises
-    // (No sets yet — workout not started)
+    // STEP 6: Prepare selected exercises
+    // (no sets yet)
     // ================================
-    const selectedExercises = workoutPlan.exercises
+    const selectedExercises = req.workoutPlan.exercises
         .filter(ex => targets.includes(ex.target))
         .map(ex => ({
             name: ex.name,
@@ -177,13 +137,13 @@ exports.setMusclesToWorkout = catchAsync(async (req, res, next) => {
     }
 
     // ================================
-    // STEP 5: Prevent duplicate workout today
+    // STEP 7: Prevent duplicate workout today
     // ================================
     const endOfToday = new Date(startOfToday);
     endOfToday.setHours(23, 59, 59, 999);
 
     const existingLog = await WorkoutLog.findOne({
-        workoutPlanId: workoutPlan._id,
+        userId: req.user._id,
         date: {
             $gte: startOfToday,
             $lt: endOfToday
@@ -197,17 +157,18 @@ exports.setMusclesToWorkout = catchAsync(async (req, res, next) => {
     }
 
     // ================================
-    // STEP 6: Create today’s workout log
+    // STEP 8: Create today's workout log
     // ================================
     const workoutLog = await WorkoutLog.create({
-        workoutPlanId: workoutPlan._id,
+        userId: req.user._id,
+        workoutPlanId: req.workoutPlan._id,
         date: new Date(),
         status: 'not yet started',
         exercises: selectedExercises
     });
 
     // ================================
-    // STEP 7: Send response
+    // STEP 9: Send response
     // ================================
     res.status(201).json({
         status: 'success',

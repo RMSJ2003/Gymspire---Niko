@@ -1,12 +1,17 @@
 const express = require('express');
 const sharedWorkoutSessionController = require('../controllers/sharedWorkoutSessionController');
 const authController = require('../controllers/authController');
+const requireWorkoutPlan = require('../middlewares/requireWorkoutPlan');
 
 const router = express.Router();
 
 router.use(authController.protect);
 
-router.post('/:joinCode', sharedWorkoutSessionController.joinChallenge);
+router.post(
+    '/:joinCode',
+    requireWorkoutPlan,
+    sharedWorkoutSessionController.joinChallenge
+);
 
 router
     .route('/')
@@ -16,4 +21,3 @@ router
     );
 
 module.exports = router;
-

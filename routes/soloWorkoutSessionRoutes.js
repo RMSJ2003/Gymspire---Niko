@@ -1,6 +1,7 @@
 const express = require('express');
 const soloWorkoutSessionController = require('../controllers/soloWorkoutSessionController');
 const authController = require('../controllers/authController');
+const requireWorkoutPlan = require('../middlewares/requireWorkoutPlan');
 
 const router = express.Router();
 
@@ -8,8 +9,14 @@ router.use(authController.protect);
 
 router
     .route('/musclesToWorkout')
-    .get(soloWorkoutSessionController.getMusclesToWorkout)
-    .post(soloWorkoutSessionController.setMusclesToWorkout); // this is where user already chosen muscles to worout the system will receive it
+    .get(
+        requireWorkoutPlan,
+        soloWorkoutSessionController.getMusclesToWorkout
+    )
+    .post(
+        requireWorkoutPlan,
+        soloWorkoutSessionController.setMusclesToWorkout
+    ); // this is where user already chosen muscles to worout the system will receive it
 
 router
     .post('/:workoutLogId/start', soloWorkoutSessionController.startSoloWorkoutSession)
