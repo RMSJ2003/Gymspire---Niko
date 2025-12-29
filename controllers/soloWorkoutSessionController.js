@@ -263,64 +263,6 @@ exports.startSoloWorkoutSession = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.updateWorkoutSet = catchAsync(async (req, res, next) => {
-    const {
-        workoutLogId,
-        exerciseIndex,
-        setNumber
-    } = req.params;
-    const {
-        weight,
-        reps,
-        unit
-    } = req.body;
-
-    // 1️⃣ Load workout log
-    const workoutLog = await WorkoutLog.findById(workoutLogId);
-    if (!workoutLog) {
-        return next(new AppError('Workout session not found', 404));
-    }
-
-    if (!workoutLog.workoutPlanId && workoutLog.challengeId) return next(
-        new AppError('You are currently in solo mode and not allowed to modify a shared workout', 403)
-    );
-
-    // 2️⃣ Verify ownership
-    if (workoutLog.userId.toString() !== req.user._id.toString()) {
-        return next(new AppError('You are not allowed to modify this workout', 403));
-    }
-
-    // 3️⃣ Existing guards (your logic)
-    if (workoutLog.status === 'done') {
-        return next(new AppError('Workout already finished', 400));
-    }
-
-    if (workoutLog.status === 'not yet started') {
-        return next(new AppError('Workout not started yet', 400));
-    }
-
-    const exercise = workoutLog.exercises[exerciseIndex];
-    if (!exercise) {
-        return next(new AppError('Exercise not found', 404));
-    }
-
-    const set = exercise.set.find(s => s.setNumber === Number(setNumber));
-    if (!set) {
-        return next(new AppError('Set not found', 404));
-    }
-
-    set.weight = weight;
-    set.reps = reps;
-    set.unit = unit || 'LB';
-
-    await workoutLog.save();
-
-    res.status(200).json({
-        status: 'success',
-        data: workoutLog
-    });
-});
-
 exports.finishWorkoutSession = catchAsync(async (req, res, next) => {
     const workoutLog = await WorkoutLog.findById(req.params.workoutLogId);
 

@@ -2,6 +2,7 @@ const express = require('express');
 const soloWorkoutSessionController = require('../controllers/soloWorkoutSessionController');
 const authController = require('../controllers/authController');
 const requireWorkoutPlan = require('../middlewares/requireWorkoutPlan');
+const {updateWorkoutSet} = require('../middlewares/updateWorkoutSet');
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ router
 
 router
     .route('/:workoutLogId/exercises/:exerciseIndex/sets/:setNumber')
-    .patch(soloWorkoutSessionController.updateWorkoutSet);
+    .patch(updateWorkoutSet);
 
 router.patch('/:workoutLogId/finish', soloWorkoutSessionController.finishWorkoutSession);
 
