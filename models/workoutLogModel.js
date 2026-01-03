@@ -34,6 +34,10 @@ const workoutLogSchema = new mongoose.Schema({
             type: String,
             required: true
         },
+        gifURL: {
+            type: String,
+            required: true
+        },
         set: [{
             setNumber: {
                 type: Number,

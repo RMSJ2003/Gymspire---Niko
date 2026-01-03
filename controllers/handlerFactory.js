@@ -13,6 +13,15 @@ exports.deleteOne = Model => catchAsync(async (req, res, next) => {
     });
 });
 
+exports.deleteAll = Model => catchAsync(async (req, res, next) => {
+    await Model.deleteMany({});
+
+    res.status(204).json({
+        status: 'success',
+        data: null
+    });
+});
+
 exports.updateOne = Model => catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
@@ -39,11 +48,13 @@ exports.getOne = Model => catchAsync(async (req, res, next) => {
 });
 
 exports.getAll = Model => catchAsync(async (req, res, next) => {
-    let filter = {};
+    // let filter = {};
 
-    const features = new APIFeatures(Model.find(filter), req.query);
+    // const features = new APIFeatures(Model.find(filter), req.query);
 
-    const doc = await features.query;
+    // const doc = await features.query;
+
+    const doc = await Model.find();
 
     res.status(200).json({
         status: 'success',

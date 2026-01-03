@@ -1,4 +1,8 @@
-exports.enforceMuscleRest = ({ lastWorkoutLog, targets, minHours = 24 }) => {
+exports.enforceMuscleRest = ({
+  lastWorkoutLog,
+  targets,
+  minHours = 24
+}) => {
 
   // 1️⃣ If the user has never worked out before,
   // there is nothing to enforce — allow the action.
@@ -32,7 +36,7 @@ exports.enforceMuscleRest = ({ lastWorkoutLog, targets, minHours = 24 }) => {
   // The controller or middleware will catch this.
   if (conflicts.length) {
     throw new Error(
-      `You trained these muscles ${Math.floor(
+      `You trained/are training these muscles ${Math.floor(
         hoursSince
       )} hours ago: ${conflicts.join(', ')}`
     );

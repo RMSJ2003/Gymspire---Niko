@@ -1,16 +1,27 @@
 const express = require('express');
 const workoutPlanController = require('../controllers/workoutPlanController');
 const authController = require('../controllers/authController');
+const requireWorkoutPlan = require('../middlewares/requireWorkoutPlan');
 
 const router = express.Router();
 
 router.use(authController.protect);
 
-router.get('/getAllExercises', workoutPlanController.getAllExercises);
-
-router.post('/assignExercisesToMuscles', workoutPlanController.assignExercisesToMuscles);
-
-router.get('/myWorkoutPlan', workoutPlanController.getCurrentUserWorkoutPlan);
+router
+    .route('/')
+    .post(workoutPlanController.createMyWorkoutPlan)
+    .get(
+        requireWorkoutPlan,
+        workoutPlanController.getMyWorkoutPlan
+    )
+    .patch(
+        requireWorkoutPlan,
+        workoutPlanController.updateMyWorkoutPlan
+    )
+    .delete(
+        requireWorkoutPlan,
+        workoutPlanController.deleteMyWorkoutPlan
+    );
 
 module.exports = router;
 

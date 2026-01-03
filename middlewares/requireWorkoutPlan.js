@@ -5,10 +5,10 @@ const catchAsync = require('../utils/catchAsync');
 module.exports = catchAsync(async(req, res, next) => {
     const workoutPlan = await WorkoutPlan.findOne({
         userId: req.user._id
-    });
+    }).populate('exerciseDetails');
 
     if (!workoutPlan) return next(
-        new AppError('You must create a workout plan first', 409)
+        new AppError('You do not have a workout plan. Please create one first.', 409)
     );
 
     // It attaches data to the request object so the next middleware / controller can 

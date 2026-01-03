@@ -7,36 +7,24 @@ const workoutPlanSchema = new mongoose.Schema({
         required: true
     },
     exercises: [{
-        exerciseId: {
-            type: String,
-            required: true
-        },
-        name: {
-            type: String,
-            required: true
-        },
-        gifURL: {
-            type: String,
-            required: true
-        },
-        target: {
-            type: String,
-            required: true
-        },
-        instructions: {
-            type: [String],
-            required: true
-        }
+        type: mongoose.Schema.ObjectId,
+        ref: 'Exercise'
     }]
+}, {
+    toJSON: {
+        virtuals: true
+    },
+    toObject: {
+        virtuals: true
+    }
 });
 
-// ✅ Validate NO duplicate "target" muscles
-workoutPlanSchema.path('exercises').validate(function (exercises) {
-    const targets = exercises.map(ex => ex.target);
-    const uniqueTargets = new Set(targets);
-
-    return targets.length === uniqueTargets.size; // true if no duplicates
-}, 'Each muscle can only have ONE assigned exercise.');
+// exerciseDetails is just a name of the virtual populate
+workoutPlanSchema.virtual('exerciseDetails', {
+    ref: 'Exercise',
+    localField: 'exercises',    // WorkoutPlan.exercises (array of ObjectIds)
+    foreignField: '_id'         // Exercise._id
+});
 
 const WorkoutPlan = mongoose.model('WorkoutPlan', workoutPlanSchema);
 module.exports = WorkoutPlan;

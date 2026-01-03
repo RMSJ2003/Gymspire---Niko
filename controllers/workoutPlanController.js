@@ -1,99 +1,195 @@
-const axios = require('axios');
+const mongoose = require('mongoose');
 const WorkoutPlan = require('../models/workoutPlanModel');
+const Exercise = require('../models/exerciseModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
-const muscles = ["pectorals", "upper back", "delts", "triceps", "biceps", "forearms", "abs", "quads",
-    "hamstrings", "glutes", "calves"
-];
+exports.createMyWorkoutPlan = catchAsync(async (req, res, next) => {
+    const {
+        exerciseIds
+    } = req.body;
 
-// *the exercise will be displayed for users to choose exercises per each muscle group. 
-exports.getAllExercises = catchAsync(async (req, res, next) => {
-    const baseURL = `${process.env.EXERCISE_DB_URL}/api/v1/exercises/filter`;
+    // 0) Validate input
+    if (!Array.isArray(exerciseIds) || exerciseIds.length === 0) {
+        return next(new AppError('Please provide an array of exercise _ids', 400));
+    }
 
-    const grouped = {};
-
-    const promises = muscles.map(muscle =>
-        axios.get(baseURL, {
-            params: {
-                offset: 0,
-                limit: 500,
-                muscles: muscle,
-                equipment: 'dumbbell'
-            }
-        }).then(r => {
-            grouped[muscle] = r.data.data || [];
-        })
+    // 1) Validate ObjectId FORMAT first
+    const validObjectIds = exerciseIds.filter(id =>
+        mongoose.Types.ObjectId.isValid(id)
     );
 
-    await Promise.all(promises);
+    const invalidFormatIds = exerciseIds.filter(id =>
+        !mongoose.Types.ObjectId.isValid(id)
+    );
 
-    // // Combine all exercises
-    // let allExercises = [];
-    // results.forEach(r => {
-    //     if (r.data.data) allExercises.push(...r.data.data);
-    // });
+    if (invalidFormatIds.length > 0) {
+        return next(
+            new AppError(
+                `Invalid exerciseIds format: ${invalidFormatIds.join(', ')}`,
+                400
+            )
+        );
+    }
 
-    res.status(200).json({
+    // 2) Fetch exercises
+    const exercisesFromDb = await Exercise.find({
+        _id: {
+            $in: validObjectIds
+        }
+    });
+
+    // 3) Validate existence
+    const foundIds = exercisesFromDb.map(ex => ex._id.toString());
+
+    const notFoundIds = validObjectIds.filter(
+        id => !foundIds.includes(id)
+    );
+
+    if (notFoundIds.length > 0) {
+        return next(
+            new AppError(
+                `ExerciseIds not found: ${notFoundIds.join(', ')}`,
+                400
+            )
+        );
+    }
+
+    // 4) Validate NO duplicate targets
+    const targets = exercisesFromDb.map(ex => ex.target);
+    const uniqueTargets = new Set(targets);
+
+    if (targets.length !== uniqueTargets.size) {
+        return next(
+            new AppError('Each muscle group can only have ONE exercise.', 400)
+        );
+    }
+
+    // 5) Guard: one workout plan per user
+    const existingWorkoutPlan = await WorkoutPlan.findOne({
+        userId: req.user._id
+    });
+
+    if (existingWorkoutPlan) {
+        return next(new AppError('You already have a workout plan.', 400));
+    }
+
+    // 6) Save ObjectIds
+    const exercises = exercisesFromDb.map(ex => ex._id);
+
+    const newWorkoutPlan = await WorkoutPlan.create({
+        userId: req.user._id,
+        exercises
+    });
+
+    res.status(201).json({
         status: 'success',
-        data: grouped
+        data: newWorkoutPlan
     });
 });
 
-// *ask chatGPT for further improvements
-exports.assignExercisesToMuscles = catchAsync(async (req, res, next) => {
-    const exercisesId = req.body;
 
-    // 1) Validate Inputs 
-    if (!Array.isArray(exercisesId) || exercisesId.length === 0) return next(
-        new AppError('Please send an array of exercises.', 400)
+exports.getMyWorkoutPlan = catchAsync(async (req, res, next) => {
+    const workoutPlan = req.workoutPlan;
+
+    res.status(200).json({
+        status: 'success',
+        data: workoutPlan
+    });
+});
+
+exports.updateMyWorkoutPlan = catchAsync(async (req, res, next) => {
+    const {
+        exerciseIds
+    } = req.body;
+
+    // 0) Validate input
+    if (!Array.isArray(exerciseIds) || exerciseIds.length === 0) {
+        return next(new AppError('Please provide an array of exercise _ids', 400));
+    }
+
+    // 1) Validate ObjectId FORMAT first
+    const validObjectIds = exerciseIds.filter(id =>
+        mongoose.Types.ObjectId.isValid(id)
     );
 
-    // 2) Turn exercises IDs into actual exercises
-    const promises = exercisesId.map(id =>
-        axios.get(`${process.env.EXERCISE_DB_URL}/api/v1/exercises/${id}`)
+    const invalidFormatIds = exerciseIds.filter(id =>
+        !mongoose.Types.ObjectId.isValid(id)
     );
 
-    // Note: Promise.all(promises) waits for all of them (requests) to finish.
-    const responses = await Promise.all(promises);
+    if (invalidFormatIds.length > 0) {
+        return next(
+            new AppError(
+                `Invalid exerciseIds format: ${invalidFormatIds.join(', ')}`,
+                400
+            )
+        );
+    }
 
-    // 3) Extract only exercises data
-    const exercises = responses.map(r => {
-        const ex = r.data.data;
-
-        return {
-            exerciseId: ex.exerciseId,
-            name: ex.name,
-            gifURL: ex.gifUrl,
-            target: ex.targetMuscles[0],
-            instructions: ex.instructions
-        };
+    // 2) Fetch exercises
+    const exercisesFromDb = await Exercise.find({
+        _id: {
+            $in: validObjectIds
+        }
     });
 
-    // 4) Update the database
-    const workoutPlan = await WorkoutPlan.findOneAndUpdate({
+    // 3) Validate existence
+    const foundIds = exercisesFromDb.map(ex => ex._id.toString());
+
+    const notFoundIds = validObjectIds.filter(
+        id => !foundIds.includes(id)
+    );
+
+    if (notFoundIds.length > 0) {
+        return next(
+            new AppError(
+                `ExerciseIds not found: ${notFoundIds.join(', ')}`,
+                400
+            )
+        );
+    }
+
+    // 4) Validate NO duplicate targets
+    const targets = exercisesFromDb.map(ex => ex.target);
+    const uniqueTargets = new Set(targets);
+
+    if (targets.length !== uniqueTargets.size) {
+        return next(
+            new AppError('Each muscle group can only have ONE exercise.', 400)
+        );
+    }
+
+    // 5) Update workout plan
+    const exercises = exercisesFromDb.map(ex => ex._id);
+
+    const updatedWorkoutPlan = await WorkoutPlan.findOneAndUpdate({
         userId: req.user._id
     }, {
-        exercises: exercises
+        exercises
     }, {
         new: true,
-        upsert: true,
         runValidators: true
     });
 
+    if (!updatedWorkoutPlan) {
+        return next(new AppError('Workout plan not found.', 404));
+    }
+
+    // 6) Send response
     res.status(200).json({
         status: 'success',
-        data: workoutPlan
+        data: updatedWorkoutPlan
     });
 });
 
-exports.getCurrentUserWorkoutPlan = catchAsync(async (req, res, next) => {    
-    const workoutPlan = await WorkoutPlan.findOne({userId: req.user._id});
 
-    // Exercises will then be display to the UI for the users to edit
+exports.deleteMyWorkoutPlan = catchAsync(async (req, res, next) => {
+    await WorkoutPlan.deleteOne({
+        userId: req.user._id
+    });
 
-    res.status(200).json({
+    res.status(204).json({
         status: 'success',
-        data: workoutPlan
+        data: null
     });
 });
