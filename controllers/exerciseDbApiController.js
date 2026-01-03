@@ -1,5 +1,6 @@
 const axios = require('axios');
 const Exercise = require('../models/exerciseModel');
+// const apiExercisesTemplate = require('../dev-data/data/apiExercisesTemplate');
 const catchAsync = require('../utils/catchAsync');
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -71,3 +72,15 @@ exports.importApiExercises = catchAsync(async (req, res, next) => {
         imported: totalImported
     });
 });
+
+// exports.importTemplateExercises = catchAsync(async (req, res, next) => {
+//     const exercises = Exercises.create({
+        
+//     });
+
+//     res.status(200).json({
+//         status: 'success',
+//         imported: ,
+//         data: exercises
+//     })
+// });

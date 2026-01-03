@@ -17,9 +17,9 @@ var autoFinishStaleWorkouts = require('../middlewares/authFinishStaleWorkouts');
 var router = express.Router();
 router.use(authController.protect);
 router.route('/challenge/:challengeId') // We asked for challengeId to know where to add the log
-.post(challengeController.getChallenge, requireActiveChallenge, autoFinishStaleWorkouts, workoutLogController.createChallengeWorkoutLog); // Create a challenge log (Start challenge)
+.post(challengeController.getChallenge, requireActiveChallenge, autoFinishStaleWorkouts, workoutLogController.createMyChallengeWorkoutLog); // Create a challenge log (Start challenge)
 
-router.route('/solo').post(requireWorkoutPlan, autoFinishStaleWorkouts, workoutLogController.createSoloWorkoutLog).get(workoutLogController.getMyWorkoutLogs);
-router.route('/:workoutLogId/exercises/:exerciseIndex/sets/:setNumber').patch(workoutLogController.updateWorkoutSet);
+router.route('/solo').post(requireWorkoutPlan, autoFinishStaleWorkouts, workoutLogController.createMySoloWorkoutLog).get(workoutLogController.getMyWorkoutLogs);
+router.route('/:workoutLogId/exercises/:exerciseIndex/sets/:setNumber').patch(workoutLogController.updateMyWorkoutSet);
 router.patch('/:workoutLogId/finish', workoutLogController.finishWorkoutLog);
 module.exports = router;

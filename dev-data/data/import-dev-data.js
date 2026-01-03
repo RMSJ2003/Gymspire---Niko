@@ -1,10 +1,11 @@
 const fs = require('fs');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const User = require('../../models/userModel');
-const WorkoutPlan = require('../../models/workoutPlanModel');
-const WorkoutLog = require('../../models/workoutLogModel');
-const Challenge = require('../../models/challengeModel');
+// const User = require('../../models/userModel');
+// const WorkoutPlan = require('../../models/workoutPlanModel');
+// const WorkoutLog = require('../../models/workoutLogModel');
+// const Challenge = require('../../models/challengeModel');
+const Exercise = require('../../models/exerciseModel');
 
 dotenv.config({
     path: './config.env'
@@ -33,22 +34,24 @@ const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'));
 const workoutLogs = JSON.parse(fs.readFileSync(`${__dirname}/workoutLogs.json`, 'utf-8'));
 const workoutPlans = JSON.parse(fs.readFileSync(`${__dirname}/workoutPlan.json`, 'utf-8'));
 const challenge = JSON.parse(fs.readFileSync(`${__dirname}/challenge.json`, 'utf-8'));
+const exerciseTemplates = JSON.parse(fs.readFileSync(`${__dirname}/apiExercisesTemplate.json`, 'utf-8'));
 
 // IMPORT DATA INTO DB
 const importData = async () => {
     try {
-        await User.create(users, {
-            validateBeforeSave: false
-        });
-        await WorkoutLog.create(workoutLogs, {
-            validateBeforeSave: false
-        });
-        await WorkoutPlan.create(workoutPlans, {
-            validateBeforeSave: false
-        });
-        await Challenge.create(challenge, {
-            validateBeforeSave: false
-        });
+        // await User.create(users, {
+        //     validateBeforeSave: false
+        // });
+        // await WorkoutLog.create(workoutLogs, {
+        //     validateBeforeSave: false
+        // });
+        // await WorkoutPlan.create(workoutPlans, {
+        //     validateBeforeSave: false
+        // });
+        // await Challenge.create(challenge, {
+        //     validateBeforeSave: false
+        // });
+        await Exercise.create(exerciseTemplates, {validateBeforeSave: false});
         console.log('Data successfully loaded!');
         process.exit();
     } catch (err) {
@@ -59,10 +62,11 @@ const importData = async () => {
 // DELETE ALL DATA FROM DB
 const deleteData = async () => {
     try {
-        await User.deleteMany();
-        await WorkoutLog.deleteMany();
-        await WorkoutPlan.deleteMany();
-        await Challenge.deleteMany();
+        // await User.deleteMany();
+        // await WorkoutLog.deleteMany();
+        // await WorkoutPlan.deleteMany();
+        // await Challenge.deleteMany();
+        await Exercise.deleteMany();
         console.log('Data successfully deleted!');
         process.exit();
     } catch (err) {

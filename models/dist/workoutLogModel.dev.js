@@ -27,6 +27,24 @@ var workoutLogSchema = new mongoose.Schema({
     "enum": ['not yet started', 'ongoing', 'done'],
     "default": 'ongoing'
   },
+  videoUrl: {
+    type: String,
+    required: function required() {
+      // required ONLY if this is a challenge workout
+      return !!this.challengeId && this.status === 'done';
+    },
+    validate: {
+      validator: function validator(v) {
+        // If challengeId exists, videoUrl must be a non-empty string
+        if (this.challengeId) {
+          return typeof v === 'string' && v.trim().length > 0;
+        }
+
+        return true;
+      },
+      message: 'videoUrl is required for challenge workouts'
+    }
+  },
   exercises: [{
     name: {
       type: String,

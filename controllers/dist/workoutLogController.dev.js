@@ -10,51 +10,56 @@ var AppError = require('../utils/appError');
 
 var catchAsync = require('../utils/catchAsync');
 
+var ensureNoOngoingWorkoutLog = require('../utils/ensureNoOngoingWorkoutLogs');
+
 var createDefaultSets = require('../utils/defaultWorkoutSets');
 
 var _require = require('../services/restRule.service'),
     enforceMuscleRest = _require.enforceMuscleRest;
 
-exports.createSoloWorkoutLog = catchAsync(function _callee(req, res, next) {
-  var targets, lastWorkoutLog, planExercises, validTargets, invalidTargets, selectedExercises, startOfToday, endOfToday, existingLog, newWorkoutLog;
+exports.createMySoloWorkoutLog = catchAsync(function _callee(req, res, next) {
+  var targets, lastWorkoutLog, planExercises, validTargets, invalidTargets, selectedExercises, newWorkoutLog;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          targets = req.body.targets; // 1) Validate request body
+          targets = req.body.targets; // 🚫 Global guard
 
+          _context.next = 3;
+          return regeneratorRuntime.awrap(ensureNoOngoingWorkoutLog(req.user._id));
+
+        case 3:
           if (!(!Array.isArray(targets) || targets.length === 0)) {
-            _context.next = 3;
+            _context.next = 5;
             break;
           }
 
           return _context.abrupt("return", next(new AppError('Please select at least one muscle group', 400)));
 
-        case 3:
-          _context.next = 5;
+        case 5:
+          _context.next = 7;
           return regeneratorRuntime.awrap(WorkoutLog.findOne({
             userId: req.user._id
           }).sort({
             date: -1
           }));
 
-        case 5:
+        case 7:
           lastWorkoutLog = _context.sent;
-          _context.prev = 6;
+          _context.prev = 8;
           enforceMuscleRest({
             lastWorkoutLog: lastWorkoutLog,
             targets: targets
           });
-          _context.next = 13;
+          _context.next = 15;
           break;
 
-        case 10:
-          _context.prev = 10;
-          _context.t0 = _context["catch"](6);
+        case 12:
+          _context.prev = 12;
+          _context.t0 = _context["catch"](8);
           return _context.abrupt("return", next(new AppError(_context.t0.message, 409)));
 
-        case 13:
-          // 3) Validate targets exist in workout plan
+        case 15:
           planExercises = req.workoutPlan.exerciseDetails;
           validTargets = planExercises.map(function (ex) {
             return ex.target;
@@ -63,15 +68,14 @@ exports.createSoloWorkoutLog = catchAsync(function _callee(req, res, next) {
             return !validTargets.includes(t);
           });
 
-          if (!(invalidTargets.length > 0)) {
-            _context.next = 18;
+          if (!invalidTargets.length) {
+            _context.next = 20;
             break;
           }
 
           return _context.abrupt("return", next(new AppError("Invalid muscle targets: ".concat(invalidTargets.join(', ')), 400)));
 
-        case 18:
-          // 4) Select exercises based on targets
+        case 20:
           selectedExercises = planExercises.filter(function (ex) {
             return targets.includes(ex.target);
           }).map(function (ex) {
@@ -84,105 +88,76 @@ exports.createSoloWorkoutLog = catchAsync(function _callee(req, res, next) {
           });
 
           if (selectedExercises.length) {
-            _context.next = 21;
+            _context.next = 23;
             break;
           }
 
-          return _context.abrupt("return", next(new AppError('No matching exercises found for selected muscles', 400)));
+          return _context.abrupt("return", next(new AppError('No matching exercises found', 400)));
 
-        case 21:
-          // 5) Prevent duplicate workout today
-          startOfToday = new Date();
-          startOfToday.setHours(0, 0, 0, 0);
-          endOfToday = new Date(startOfToday);
-          endOfToday.setHours(23, 59, 59, 999);
-          _context.next = 27;
-          return regeneratorRuntime.awrap(WorkoutLog.findOne({
-            userId: req.user._id,
-            date: {
-              $gte: startOfToday,
-              $lt: endOfToday
-            }
-          }));
-
-        case 27:
-          existingLog = _context.sent;
-
-          if (!existingLog) {
-            _context.next = 30;
-            break;
-          }
-
-          return _context.abrupt("return", next(new AppError('Workout already started today', 400)));
-
-        case 30:
-          _context.next = 32;
+        case 23:
+          _context.next = 25;
           return regeneratorRuntime.awrap(WorkoutLog.create({
             userId: req.user._id,
             workoutPlanId: req.workoutPlan._id,
-            date: new Date(),
             status: 'ongoing',
             exercises: selectedExercises
           }));
 
-        case 32:
+        case 25:
           newWorkoutLog = _context.sent;
           res.status(201).json({
             status: 'success',
             data: newWorkoutLog
           });
 
-        case 34:
+        case 27:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[6, 10]]);
+  }, null, null, [[8, 12]]);
 });
-exports.createChallengeWorkoutLog = catchAsync(function _callee2(req, res, next) {
-  var challenge, joined, existingChallengeLog, challengeExercises, lastWorkoutLog, challengeTargets, newChallengeLog;
+exports.createMyChallengeWorkoutLog = catchAsync(function _callee2(req, res, next) {
+  var challenge, joined, alreadyLogged, challengeExercises, lastWorkoutLog, challengeTargets, newChallengeWorkoutLog;
   return regeneratorRuntime.async(function _callee2$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          challenge = req.challenge;
+          challenge = req.challenge; // 🚫 Global guard
+
+          _context2.next = 3;
+          return regeneratorRuntime.awrap(ensureNoOngoingWorkoutLog(req.user._id));
+
+        case 3:
           joined = challenge.participants.some(function (id) {
             return id.toString() === req.user._id.toString();
           });
 
           if (joined) {
-            _context2.next = 4;
+            _context2.next = 6;
             break;
           }
 
           return _context2.abrupt("return", next(new AppError('You are not a participant of this challenge', 409)));
 
-        case 4:
-          _context2.next = 6;
+        case 6:
+          _context2.next = 8;
           return regeneratorRuntime.awrap(WorkoutLog.findOne({
             userId: req.user._id,
-            challengeId: challenge._id,
-            status: {
-              $ne: 'done'
-            }
+            challengeId: challenge._id
           }));
 
-        case 6:
-          existingChallengeLog = _context2.sent;
+        case 8:
+          alreadyLogged = _context2.sent;
 
-          if (!existingChallengeLog) {
-            _context2.next = 9;
+          if (!alreadyLogged) {
+            _context2.next = 11;
             break;
           }
 
-          return _context2.abrupt("return", next(new AppError('You already have an ongoing workout for this challenge', 409)));
+          return _context2.abrupt("return", next(new AppError('You already have a workout log for this challenge', 409)));
 
-        case 9:
-          // ================================
-          // STEP 5: Fetch challenge exercises (targets)
-          // - Extract muscle targets from challenge.exercises
-          // - These will be used for rest rule enforcement
-          // ================================
+        case 11:
           challengeExercises = challenge.exerciseDetails.map(function (ex) {
             return {
               name: ex.name,
@@ -190,49 +165,34 @@ exports.createChallengeWorkoutLog = catchAsync(function _callee2(req, res, next)
               gifURL: ex.gifURL,
               set: createDefaultSets()
             };
-          }); // Populate the sets
-
-          challengeExercises.forEach(function (ex) {
-            ex.set = createDefaultSets();
-          }); // ================================
-          // STEP 6: Fetch user's most recent workout log
-          // - Include both solo and challenge workouts
-          // - This is needed for recovery validation
-          // ================================
-
-          _context2.next = 13;
+          });
+          _context2.next = 14;
           return regeneratorRuntime.awrap(WorkoutLog.findOne({
             userId: req.user._id
           }).sort({
             date: -1
           }));
 
-        case 13:
+        case 14:
           lastWorkoutLog = _context2.sent;
-          // ================================
-          // STEP 7: Enforce 24-hour muscle rest rule
-          // - Compare challenge targets vs last workout muscles
-          // - Block if recovery time has not passed
-          // ================================
-          // Extract the targets
           challengeTargets = challengeExercises.map(function (ex) {
             return ex.target;
           });
-          _context2.prev = 15;
+          _context2.prev = 16;
           enforceMuscleRest({
             lastWorkoutLog: lastWorkoutLog,
             targets: challengeTargets
           });
-          _context2.next = 22;
+          _context2.next = 23;
           break;
 
-        case 19:
-          _context2.prev = 19;
-          _context2.t0 = _context2["catch"](15);
+        case 20:
+          _context2.prev = 20;
+          _context2.t0 = _context2["catch"](16);
           return _context2.abrupt("return", next(new AppError(_context2.t0.message, 409)));
 
-        case 22:
-          _context2.next = 24;
+        case 23:
+          _context2.next = 25;
           return regeneratorRuntime.awrap(WorkoutLog.create({
             userId: req.user._id,
             challengeId: challenge._id,
@@ -240,23 +200,19 @@ exports.createChallengeWorkoutLog = catchAsync(function _callee2(req, res, next)
             exercises: challengeExercises
           }));
 
-        case 24:
-          newChallengeLog = _context2.sent;
-          // ================================
-          // STEP 10: Send success response
-          // - Return created workout log metadata
-          // ================================
-          res.status(200).json({
+        case 25:
+          newChallengeWorkoutLog = _context2.sent;
+          res.status(201).json({
             status: 'success',
-            data: newChallengeLog
+            data: newChallengeWorkoutLog
           });
 
-        case 26:
+        case 27:
         case "end":
           return _context2.stop();
       }
     }
-  }, null, null, [[15, 19]]);
+  }, null, null, [[16, 20]]);
 });
 exports.getMyWorkoutLogs = catchAsync(function _callee3(req, res, next) {
   var workoutLogs;
@@ -283,7 +239,7 @@ exports.getMyWorkoutLogs = catchAsync(function _callee3(req, res, next) {
     }
   });
 });
-exports.updateWorkoutSet = catchAsync(function _callee4(req, res, next) {
+exports.updateMyWorkoutSet = catchAsync(function _callee4(req, res, next) {
   var _req$params, workoutLogId, exerciseIndex, setNumber, _req$body, weight, reps, unit, workoutLog, exercise, set;
 
   return regeneratorRuntime.async(function _callee4$(_context4) {
@@ -414,7 +370,7 @@ exports.finishWorkoutLog = catchAsync(function _callee5(req, res, next) {
             break;
           }
 
-          return _context5.abrupt("return", next(new AppError('Workout not found', 404)));
+          return _context5.abrupt("return", next(new AppError('Workout log not found', 404)));
 
         case 5:
           if (!workoutLog.workoutPlanId) {
@@ -437,7 +393,7 @@ exports.finishWorkoutLog = catchAsync(function _callee5(req, res, next) {
 
         case 11:
           if (!workoutLog.challengeId) {
-            _context5.next = 17;
+            _context5.next = 20;
             break;
           }
 
@@ -457,26 +413,38 @@ exports.finishWorkoutLog = catchAsync(function _callee5(req, res, next) {
           return _context5.abrupt("return", next(new AppError('Not authorized', 403)));
 
         case 17:
-          if (!(workoutLog.status === 'done')) {
+          if (!(!req.body.videoUrl || req.body.videoUrl.trim() === '')) {
             _context5.next = 19;
+            break;
+          }
+
+          return _context5.abrupt("return", next(new AppError('videoUrl is required for challenge workouts', 400)));
+
+        case 19:
+          workoutLog.videoUrl = req.body.videoUrl;
+
+        case 20:
+          if (!(workoutLog.status === 'done')) {
+            _context5.next = 22;
             break;
           }
 
           return _context5.abrupt("return", next(new AppError('Workout already finished', 400)));
 
-        case 19:
+        case 22:
           // ✅ Finish workout
           workoutLog.status = 'done';
-          _context5.next = 22;
+          _context5.next = 25;
           return regeneratorRuntime.awrap(workoutLog.save());
 
-        case 22:
+        case 25:
+          // schema validators still apply
           res.status(200).json({
             status: 'success',
             data: workoutLog
           });
 
-        case 23:
+        case 26:
         case "end":
           return _context5.stop();
       }

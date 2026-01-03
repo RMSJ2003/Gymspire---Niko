@@ -16,7 +16,7 @@ router
         challengeController.getChallenge,
         requireActiveChallenge,
         autoFinishStaleWorkouts,
-        workoutLogController.createChallengeWorkoutLog
+        workoutLogController.createMyChallengeWorkoutLog
     ); // Create a challenge log (Start challenge)
 
 router
@@ -24,13 +24,13 @@ router
     .post(
         requireWorkoutPlan,
         autoFinishStaleWorkouts,
-        workoutLogController.createSoloWorkoutLog
+        workoutLogController.createMySoloWorkoutLog
     )
     .get(workoutLogController.getMyWorkoutLogs);
 
 router
     .route('/:workoutLogId/exercises/:exerciseIndex/sets/:setNumber')
-    .patch(workoutLogController.updateWorkoutSet);
+    .patch(workoutLogController.updateMyWorkoutSet);
 
 router.patch('/:workoutLogId/finish', workoutLogController.finishWorkoutLog);
 
