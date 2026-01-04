@@ -1,21 +1,34 @@
 "use strict";
 
-var WorkoutLog = require('../models/workoutLogModel');
+var WorkoutLog = require("../models/workoutLogModel");
 
-var WorkoutPlan = require('../models/workoutPlanModel');
+var WorkoutPlan = require("../models/workoutPlanModel");
 
-var Challenge = require('../models/challengeModel');
+var Challenge = require("../models/challengeModel");
 
-var AppError = require('../utils/appError');
+var AppError = require("../utils/appError");
 
-var catchAsync = require('../utils/catchAsync');
+var catchAsync = require("../utils/catchAsync");
 
-var ensureNoOngoingWorkoutLog = require('../utils/ensureNoOngoingWorkoutLogs');
+var ensureNoOngoingWorkoutLog = require("../utils/ensureNoOngoingWorkoutLogs");
 
-var createDefaultSets = require('../utils/defaultWorkoutSets');
+var createDefaultSets = require("../utils/defaultWorkoutSets");
 
-var _require = require('../services/restRule.service'),
+var _require = require("../services/restRule.service"),
     enforceMuscleRest = _require.enforceMuscleRest;
+
+function computeStrengthScore(workoutLog) {
+  var score = 0;
+  workoutLog.exercises.forEach(function (ex) {
+    ex.set.forEach(function (s) {
+      if (s.type === "working") {
+        var estimated1RM = s.weight * (1 + s.reps / 30);
+        score += estimated1RM;
+      }
+    });
+  });
+  return score;
+}
 
 exports.createMySoloWorkoutLog = catchAsync(function _callee(req, res, next) {
   var targets, lastWorkoutLog, planExercises, validTargets, invalidTargets, selectedExercises, newWorkoutLog;
@@ -34,7 +47,7 @@ exports.createMySoloWorkoutLog = catchAsync(function _callee(req, res, next) {
             break;
           }
 
-          return _context.abrupt("return", next(new AppError('Please select at least one muscle group', 400)));
+          return _context.abrupt("return", next(new AppError("Please select at least one muscle group", 400)));
 
         case 5:
           _context.next = 7;
@@ -73,7 +86,7 @@ exports.createMySoloWorkoutLog = catchAsync(function _callee(req, res, next) {
             break;
           }
 
-          return _context.abrupt("return", next(new AppError("Invalid muscle targets: ".concat(invalidTargets.join(', ')), 400)));
+          return _context.abrupt("return", next(new AppError("Invalid muscle targets: ".concat(invalidTargets.join(", ")), 400)));
 
         case 20:
           selectedExercises = planExercises.filter(function (ex) {
@@ -92,21 +105,21 @@ exports.createMySoloWorkoutLog = catchAsync(function _callee(req, res, next) {
             break;
           }
 
-          return _context.abrupt("return", next(new AppError('No matching exercises found', 400)));
+          return _context.abrupt("return", next(new AppError("No matching exercises found", 400)));
 
         case 23:
           _context.next = 25;
           return regeneratorRuntime.awrap(WorkoutLog.create({
             userId: req.user._id,
             workoutPlanId: req.workoutPlan._id,
-            status: 'ongoing',
+            status: "ongoing",
             exercises: selectedExercises
           }));
 
         case 25:
           newWorkoutLog = _context.sent;
           res.status(201).json({
-            status: 'success',
+            status: "success",
             data: newWorkoutLog
           });
 
@@ -138,7 +151,7 @@ exports.createMyChallengeWorkoutLog = catchAsync(function _callee2(req, res, nex
             break;
           }
 
-          return _context2.abrupt("return", next(new AppError('You are not a participant of this challenge', 409)));
+          return _context2.abrupt("return", next(new AppError("You are not a participant of this challenge", 409)));
 
         case 6:
           _context2.next = 8;
@@ -155,7 +168,7 @@ exports.createMyChallengeWorkoutLog = catchAsync(function _callee2(req, res, nex
             break;
           }
 
-          return _context2.abrupt("return", next(new AppError('You already have a workout log for this challenge', 409)));
+          return _context2.abrupt("return", next(new AppError("You already have a workout log for this challenge", 409)));
 
         case 11:
           challengeExercises = challenge.exerciseDetails.map(function (ex) {
@@ -196,14 +209,14 @@ exports.createMyChallengeWorkoutLog = catchAsync(function _callee2(req, res, nex
           return regeneratorRuntime.awrap(WorkoutLog.create({
             userId: req.user._id,
             challengeId: challenge._id,
-            status: 'ongoing',
+            status: "ongoing",
             exercises: challengeExercises
           }));
 
         case 25:
           newChallengeWorkoutLog = _context2.sent;
           res.status(201).json({
-            status: 'success',
+            status: "success",
             data: newChallengeWorkoutLog
           });
 
@@ -228,7 +241,7 @@ exports.getMyWorkoutLogs = catchAsync(function _callee3(req, res, next) {
         case 2:
           workoutLogs = _context3.sent;
           res.status(200).json({
-            status: 'success',
+            status: "success",
             data: workoutLogs
           });
 
@@ -262,7 +275,7 @@ exports.updateMyWorkoutSet = catchAsync(function _callee4(req, res, next) {
             break;
           }
 
-          return _context4.abrupt("return", next(new AppError('Workout log not found', 404)));
+          return _context4.abrupt("return", next(new AppError("Workout log not found", 404)));
 
         case 7:
           if (!(workoutLog.userId.toString() !== req.user._id.toString())) {
@@ -270,23 +283,23 @@ exports.updateMyWorkoutSet = catchAsync(function _callee4(req, res, next) {
             break;
           }
 
-          return _context4.abrupt("return", next(new AppError('You are not allowed to modify this workout', 403)));
+          return _context4.abrupt("return", next(new AppError("You are not allowed to modify this workout", 403)));
 
         case 9:
-          if (!(workoutLog.status === 'done')) {
+          if (!(workoutLog.status === "done")) {
             _context4.next = 11;
             break;
           }
 
-          return _context4.abrupt("return", next(new AppError('Workout already finished', 400)));
+          return _context4.abrupt("return", next(new AppError("Workout already finished", 400)));
 
         case 11:
-          if (!(workoutLog.status === 'not yet started')) {
+          if (!(workoutLog.status === "not yet started")) {
             _context4.next = 13;
             break;
           }
 
-          return _context4.abrupt("return", next(new AppError('Workout not started yet', 400)));
+          return _context4.abrupt("return", next(new AppError("Workout not started yet", 400)));
 
         case 13:
           if (!(!workoutLog.workoutPlanId && !workoutLog.challengeId)) {
@@ -294,7 +307,7 @@ exports.updateMyWorkoutSet = catchAsync(function _callee4(req, res, next) {
             break;
           }
 
-          return _context4.abrupt("return", next(new AppError('Invalid workout session type', 400)));
+          return _context4.abrupt("return", next(new AppError("Invalid workout session type", 400)));
 
         case 15:
           // ======================================================
@@ -307,7 +320,7 @@ exports.updateMyWorkoutSet = catchAsync(function _callee4(req, res, next) {
             break;
           }
 
-          return _context4.abrupt("return", next(new AppError('Exercise not found', 404)));
+          return _context4.abrupt("return", next(new AppError("Exercise not found", 404)));
 
         case 18:
           // ======================================================
@@ -322,7 +335,7 @@ exports.updateMyWorkoutSet = catchAsync(function _callee4(req, res, next) {
             break;
           }
 
-          return _context4.abrupt("return", next(new AppError('Set not found', 404)));
+          return _context4.abrupt("return", next(new AppError("Set not found", 404)));
 
         case 21:
           // ======================================================
@@ -330,7 +343,7 @@ exports.updateMyWorkoutSet = catchAsync(function _callee4(req, res, next) {
           // ======================================================
           set.weight = weight;
           set.reps = reps;
-          set.unit = unit || 'LB'; // ======================================================
+          set.unit = unit || "LB"; // ======================================================
           // STEP 8: Save workout log
           // ======================================================
 
@@ -342,7 +355,7 @@ exports.updateMyWorkoutSet = catchAsync(function _callee4(req, res, next) {
           // STEP 9: Send response
           // ======================================================
           res.status(200).json({
-            status: 'success',
+            status: "success",
             data: workoutLog
           });
 
@@ -370,7 +383,7 @@ exports.finishWorkoutLog = catchAsync(function _callee5(req, res, next) {
             break;
           }
 
-          return _context5.abrupt("return", next(new AppError('Workout log not found', 404)));
+          return _context5.abrupt("return", next(new AppError("Workout log not found", 404)));
 
         case 5:
           if (!workoutLog.workoutPlanId) {
@@ -389,7 +402,7 @@ exports.finishWorkoutLog = catchAsync(function _callee5(req, res, next) {
             break;
           }
 
-          return _context5.abrupt("return", next(new AppError('Not authorized', 403)));
+          return _context5.abrupt("return", next(new AppError("Not authorized", 403)));
 
         case 11:
           if (!workoutLog.challengeId) {
@@ -410,43 +423,129 @@ exports.finishWorkoutLog = catchAsync(function _callee5(req, res, next) {
             break;
           }
 
-          return _context5.abrupt("return", next(new AppError('Not authorized', 403)));
+          return _context5.abrupt("return", next(new AppError("Not authorized", 403)));
 
         case 17:
-          if (!(!req.body.videoUrl || req.body.videoUrl.trim() === '')) {
+          if (!(!req.body.videoUrl || req.body.videoUrl.trim() === "")) {
             _context5.next = 19;
             break;
           }
 
-          return _context5.abrupt("return", next(new AppError('videoUrl is required for challenge workouts', 400)));
+          return _context5.abrupt("return", next(new AppError("videoUrl is required for challenge workouts", 400)));
 
         case 19:
           workoutLog.videoUrl = req.body.videoUrl;
 
         case 20:
-          if (!(workoutLog.status === 'done')) {
+          if (!(workoutLog.status === "done")) {
             _context5.next = 22;
             break;
           }
 
-          return _context5.abrupt("return", next(new AppError('Workout already finished', 400)));
+          return _context5.abrupt("return", next(new AppError("Workout already finished", 400)));
 
         case 22:
           // ✅ Finish workout
-          workoutLog.status = 'done';
+          workoutLog.status = "done";
           _context5.next = 25;
           return regeneratorRuntime.awrap(workoutLog.save());
 
         case 25:
           // schema validators still apply
           res.status(200).json({
-            status: 'success',
+            status: "success",
             data: workoutLog
           });
 
         case 26:
         case "end":
           return _context5.stop();
+      }
+    }
+  });
+});
+exports.verifyChallengeWorkoutLog = catchAsync(function _callee6(req, res, next) {
+  var workoutLogId, _req$body2, decision, judgeNotes, workoutLog;
+
+  return regeneratorRuntime.async(function _callee6$(_context6) {
+    while (1) {
+      switch (_context6.prev = _context6.next) {
+        case 0:
+          workoutLogId = req.params.workoutLogId;
+          _req$body2 = req.body, decision = _req$body2.decision, judgeNotes = _req$body2.judgeNotes;
+
+          if (["approved", "rejected"].includes(decision)) {
+            _context6.next = 4;
+            break;
+          }
+
+          return _context6.abrupt("return", next(new AppError("Decision must be approved or rejected")));
+
+        case 4:
+          _context6.next = 6;
+          return regeneratorRuntime.awrap(WorkoutLog.findById(workoutLogId));
+
+        case 6:
+          workoutLog = _context6.sent;
+
+          if (workoutLog) {
+            _context6.next = 9;
+            break;
+          }
+
+          return _context6.abrupt("return", next(new AppError("Workout log not found")));
+
+        case 9:
+          if (workoutLog.challengeId) {
+            _context6.next = 11;
+            break;
+          }
+
+          return _context6.abrupt("return", next(new AppError("Solo workouts cannot be verified", 400)));
+
+        case 11:
+          if (!(workoutLog.status !== "done")) {
+            _context6.next = 13;
+            break;
+          }
+
+          return _context6.abrupt("return", next(new AppError("Workout must be finished before verification", 409)));
+
+        case 13:
+          if (workoutLog.videoUrl) {
+            _context6.next = 15;
+            break;
+          }
+
+          return _context6.abrupt("return", next(new AppError("Workout has no video submission", 409)));
+
+        case 15:
+          if (!(workoutLog.judgeStatus !== "pending")) {
+            _context6.next = 17;
+            break;
+          }
+
+          return _context6.abrupt("return", next(new AppError("Workout already verified", 409)));
+
+        case 17:
+          // Apply judge decision
+          workoutLog.judgeStatus = decision;
+          workoutLog.judgeNotes = judgeNotes || "";
+          workoutLog.verifiedBy = req.user._id; // Compute score
+
+          if (decision === "approved") workoutLog.strengthScore = computeStrengthScore(workoutLog);
+          _context6.next = 23;
+          return regeneratorRuntime.awrap(workoutLog.save());
+
+        case 23:
+          res.status(200).json({
+            status: "success",
+            data: workoutLog
+          });
+
+        case 24:
+        case "end":
+          return _context6.stop();
       }
     }
   });

@@ -7,7 +7,6 @@ module.exports = catchAsync(async(req, res, next) => {
         userId: req.user._id
     }).populate('exerciseDetails');
     
-    console.log('exercise details: ', workoutPlan)
     if (!workoutPlan) return next(
         new AppError('You do not have a workout plan. Please create one first.', 409)
     );

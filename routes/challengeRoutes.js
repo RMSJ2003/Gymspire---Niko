@@ -16,11 +16,10 @@ router.post(
     challengeController.joinChallenge
 );
 
-router.use(authController.restrictTo('admin', 'judge'));
-
 router
     .route('/')
     .post( // Create challenge: exerciseIds sent via body
+        authController.restrictTo('judge'),
         challengeController.createChallenge
     )
     .get(challengeController.getAllChallenges);
