@@ -23,6 +23,9 @@ router
         challengeController.createChallenge
     )
     .get(challengeController.getAllChallenges);
-    
+
+router
+    .route('/:challengeId/leaderboard')
+    .get(challengeController.getLeaderboard);
 
 module.exports = router;

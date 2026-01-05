@@ -1,24 +1,24 @@
 "use strict";
 
-var systemExercises = require('../dev-data/data/systemExercises');
+var systemExercises = require("../dev-data/data/systemExercises");
 
-var mongoose = require('mongoose');
+var mongoose = require("mongoose");
 
-var WorkoutLog = require('../models/workoutLogModel');
+var WorkoutLog = require("../models/workoutLogModel");
 
-var Challenge = require('../models/challengeModel');
+var Challenge = require("../models/challengeModel");
 
-var Exercise = require('../models/exerciseModel');
+var Exercise = require("../models/exerciseModel");
 
-var handlerFactory = require('./handlerFactory');
+var handlerFactory = require("./handlerFactory");
 
-var AppError = require('../utils/appError');
+var AppError = require("../utils/appError");
 
-var catchAsync = require('../utils/catchAsync');
+var catchAsync = require("../utils/catchAsync");
 
-var generateJoinCode = require('../utils/generateJoinCode');
+var generateJoinCode = require("../utils/generateJoinCode");
 
-var _require = require('../services/restRule.service'),
+var _require = require("../services/restRule.service"),
     enforceMuscleRest = _require.enforceMuscleRest; // Note: you will create a workoutLog with challengeId in this function
 
 
@@ -36,7 +36,7 @@ exports.createChallenge = catchAsync(function _callee(req, res, next) {
             break;
           }
 
-          return _context.abrupt("return", next(new AppError('exerciseIds must be a non-empty array', 400)));
+          return _context.abrupt("return", next(new AppError("exerciseIds must be a non-empty array", 400)));
 
         case 3:
           // 1) Validate if exerciseIds array contain valid elements
@@ -52,7 +52,7 @@ exports.createChallenge = catchAsync(function _callee(req, res, next) {
             break;
           }
 
-          return _context.abrupt("return", next(new AppError("Invalid exerciseIds format: ".concat(invalidFormatIds.join(', ')), 400)));
+          return _context.abrupt("return", next(new AppError("Invalid exerciseIds format: ".concat(invalidFormatIds.join(", ")), 400)));
 
         case 7:
           _context.next = 9;
@@ -77,7 +77,7 @@ exports.createChallenge = catchAsync(function _callee(req, res, next) {
             break;
           }
 
-          return _context.abrupt("return", next(new AppError("ExerciseIds not found: ".concat(notFoundIds.join(', ')), 400)));
+          return _context.abrupt("return", next(new AppError("ExerciseIds not found: ".concat(notFoundIds.join(", ")), 400)));
 
         case 14:
           // 4) Validate NO duplicate targets
@@ -91,7 +91,7 @@ exports.createChallenge = catchAsync(function _callee(req, res, next) {
             break;
           }
 
-          return _context.abrupt("return", next(new AppError('Each muscle group can only have ONE exercise.', 400)));
+          return _context.abrupt("return", next(new AppError("Each muscle group can only have ONE exercise.", 400)));
 
         case 18:
           // 5) Save ObjectIds of exercises
@@ -114,7 +114,7 @@ exports.createChallenge = catchAsync(function _callee(req, res, next) {
           newChallenge = _context.sent;
           // 8) Send response
           res.status(200).json({
-            status: 'success',
+            status: "success",
             data: newChallenge
           });
 
@@ -141,7 +141,7 @@ exports.joinChallenge = catchAsync(function _callee2(req, res, next) {
             break;
           }
 
-          return _context2.abrupt("return", next(new AppError('Invalid join code', 404)));
+          return _context2.abrupt("return", next(new AppError("Invalid join code", 404)));
 
         case 3:
           // // ------------------------------------------------------------------
@@ -168,7 +168,7 @@ exports.joinChallenge = catchAsync(function _callee2(req, res, next) {
             break;
           }
 
-          return _context2.abrupt("return", next(new AppError('You already joined this challenge', 409)));
+          return _context2.abrupt("return", next(new AppError("You already joined this challenge", 409)));
 
         case 6:
           _context2.next = 8;
@@ -214,8 +214,8 @@ exports.joinChallenge = catchAsync(function _callee2(req, res, next) {
 
         case 20:
           res.status(200).json({
-            status: 'success',
-            message: 'Successfully joined the challenge'
+            status: "success",
+            message: "Successfully joined the challenge"
           });
 
         case 21:
@@ -264,11 +264,11 @@ exports.getChallenge = catchAsync(function _callee3(req, res, next) {
           break;
 
         case 9:
-          return _context3.abrupt("return", next(new AppError('Challenge identifier is required', 400)));
+          return _context3.abrupt("return", next(new AppError("Challenge identifier is required", 400)));
 
         case 10:
           _context3.next = 12;
-          return regeneratorRuntime.awrap(Challenge.findOne(query).populate('exerciseDetails'));
+          return regeneratorRuntime.awrap(Challenge.findOne(query).populate("exerciseDetails"));
 
         case 12:
           challenge = _context3.sent;
@@ -278,7 +278,7 @@ exports.getChallenge = catchAsync(function _callee3(req, res, next) {
             break;
           }
 
-          return _context3.abrupt("return", next(new AppError('Challenge not found', 404)));
+          return _context3.abrupt("return", next(new AppError("Challenge not found", 404)));
 
         case 15:
           // ================================
@@ -301,12 +301,12 @@ exports.getAllChallenges = catchAsync(function _callee4(req, res, next) {
       switch (_context4.prev = _context4.next) {
         case 0:
           _context4.next = 2;
-          return regeneratorRuntime.awrap(Challenge.find().populate('exerciseDetails'));
+          return regeneratorRuntime.awrap(Challenge.find().populate("exerciseDetails"));
 
         case 2:
           challenges = _context4.sent;
           res.status(200).json({
-            status: 'success',
+            status: "success",
             results: challenges.length,
             data: {
               data: challenges
@@ -316,6 +316,73 @@ exports.getAllChallenges = catchAsync(function _callee4(req, res, next) {
         case 4:
         case "end":
           return _context4.stop();
+      }
+    }
+  });
+});
+exports.getLeaderboard = catchAsync(function _callee5(req, res, next) {
+  var challengeId, leaderboard;
+  return regeneratorRuntime.async(function _callee5$(_context5) {
+    while (1) {
+      switch (_context5.prev = _context5.next) {
+        case 0:
+          challengeId = req.params.challengeId;
+          _context5.next = 3;
+          return regeneratorRuntime.awrap(WorkoutLog.aggregate([// 1) Only this challenge
+          {
+            $match: {
+              challengeId: new mongoose.Types.ObjectId(challengeId),
+              status: "done",
+              judgeStatus: "approved"
+            }
+          }, // 2) Join user info
+          {
+            $lookup: {
+              from: "users",
+              localField: "userId",
+              foreignField: "_id",
+              as: "user"
+            }
+          }, {
+            $unwind: "$user"
+          }, // 3) Shape leaderboard row
+          {
+            $project: {
+              _id: 0,
+              userId: "$user._id",
+              username: "$user.username",
+              strengthScore: 1
+            }
+          }, // 4) Sort strongest first
+          {
+            $sort: {
+              strengthScore: -1
+            }
+          }, // 5) Rank users
+          {
+            $setWindowFields: {
+              sortBy: {
+                strengthScore: -1
+              },
+              output: {
+                rank: {
+                  $rank: {}
+                }
+              }
+            }
+          }]));
+
+        case 3:
+          leaderboard = _context5.sent;
+          res.status(200).json({
+            status: 'success',
+            results: leaderboard.length,
+            data: leaderboard
+          });
+
+        case 5:
+        case "end":
+          return _context5.stop();
       }
     }
   });
