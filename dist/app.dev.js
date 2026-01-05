@@ -1,20 +1,28 @@
-const express = require('express');
+"use strict";
 
-const userRouter = require('./routes/userRoutes');
-const workoutPlanRouter = require('./routes/workoutPlanRoutes');
-const prRouter = require('./routes/prRoutes');
-const challengeRouter = require('./routes/challengeRoutes');
-const workoutLogRouter = require('./routes/workoutLogRoutes');
-const exerciseDbApiRouter = require('./routes/exerciseDbApiRoutes');
-const exerciseRouter = require('./routes/exerciseRoutes');
-const adminRouter = require('./routes/adminRoutes');
+var express = require('express');
 
-const app = express();
+var userRouter = require('./routes/userRoutes');
 
+var workoutPlanRouter = require('./routes/workoutPlanRoutes');
+
+var prRouter = require('./routes/prRoutes');
+
+var challengeRouter = require('./routes/challengeRoutes');
+
+var workoutLogRouter = require('./routes/workoutLogRoutes');
+
+var exerciseDbApiRouter = require('./routes/exerciseDbApiRoutes');
+
+var exerciseRouter = require('./routes/exerciseRoutes');
+
+var adminRouter = require('./routes/adminRoutes');
+
+var app = express();
 app.use(express.json({
-    limit: '10kb' // We set size for body so when the body is over 10kb, it will not be accepted.
-}));
+  limit: '10kb' // We set size for body so when the body is over 10kb, it will not be accepted.
 
+}));
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/workout-plans', workoutPlanRouter);
 app.use('/api/v1/prs', prRouter);
@@ -23,9 +31,7 @@ app.use('/api/v1/workout-logs', workoutLogRouter);
 app.use('/api/v1/exercise-db-api', exerciseDbApiRouter);
 app.use('/api/v1/exercises', exerciseRouter);
 app.use('/api/v1/admin', adminRouter);
-
 module.exports = app;
-
 /*
 
 const axios = require('axios');
