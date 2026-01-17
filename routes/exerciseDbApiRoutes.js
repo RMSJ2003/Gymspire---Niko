@@ -10,7 +10,7 @@ router.use(authController.restrictTo('admin'));
 
 router
     .route('/')
-    .get(exerciseDbApiController.importApiExercises)
+    .get(exerciseDbApiController.importApiExercises);
 
 // router.get('/template', exerciseDbApiController.)
 

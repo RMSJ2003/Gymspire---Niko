@@ -1,0 +1,19 @@
+extends base
+
+form(action='/api/v1/users/signup' method='POST')
+    label(for='email') Email
+    input(type='text' name='email' id='email' required)
+
+    label(for='username') Username
+    input(type='text' name='username' id='username' required)
+
+    label(for='pfpUrl') Profile Picture URL
+    input(type='text' name='pfpUrl' id='pfpUrl' required)
+
+    label(for='password') Password
+    input(type='password' name='password' id='password' required)
+
+    label(for='passwordConfirm') Password Confirm
+    input(type='password' name='passwordConfirm' id='passwordConfirm' required)
+
+    button(type='submit') Sign Up

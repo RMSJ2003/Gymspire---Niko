@@ -53,14 +53,14 @@ const userSchema = new mongoose.Schema({
     pfpUrl: {
         type: String
     },
-    quote: {
-        type: String,
-        trim: true // *is this really needed?
-    },
-    beforeImgUrl: String,
-    beforeWeight: Number,
-    afterImgUrl: String,
-    afterWeight: Number,
+    // quote: {
+    //     type: String,
+    //     trim: true // *is this really needed?
+    // },
+    // beforeImgUrl: String,  // *is this really needed?
+    // beforeWeight: Number, // *is this really needed?
+    // afterImgUrl: String, // *is this really needed?
+    // afterWeight: Number, // *is this really needed?
     passwordChangedAt: Date, // The value of this field will change when someone change the password.
     passwordResetToken: String,
     passwordResetExpires: Date, // timer do reset the password
