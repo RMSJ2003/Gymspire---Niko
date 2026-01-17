@@ -1,0 +1,21 @@
+/* SIGN UP - START */
+
+button {
+  position: relative;
+  padding: 0.75rem 1.5rem;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinner {
+  margin-left: 8px;
+  font-size: 0.9rem;
+}
+
+.hidden {
+  display: none;
+}
+/* SIGN UP - END */
