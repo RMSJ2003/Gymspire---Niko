@@ -1,0 +1,56 @@
+body {
+  background: #22356d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+* {
+  box-sizing: border-box;
+}
+
+.Login-Container {
+  background: white;
+  padding: 25px;
+  width: 400px;
+  height: 280px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center; /* vertical */
+  align-items: center; /* horizontal */
+}
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.Login-btn {
+  background: #277529;
+  color: white;
+  margin-bottom: 10px;
+}
+/* hover for login button*/
+.Login-btn:hover {
+  background: #1c4d1d;
+  color: white;
+}
+.SignUp-btn {
+  background: #af534c;
+  color: white;
+}
+/* hover for signup button*/
+.SignUp-btn:hover {
+  background: #833e39;
+  color: white;
+}
