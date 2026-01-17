@@ -6,7 +6,8 @@ const router = express.Router();
 // Overview Page
 // router.get('/')
 
-// Sign up Page
 router.get('/signup', viewController.signUp);
+
+router.get('/login', viewController.login)
 
 module.exports = router;
