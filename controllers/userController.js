@@ -61,7 +61,7 @@ exports.deleteMe = catchAsync(async (req, res) => {
 exports.updateUserRole = catchAsync(async (req, res, next) => {
   const { userType } = req.body;
 
-  if (!["judge", "admin"].includes(userType))
+  if (!["coach", "admin"].includes(userType))
     return next(new AppError("Invalid role", 400));
 
   const user = await User.findByIdAndUpdate(

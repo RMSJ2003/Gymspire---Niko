@@ -1,27 +1,30 @@
 "use strict";
 
-var crypto = require('crypto');
+var crypto = require("crypto");
 
-var mongoose = require('mongoose');
+var mongoose = require("mongoose");
 
-var _require = require('os'),
+var _require = require("os"),
     type = _require.type;
 
-var validator = require('validator');
+var validator = require("validator");
 
-var bcrypt = require('bcryptjs');
+var bcrypt = require("bcryptjs");
 
 var userSchema = new mongoose.Schema({
   email: {
     type: String,
-    required: [true, 'Please provide your email'],
+    required: [true, "Please provide your email"],
     unique: true,
     lowercase: true,
-    validate: [validator.isEmail, 'Provide a valid email']
+    validate: {
+      validator: validator.isEmail,
+      message: "Please provide a valid email address"
+    }
   },
   password: {
     type: String,
-    required: [true, 'Please provide a password'],
+    required: [true, "Please provide a password"],
     minlength: 8,
     // length of passwords is more important than crazy symbols
     select: false // If we read all users then password field won't show up but if we sign up user it will still show up (encrypted version)
@@ -29,7 +32,7 @@ var userSchema = new mongoose.Schema({
   },
   passwordConfirm: {
     type: String,
-    required: [true, 'Please confirm your password'],
+    required: [true, "Please confirm your password"],
     // Custom Validator to confirm password.
     validate: {
       // THIS ONLY WORKS ON CREATE AND SAVE !!! (.save and .create in mongoose)
@@ -39,22 +42,22 @@ var userSchema = new mongoose.Schema({
         // If passwordConfirm == password, from doc
         return el === this.password;
       },
-      message: 'Passwords are not the same!'
+      message: "Passwords are not the same!"
     }
   },
   userType: {
     type: String,
-    "enum": ['user', 'judge', 'admin'],
-    "default": 'user'
+    "enum": ["user", "coach", "admin"],
+    "default": "user"
   },
   username: {
     type: String,
-    required: [true, 'Please provide your username'],
+    required: [true, "Please provide your username"],
     // NOT SURE ABOUT THESE:
     trim: true,
-    minlength: [3, 'Username must be at least 3 characters'],
-    maxlength: [20, 'Username must be at most 20 characters'],
-    match: [/^[a-zA-Z0-9._-]+$/, 'Username may only contain letters, numbers, dots, underscores, and hyphens']
+    minlength: [3, "Username must be at least 3 characters"],
+    maxlength: [20, "Username must be at most 20 characters"],
+    match: [/^[a-zA-Z0-9._-]+$/, "Username may only contain letters, numbers, dots, underscores, and hyphens"]
   },
   pfpUrl: {
     type: String
@@ -74,12 +77,12 @@ var userSchema = new mongoose.Schema({
 
 }); // START OF COMMENT FOR IMPORTING DEV DATA
 
-userSchema.pre('save', function _callee(next) {
+userSchema.pre("save", function _callee(next) {
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          if (this.isModified('password')) {
+          if (this.isModified("password")) {
             _context.next = 2;
             break;
           }
@@ -103,9 +106,9 @@ userSchema.pre('save', function _callee(next) {
   }, null, this);
 }); // Reset Password Middleware
 
-userSchema.pre('save', function (next) {
+userSchema.pre("save", function (next) {
   // If not modified OR the document is new, then return right away and proceed to the middleware
-  if (!this.isModified('password') || this.isNew) return next();
+  if (!this.isModified("password") || this.isNew) return next();
   this.passwordChangedAt = Date.now() - 1000; // update last update date
 
   next();
@@ -159,10 +162,10 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 
 userSchema.methods.createPasswordResetToken = function () {
   // resetToken should be cryptographically strong as the password hash
-  var resetToken = crypto.randomBytes(32).toString('hex');
-  this.passwordResetToken = crypto.createHash('sha256') // type of hash
+  var resetToken = crypto.randomBytes(32).toString("hex");
+  this.passwordResetToken = crypto.createHash("sha256") // type of hash
   .update(resetToken) // which string?
-  .digest('hex'); // type of string
+  .digest("hex"); // type of string
   // We are logging the resetToken as an object cuz this way, we'll se the variable name along with its value
 
   console.log({
@@ -173,5 +176,5 @@ userSchema.methods.createPasswordResetToken = function () {
   return resetToken;
 };
 
-var User = mongoose.model('User', userSchema);
+var User = mongoose.model("User", userSchema);
 module.exports = User;

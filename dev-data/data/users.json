@@ -25,9 +25,9 @@
   },
   {
     "_id": "5c8a1d5b0190b214360dc059",
-    "email": "Judge1@gymspire.com",
+    "email": "coach1@gymspire.com",
     "password": "$2a$12$Q0grHjH9PXc6SxivC8m12.2mZJ9BbKcgFpwSG4Y1ZEII8HJVzWeyS",
-    "userType": "judge",
+    "userType": "coach",
     "username": "CoachAlex",
     "quote": "Discipline beats motivation.",
     "beforeImgUrl": "",
@@ -37,9 +37,9 @@
   },
   {
     "_id": "5c8a1d5b0190b214360dc060",
-    "email": "Judge2@gymspire.com",
+    "email": "coach2@gymspire.com",
     "password": "$2a$12$Q0grHjH9PXc6SxivC8m12.2mZJ9BbKcgFpwSG4Y1ZEII8HJVzWeyS",
-    "userType": "judge",
+    "userType": "coach",
     "username": "FitRhea",
     "quote": "Push harder than yesterday.",
     "beforeImgUrl": "",

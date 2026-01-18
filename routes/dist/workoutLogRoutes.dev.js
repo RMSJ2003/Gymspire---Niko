@@ -22,6 +22,6 @@ router.route('/challenge/:challengeId') // We asked for challengeId to know wher
 router.route('/solo').post(requireWorkoutPlan, autoFinishStaleWorkouts, workoutLogController.createMySoloWorkoutLog).get(workoutLogController.getMyWorkoutLogs);
 router.route('/:workoutLogId/exercises/:exerciseIndex/sets/:setNumber').patch(workoutLogController.updateMyWorkoutSet);
 router.patch('/:workoutLogId/finish', workoutLogController.finishWorkoutLog);
-router.use(authController.restrictTo('judge'));
+router.use(authController.restrictTo('coach'));
 router.route('/:workoutLogId/verify').patch(workoutLogController.verifyChallengeWorkoutLog);
 module.exports = router;

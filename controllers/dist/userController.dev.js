@@ -99,7 +99,7 @@ exports.updateUserRole = catchAsync(function _callee3(req, res, next) {
         case 0:
           userType = req.body.userType;
 
-          if (["judge", "admin"].includes(userType)) {
+          if (["coach", "admin"].includes(userType)) {
             _context3.next = 3;
             break;
           }

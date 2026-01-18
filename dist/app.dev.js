@@ -36,7 +36,8 @@ app.use(express.json({
 app.use(express.json());
 app.use(express.urlencoded({
   extended: true
-})); // 🔹 Set Pug as view engine
+}));
+app.use(express["static"]('public')); // 🔹 Set Pug as view engine
 
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));

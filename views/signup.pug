@@ -1,9 +1,13 @@
 extends base
 
 block content
-    form(action='/api/v1/users/signup' method='POST')
+    form(
+        action='/api/v1/users/signup'
+        method='POST'
+        id='signupForm'
+    )
         label(for='email') Email
-        input(type='text' name='email' id='email' required)
+        input(type='email' name='email' id='email' required)
 
         label(for='username') Username
         input(type='text' name='username' id='username' required)
@@ -14,7 +18,13 @@ block content
         label(for='password') Password
         input(type='password' name='password' id='password' required)
 
-        label(for='passwordConfirm') Password Confirm
+        label(for='passwordConfirm') Confirm Password
         input(type='password' name='passwordConfirm' id='passwordConfirm' required)
 
-        button(type='submit') Sign Up
+        button(type='submit' id='submitBtn')
+            span.btn-text Create Account
+            span.spinner.hidden Loading...
+
+        block scripts
+            script(src='/js/signup.js')
+

@@ -51,22 +51,38 @@ const createSendToken = (user, statusCode, res) => {
 exports.signup = catchAsync(async (req, res, next) => {
   const { email, username, password, passwordConfirm, pfpUrl } = req.body;
 
-  // 1) Validate iACADEMY email
-  const allowedDomains = ["@iacademy.ph", "@iacademy.edu.ph"];
-  const isValidEmail = allowedDomains.some(domain =>
-    email.toLowerCase().endsWith(domain)
-  );
-
-  if (!isValidEmail) {
+  // 🔐 Email rule 
+  if (!email.endsWith("@iacademy.ph") && !email.endsWith("@iacademy.edu.ph")) {
     return next(
-      new AppError(
-        "Only iACADEMY emails (@iacademy.ph or @iacademy.edu.ph) are allowed.",
-        400
-      )
+      new AppError("Users and admins must use an iACADEMY email address.", 400)
     );
   }
 
-  // 2) Validate password strength
+  // 🔐 Password strength
+  if (!isStrongPassword(password)) {
+    return next(
+      new AppError(
+        "Password must be at least 8 characters long and contain at least one letter and one number.",
+        400
+      ) 
+    );
+  }
+
+  const newUser = await User.create({
+    email,
+    username,
+    password,
+    passwordConfirm,
+    pfpUrl,
+  });
+
+  createSendToken(newUser, 201, res);
+});
+
+exports.createCoach = catchAsync(async (req, res, next) => {
+  const { email, username, password, passwordConfirm, pfpUrl } = req.body;
+
+  // 1) Validate password strength (business logic)
   if (!isStrongPassword(password)) {
     return next(
       new AppError(
@@ -76,18 +92,18 @@ exports.signup = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 3) Create user (FORCE userType)
+  // 2) Create user (coach)
   const newUser = await User.create({
     email,
+    username,
     password,
     passwordConfirm,
-    username,
     pfpUrl,
+    userType: "coach",
   });
 
   createSendToken(newUser, 201, res);
 });
-
 
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
@@ -263,7 +279,6 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
 // CHANGING PASSWORD FUNCTIONALITIES - END
 
-
 // Use protect to stop users
 // Use isLoggedIn to show UI state
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
@@ -273,7 +288,7 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
       const user = await User.findById(decoded.id);
 
       if (user) res.locals.user = user;
-    } catch (err){}
+    } catch (err) {}
   }
 
   next();

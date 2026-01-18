@@ -34,7 +34,7 @@ router
 
 router.patch('/:workoutLogId/finish', workoutLogController.finishWorkoutLog);
 
-router.use(authController.restrictTo('judge'));
+router.use(authController.restrictTo('coach'));
 
 router
     .route('/:workoutLogId/verify')

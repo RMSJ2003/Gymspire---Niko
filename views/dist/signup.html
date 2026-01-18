@@ -6,18 +6,19 @@
     <title>Gymspire |  </title>
   </head>
   <body>
-    <form action="/api/v1/users/signup" method="POST">
+    <form action="/api/v1/users/signup" method="POST" id="signupForm">
       <label for="email">Email</label>
-      <input type="text" name="email" id="email" required="required"/>
+      <input type="email" name="email" id="email" required="required"/>
       <label for="username">Username</label>
       <input type="text" name="username" id="username" required="required"/>
       <label for="pfpUrl">Profile Picture URL</label>
       <input type="text" name="pfpUrl" id="pfpUrl" required="required"/>
       <label for="password">Password</label>
       <input type="password" name="password" id="password" required="required"/>
-      <label for="passwordConfirm">Password Confirm</label>
+      <label for="passwordConfirm">Confirm Password</label>
       <input type="password" name="passwordConfirm" id="passwordConfirm" required="required"/>
-      <button type="submit">Sign Up</button>
+      <button type="submit" id="submitBtn"><span class="btn-text">Create Account</span><span class="spinner hidden">Loading...</span></button>
+      <script src="/js/signup.js"></script>
     </form>
   </body>
 </html>
