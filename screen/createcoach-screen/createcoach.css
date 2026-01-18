@@ -35,14 +35,14 @@ button {
   cursor: pointer;
 }
 
-.CreateAccount-btn {
-  background: #277529;
+.Coach-btn {
+  background: #c1419b;
   color: white;
   margin-bottom: 10px;
 }
-/* hover for create button*/
-.CreateAccount:hover {
-  background: #1c4d1d;
+/* hover for login button*/
+.Coach-btn:hover {
+  background: #782860;
   color: white;
 }
 
