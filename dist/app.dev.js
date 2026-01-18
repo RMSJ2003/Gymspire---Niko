@@ -26,8 +26,6 @@ var adminRouter = require("./routes/adminRoutes");
 
 var viewRouter = require("./routes/viewRoutes");
 
-var authController = require("./controllers/authController");
-
 var app = express();
 app.use(express.json({
   limit: "10kb" // We set size for body so when the body is over 10kb, it will not be accepted.
@@ -59,7 +57,6 @@ app.use("/api/v1/admin", adminRouter); // HANDLING OPERATIONAL ERROR
 app.use(function (req, res, next) {
   next(new AppError("Can't find ".concat(req.originalUrl), 404));
 });
-app.use(authController.isLoggedIn);
 app.use(globalErrorHandler); // Should be last in app.use to catch error in prev codes/
 
 module.exports = app;

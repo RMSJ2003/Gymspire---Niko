@@ -39,9 +39,14 @@ var createSendToken = function createSendToken(user, statusCode, res) {
   };
   res.cookie("jwt", token, cookieOptions);
   user.password = undefined;
+  var redirectTo = '/dashboard';
+  if (user.userType === 'admin') redirectTo = '/admin/dashboard';
+  if (user.userType === 'coach') redirectTo = '/coach/dashboard';
   res.status(statusCode).json({
     status: "success",
     token: token,
+    redirectTo: redirectTo,
+    // The backend now tells frontend where to go
     data: {
       user: user
     }
@@ -374,8 +379,9 @@ exports.resetPassword = catchAsync(function _callee6(req, res, next) {
     }
   });
 }); // CHANGING PASSWORD FUNCTIONALITIES - END
-// Use protect to stop users
-// Use isLoggedIn to show UI state
+// With this, pug files can now do something like this:
+// if user
+//   p Welcome #{user.username}
 
 exports.isLoggedIn = catchAsync(function _callee7(req, res, next) {
   var decoded, user;

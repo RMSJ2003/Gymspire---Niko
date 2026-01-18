@@ -34,3 +34,19 @@ exports.login = catchAsync(function _callee2(req, res, next) {
     }
   });
 });
+exports.dashboard = catchAsync(function _callee3(req, res, next) {
+  return regeneratorRuntime.async(function _callee3$(_context3) {
+    while (1) {
+      switch (_context3.prev = _context3.next) {
+        case 0:
+          res.status(200).render('dashboard', {
+            title: 'Dashboard'
+          });
+
+        case 1:
+        case "end":
+          return _context3.stop();
+      }
+    }
+  });
+});

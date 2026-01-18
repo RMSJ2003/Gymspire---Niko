@@ -11,3 +11,9 @@ exports.login = catchAsync(async (req, res, next) => {
     title: "Login",
   });
 });
+
+exports.dashboard = catchAsync(async (req, res, next) => {
+  res.status(200).render('dashboard', {
+    title: 'Dashboard'
+  });
+});

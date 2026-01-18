@@ -1,11 +1,9 @@
 extends base
 
 block content
-    form(
-        action='/api/v1/users/signup'
-        method='POST'
-        id='signupForm'
-    )
+    //- "novalidate" disables browser auto-submit
+    //- We use AJAX for submit
+    form(id='signupForm' novalidate) 
         label(for='email') Email
         input(type='email' name='email' id='email' required)
 

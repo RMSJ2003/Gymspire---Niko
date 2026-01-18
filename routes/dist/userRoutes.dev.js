@@ -8,7 +8,6 @@ var authController = require("../controllers/authController");
 
 var router = express.Router();
 router.route("/signup").post(authController.signup);
-router.route("/createCoach").post(authController.createCoach);
 router.route("/login").post(authController.login);
 router.post("/forgotPassword", authController.forgotPassword);
 router.patch("/resetPassword/:token", authController.resetPassword); // USED authController.protect -------------------------- START

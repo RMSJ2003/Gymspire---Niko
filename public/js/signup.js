@@ -46,25 +46,50 @@ passwordConfirmInput.addEventListener("input", validatePasswords);
 // ===============================
 // Submit behavior
 // ===============================
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
   validateEmail();
   validatePasswords();
 
   if (!form.checkValidity()) {
-    e.preventDefault();
     form.reportValidity();
-
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      spinner?.classList.add("hidden");
-      btnText.textContent = "Create Account";
-    }
     return;
   }
 
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    btnText.textContent = "Creating...";
-    spinner?.classList.remove("hidden");
+  submitBtn.disabled = true;
+  btnText.textContent = "Creating...";
+  spinner.classList.remove("hidden");
+
+  const formData = {
+    email: emailInput.value,
+    username: document.querySelector("#username").value,
+    password: passwordInput.value,
+    passwordConfirm: passwordConfirmInput.value,
+    pfpUrl: document.querySelector("#pfpUrl").value
+  };
+
+  try {
+    const res = await fetch("/api/v1/users/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    if (data.status !== "success") throw new Error(data.message);
+
+    // ✅ OPTIONAL: save token (only if not using cookies)
+    localStorage.setItem("jwt", data.token);
+
+    // ✅ REDIRECT
+    window.location.href = data.redirectTo || "/dashboard"; // This is GET
+  } catch (err) {
+    alert(err.message || "Signup failed");
+  } finally {
+    submitBtn.disabled = false;
+    btnText.textContent = "Create Account";
+    spinner.classList.add("hidden");
   }
 });

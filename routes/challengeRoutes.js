@@ -19,7 +19,7 @@ router.post(
 router
     .route('/')
     .post( // Create challenge: exerciseIds sent via body
-        authController.restrictTo('coach'),
+        authController.restrictTo('judge'),
         challengeController.createChallenge
     )
     .get(challengeController.getAllChallenges);

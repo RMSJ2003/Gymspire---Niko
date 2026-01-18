@@ -8,8 +8,8 @@ var authController = require("../controllers/authController");
 
 var router = express.Router();
 router.use(authController.protect);
-router.use(authController.restrictTo("admin"));
-router.get('/gymspire-time', adminController.getGymspireTime);
-router.get('/gym-usage', adminController.getGymUsageByHour);
-router.get('/gym-time-recommendation', adminController.getRecommendedGymTime);
+router.get("/gymspire-time", adminController.getGymspireTime);
+router.get("/gym-usage", adminController.getGymUsageByHour);
+router.get("/gym-time-recommendation", adminController.getRecommendedGymTime);
+router.route("/createCoach").post(authController.restrictTo("admin"), authController.createCoach);
 module.exports = router;

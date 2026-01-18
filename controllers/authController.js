@@ -39,9 +39,15 @@ const createSendToken = (user, statusCode, res) => {
 
   user.password = undefined;
 
+  let redirectTo = '/dashboard';
+
+  if (user.userType === 'admin') redirectTo = '/admin/dashboard';
+  if (user.userType === 'coach') redirectTo = '/coach/dashboard';
+
   res.status(statusCode).json({
     status: "success",
     token,
+    redirectTo, // The backend now tells frontend where to go
     data: {
       user,
     },
@@ -279,8 +285,9 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
 // CHANGING PASSWORD FUNCTIONALITIES - END
 
-// Use protect to stop users
-// Use isLoggedIn to show UI state
+// With this, pug files can now do something like this:
+// if user
+//   p Welcome #{user.username}
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
   if (req.cookies.jwt) {
     try {

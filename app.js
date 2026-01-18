@@ -13,9 +13,6 @@ const exerciseDbApiRouter = require("./routes/exerciseDbApiRoutes");
 const exerciseRouter = require("./routes/exerciseRoutes");
 const adminRouter = require("./routes/adminRoutes");
 const viewRouter = require("./routes/viewRoutes");
-
-const authController = require("./controllers/authController");
-
 const app = express();
 
 app.use(
@@ -51,8 +48,6 @@ app.use("/api/v1/admin", adminRouter);
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl}`, 404));
 });
-
-app.use(authController.isLoggedIn);
 
 app.use(globalErrorHandler); // Should be last in app.use to catch error in prev codes/
 
