@@ -2,6 +2,9 @@ const form = document.querySelector("#signupForm");
 const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#password");
 const passwordConfirmInput = document.querySelector("#passwordConfirm");
+const emailError = document.querySelector("#emailError");
+const passwordError = document.querySelector("#passwordError");
+const passwordConfirmError = document.querySelector("#passwordConfirmError");
 
 const submitBtn = document.querySelector("#submitBtn");
 const spinner = submitBtn?.querySelector(".spinner");
@@ -66,7 +69,7 @@ form.addEventListener("submit", async (e) => {
     username: document.querySelector("#username").value,
     password: passwordInput.value,
     passwordConfirm: passwordConfirmInput.value,
-    pfpUrl: document.querySelector("#pfpUrl").value
+    pfpUrl: document.querySelector("#pfpUrl").value,
   };
 
   try {
@@ -78,7 +81,9 @@ form.addEventListener("submit", async (e) => {
 
     const data = await res.json();
 
-    if (data.status !== "success") throw new Error(data.message);
+    if (!res.ok) {
+      throw new Error(data.message || "Signup failed");
+    }
 
     // ✅ OPTIONAL: save token (only if not using cookies)
     localStorage.setItem("jwt", data.token);
@@ -86,10 +91,24 @@ form.addEventListener("submit", async (e) => {
     // ✅ REDIRECT
     window.location.href = data.redirectTo || "/dashboard"; // This is GET
   } catch (err) {
-    alert(err.message || "Signup failed");
+    const message = err.message || "Signup failed";
+
+    if (message.toLowerCase().includes("email")) {
+      emailError.textContent = message;
+    } else if (message.toLowerCase().includes("password")) {
+      passwordError.textContent = message;
+    } else {
+      alert(message); // fallback for unexpected errors
+    }
   } finally {
     submitBtn.disabled = false;
     btnText.textContent = "Create Account";
     spinner.classList.add("hidden");
   }
 });
+
+function clearErrors() {
+  emailError.textContent = "";
+  passwordError.textContent = "";
+  passwordConfirmError.textContent = "";
+}

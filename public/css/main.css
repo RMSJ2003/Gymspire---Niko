@@ -18,4 +18,11 @@ button:disabled {
 .hidden {
   display: none;
 }
+
+.form-error {
+  color: #d32f2f;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  display: block;
+}
 /* SIGN UP - END */

@@ -4,6 +4,8 @@ var path = require("path");
 
 var express = require("express");
 
+var cookieParser = require("cookie-parser");
+
 var AppError = require("./utils/appError");
 
 var globalErrorHandler = require("./controllers/errorController");
@@ -30,8 +32,10 @@ var app = express();
 app.use(express.json({
   limit: "10kb" // We set size for body so when the body is over 10kb, it will not be accepted.
 
-}));
-app.use(express.json());
+})); // app.use(express.json());
+
+app.use(cookieParser()); // 👈 MUST BE BEFORE ROUTES
+
 app.use(express.urlencoded({
   extended: true
 }));

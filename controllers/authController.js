@@ -30,7 +30,7 @@ const createSendToken = (user, statusCode, res) => {
 
   const cookieOptions = {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 100
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true, // The cookie can't be access or modified in anyway by the browser (important for xss attacks)
   };
@@ -46,7 +46,7 @@ const createSendToken = (user, statusCode, res) => {
 
   res.status(statusCode).json({
     status: "success",
-    token,
+    token, // This also will be used by .protect
     redirectTo, // The backend now tells frontend where to go
     data: {
       user,
@@ -133,11 +133,15 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check if it exists
   let token;
 
-  if (
+  // 2) Get token from cookie OR header
+  if (req.cookies.jwt) {
+    token = req.cookies.jwt;
+  } else if(
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
@@ -291,12 +295,15 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
   if (req.cookies.jwt) {
     try {
-      const decoded = jwt.verify(req.cookies.process.env.JWT_SECRET);
-      const user = await User.findById(decoded.id);
+      const decoded = jwt.verify(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
 
+      const user = await User.findById(decoded.id);
       if (user) res.locals.user = user;
     } catch (err) {}
   }
-
   next();
 });
+

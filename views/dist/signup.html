@@ -9,15 +9,15 @@
   <body>
     <form id="signupForm" novalidate="novalidate"> 
       <label for="email">Email</label>
-      <input type="email" name="email" id="email" required="required"/>
+      <input type="email" name="email" id="email" required="required"/><small class="form-error" id="emailError"></small>
       <label for="username">Username</label>
       <input type="text" name="username" id="username" required="required"/>
       <label for="pfpUrl">Profile Picture URL</label>
       <input type="text" name="pfpUrl" id="pfpUrl" required="required"/>
       <label for="password">Password</label>
-      <input type="password" name="password" id="password" required="required"/>
+      <input type="password" name="password" id="password" required="required"/><small class="form-error" id="passwordError"></small>
       <label for="passwordConfirm">Confirm Password</label>
-      <input type="password" name="passwordConfirm" id="passwordConfirm" required="required"/>
+      <input type="password" name="passwordConfirm" id="passwordConfirm" required="required"/><small class="form-error" id="passwordConfirmError"></small>
       <button type="submit" id="submitBtn"><span class="btn-text">Create Account</span><span class="spinner hidden">Loading...</span></button>
       <script src="/js/signup.js"></script>
     </form>

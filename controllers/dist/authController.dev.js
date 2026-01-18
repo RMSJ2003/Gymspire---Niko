@@ -33,7 +33,7 @@ var signToken = function signToken(id) {
 var createSendToken = function createSendToken(user, statusCode, res) {
   var token = signToken(user._id);
   var cookieOptions = {
-    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 100),
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
     httpOnly: true // The cookie can't be access or modified in anyway by the browser (important for xss attacks)
 
   };
@@ -45,6 +45,7 @@ var createSendToken = function createSendToken(user, statusCode, res) {
   res.status(statusCode).json({
     status: "success",
     token: token,
+    // This also will be used by .protect
     redirectTo: redirectTo,
     // The backend now tells frontend where to go
     data: {
@@ -198,7 +199,10 @@ exports.protect = catchAsync(function _callee4(req, res, next) {
       switch (_context4.prev = _context4.next) {
         case 0:
           // 1) Getting token and check if it exists
-          if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+          // 2) Get token from cookie OR header
+          if (req.cookies.jwt) {
+            token = req.cookies.jwt;
+          } else if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
             token = req.headers.authorization.split(" ")[1]; // Getting the value of token cuz
             // the authorization looks like this:
             // Authorization: Bearer <token>
@@ -395,7 +399,7 @@ exports.isLoggedIn = catchAsync(function _callee7(req, res, next) {
           }
 
           _context7.prev = 1;
-          decoded = jwt.verify(req.cookies.process.env.JWT_SECRET);
+          decoded = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
           _context7.next = 5;
           return regeneratorRuntime.awrap(User.findById(decoded.id));
 

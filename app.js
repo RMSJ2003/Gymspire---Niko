@@ -2,6 +2,7 @@ const path = require("path");
 
 const express = require("express");
 
+const cookieParser = require("cookie-parser");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 const userRouter = require("./routes/userRoutes");
@@ -21,7 +22,10 @@ app.use(
   })
 );
 
-app.use(express.json());
+// app.use(express.json());
+app.use(cookieParser()); // 👈 MUST BE BEFORE ROUTES
+
+
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static('public'));
