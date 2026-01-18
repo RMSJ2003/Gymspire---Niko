@@ -13,11 +13,11 @@ body {
   background: white;
   padding: 25px;
   width: 400px;
-  height: 280px;
   border-radius: 8px;
   display: flex;
   justify-content: center; /* vertical */
   align-items: center; /* horizontal */
+  /* no height , to make the container adjust incase we add another input field*/
 }
 input {
   width: 100%;
