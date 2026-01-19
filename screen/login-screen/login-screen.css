@@ -26,6 +26,7 @@ input {
   border-radius: 5px;
   border: 1px solid #ccc;
 }
+
 button {
   width: 100%;
   padding: 10px;
@@ -33,6 +34,16 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.SignUp-btn {
+  background: #af534c;
+  color: white;
+}
+/* hover for signup button*/
+.SignUp-btn:hover {
+  background: #833e39;
+  color: white;
 }
 
 .Login-btn {
@@ -43,14 +54,5 @@ button {
 /* hover for login button*/
 .Login-btn:hover {
   background: #1c4d1d;
-  color: white;
-}
-.SignUp-btn {
-  background: #af534c;
-  color: white;
-}
-/* hover for signup button*/
-.SignUp-btn:hover {
-  background: #833e39;
   color: white;
 }
