@@ -11,13 +11,27 @@
       <form>
         <h2 id="SignUpTitle">SIGN UP FORM</h2>
         <!-- Input Field for email, password, login button and signup button -->
-        <input type="email" placeholder="Email" required />
-        <input type="text" placeholder="Username" required />
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Email" required />
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Username" required />
         <!-- Upload Profile Picture -->
-        <label for="profilePic">Upload Profile Picture</label>
+        <label for="ProfilePicText">Upload Profile Picture</label>
         <input type="file" id="ProfilePicText" />
-        <input type="password" placeholder="Password" required />
-        <input type="password" placeholder="Confirm Password" required />
+        <label for="NewPassword">New Password</label>
+        <input
+          type="password"
+          id="NewPassword"
+          placeholder="Password"
+          required
+        />
+        <label for="ConfirmPassword">Confirm Password</label>
+        <input
+          type="password"
+          id="ConfirmPassword"
+          placeholder="Confirm Password"
+          required
+        />
         <button type="submit" class="CreateAccount-btn">Create Account</button>
         <!-- Redirects to login-screen if user have an account -->
         <a href="../login-screen/login-screen.html">Already have an account?</a>
