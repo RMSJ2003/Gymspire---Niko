@@ -1,12 +1,20 @@
-//wait for HTML to get loaded
 document.addEventListener("DOMContentLoaded", () => {
-  // Select the Sign Up button inside the DOMContentLoaded
+  // Back button
   const ReturnBtn = document.querySelector(".Back-btn");
 
-  // Add click event inside the same block
   if (ReturnBtn) {
     ReturnBtn.addEventListener("click", () => {
       window.location.href = "../login-screen/login-screen.html";
+    });
+  }
+
+  // Forgot password form
+  const form = document.getElementById("forgotForm");
+
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault(); // stop page reload
+      showAlert(); // ✅ SHOW MODAL
     });
   }
 });
