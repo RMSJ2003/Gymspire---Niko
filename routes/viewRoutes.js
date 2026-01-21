@@ -1,18 +1,47 @@
-const express = require('express');
-const viewController = require('../controllers/viewController');
-const authController = require('../controllers/authController');
+const express = require("express");
+const viewController = require("../controllers/viewController");
+const authController = require("../controllers/authController");
 
 const router = express.Router();
 
 // Overview Page
 // router.get('/')
 
-router.get('/signup', viewController.signUp);
+router.get(
+  "/signup",
+  authController.isLoggedIn,
+  authController.redirectIfLoggedIn,
+  viewController.signUp
+);
 
-router.get('/login', viewController.login)
+router.get(
+  "/login",
+  authController.isLoggedIn,
+  authController.redirectIfLoggedIn,
+  viewController.login
+);
+
+router.get("/forgotPassword", viewController.forgotPassword);
+router.get('/reset-password/:token', viewController.resetPassword);
 
 router.use(authController.protect);
 
-router.get('/dashboard', viewController.dashboard);
+router.get(
+  "/dashboard",
+  authController.restrictTo("user"),
+  viewController.dashboard
+);
+
+router.get(
+  "/adminDashboard",
+  authController.restrictTo("admin"),
+  viewController.adminDashboard
+);
+
+router.get(
+  "/coachDashboard",
+  authController.restrictTo("coach"),
+  viewController.coachDashboard
+);
 
 module.exports = router;

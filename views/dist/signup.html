@@ -7,7 +7,11 @@
     <link rel="stylesheet" href="/css/main.css"/>
   </head>
   <body>
+    <div class="nav"><a href="/login">Login</a><a href="/signup">Sign Up</a>
+    </div>
     <form id="signupForm" novalidate="novalidate"> 
+      <!-- 🔥 Global message area-->
+      <p class="form-message" id="formMessage"></p>
       <label for="email">Email</label>
       <input type="email" name="email" id="email" required="required"/><small class="form-error" id="emailError"></small>
       <label for="username">Username</label>
@@ -18,8 +22,8 @@
       <input type="password" name="password" id="password" required="required"/><small class="form-error" id="passwordError"></small>
       <label for="passwordConfirm">Confirm Password</label>
       <input type="password" name="passwordConfirm" id="passwordConfirm" required="required"/><small class="form-error" id="passwordConfirmError"></small>
-      <button type="submit" id="submitBtn"><span class="btn-text">Create Account</span><span class="spinner hidden">Loading...</span></button>
-      <script src="/js/signup.js"></script>
+      <button type="submit" id="submitBtn"><span class="btn-text">Create Account</span></button>
     </form>
+    <script src="/js/signup.js"></script>
   </body>
 </html>

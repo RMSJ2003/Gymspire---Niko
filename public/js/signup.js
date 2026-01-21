@@ -2,13 +2,16 @@ const form = document.querySelector("#signupForm");
 const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#password");
 const passwordConfirmInput = document.querySelector("#passwordConfirm");
+
 const emailError = document.querySelector("#emailError");
 const passwordError = document.querySelector("#passwordError");
 const passwordConfirmError = document.querySelector("#passwordConfirmError");
+const formMessage = document.querySelector("#formMessage") || {
+  textContent: "",
+};
 
 const submitBtn = document.querySelector("#submitBtn");
-const spinner = submitBtn?.querySelector(".spinner");
-const btnText = submitBtn?.querySelector(".btn-text");
+const btnText = submitBtn.querySelector(".btn-text");
 
 const IACADEMY_EMAIL_REGEX =
   /^[a-zA-Z0-9._%+-]+@(iacademy\.ph|iacademy\.edu\.ph)$/;
@@ -55,28 +58,33 @@ form.addEventListener("submit", async (e) => {
   validateEmail();
   validatePasswords();
 
+  // reset errors
+  emailError.textContent = "";
+  passwordError.textContent = "";
+  passwordConfirmError.textContent = "";
+  formMessage.textContent = "";
+
   if (!form.checkValidity()) {
     form.reportValidity();
     return;
   }
 
   submitBtn.disabled = true;
-  btnText.textContent = "Creating...";
-  spinner.classList.remove("hidden");
+  btnText.textContent = "Creating account...";
 
-  const formData = {
-    email: emailInput.value,
-    username: document.querySelector("#username").value,
-    password: passwordInput.value,
-    passwordConfirm: passwordConfirmInput.value,
-    pfpUrl: document.querySelector("#pfpUrl").value,
-  };
+  let success = false; // 🔥 FLAG
 
   try {
-    const res = await fetch("/api/v1/users/signup", {
+    const res = await fetch("/api/v1/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        email: emailInput.value,
+        username: document.querySelector("#username").value,
+        password: passwordInput.value,
+        passwordConfirm: passwordConfirmInput.value,
+        pfpUrl: document.querySelector("#pfpUrl").value,
+      }),
     });
 
     const data = await res.json();
@@ -85,30 +93,34 @@ form.addEventListener("submit", async (e) => {
       throw new Error(data.message || "Signup failed");
     }
 
-    // ✅ OPTIONAL: save token (only if not using cookies)
-    localStorage.setItem("jwt", data.token);
+    // 🔥 SUCCESS UI
+    success = true;
+    formMessage.textContent = "Account created successfully! Redirecting...";
+    submitBtn.disabled = true;
 
-    // ✅ REDIRECT
-    window.location.href = data.redirectTo || "/dashboard"; // This is GET
+    // 🔥 SHORT DELAY THEN REDIRECT
+    setTimeout(() => {
+      window.location.href = data.redirectTo || "/dashboard";
+    }, 800);
   } catch (err) {
     const message = err.message || "Signup failed";
 
+    // 🔥 FIELD ERRORS FIRST
     if (message.toLowerCase().includes("email")) {
       emailError.textContent = message;
+    } else if (message.toLowerCase().includes("confirm")) {
+      passwordConfirmError.textContent = message;
     } else if (message.toLowerCase().includes("password")) {
       passwordError.textContent = message;
     } else {
-      alert(message); // fallback for unexpected errors
+      // 🔥 GLOBAL FORM ERROR
+      formMessage.textContent = message;
     }
   } finally {
-    submitBtn.disabled = false;
-    btnText.textContent = "Create Account";
-    spinner.classList.add("hidden");
+    // 🔥 ONLY RESET IF FAILED
+    if (!success) {
+      submitBtn.disabled = false;
+      btnText.textContent = "Create Account";
+    }
   }
 });
-
-function clearErrors() {
-  emailError.textContent = "";
-  passwordError.textContent = "";
-  passwordConfirmError.textContent = "";
-}

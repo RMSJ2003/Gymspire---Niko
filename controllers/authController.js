@@ -5,6 +5,7 @@ const User = require("../models/userModel");
 const sendEmail = require("./../utils/email");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const { log } = require("console");
 
 const isStrongPassword = (password) => {
   // at least 8 chars, 1 letter, 1 number
@@ -39,10 +40,10 @@ const createSendToken = (user, statusCode, res) => {
 
   user.password = undefined;
 
-  let redirectTo = '/dashboard';
+  let redirectTo = "/dashboard";
 
-  if (user.userType === 'admin') redirectTo = '/admin/dashboard';
-  if (user.userType === 'coach') redirectTo = '/coach/dashboard';
+  if (user.userType === "admin") redirectTo = "/adminDashboard";
+  if (user.userType === "coach") redirectTo = "/coachDashboard";
 
   res.status(statusCode).json({
     status: "success",
@@ -57,7 +58,7 @@ const createSendToken = (user, statusCode, res) => {
 exports.signup = catchAsync(async (req, res, next) => {
   const { email, username, password, passwordConfirm, pfpUrl } = req.body;
 
-  // 🔐 Email rule 
+  // 🔐 Email rule
   if (!email.endsWith("@iacademy.ph") && !email.endsWith("@iacademy.edu.ph")) {
     return next(
       new AppError("Users and admins must use an iACADEMY email address.", 400)
@@ -70,7 +71,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       new AppError(
         "Password must be at least 8 characters long and contain at least one letter and one number.",
         400
-      ) 
+      )
     );
   }
 
@@ -133,15 +134,27 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+exports.logout = catchAsync(async (req, res, next) => {
+  // res.cookie("jwt", "loggedout", {
+  //   expires: new Date(Date.now() + 10 * 1000), // Overwrites the JWT cookie that it expires
+  //   // almost immediately
+  //   httpOnly: true,
+  // });
+  req.user = undefined;
+
+  res.clearCookie("jwt");
+
+  res.redirect("/login");
+});
 
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check if it exists
   let token;
 
   // 2) Get token from cookie OR header
-  if (req.cookies.jwt) {
+  if (req.cookies.jwt && req.cookies.jwt !== "loggedout") {
     token = req.cookies.jwt;
-  } else if(
+  } else if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
@@ -224,10 +237,14 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   const resetURL = `${req.protocol}://${req.get(
     "host"
-  )}/api/v1/users/resetPassword/${resetToken}`; // In here we will send the original reset token, not the encrypted one
+  )}/api/v1/auth/resetPassword/${resetToken}`; // In here we will send the original reset token, not the encrypted one
+
+  const resetUrlPage = `${req.protocol}://${req.get(
+    "host"
+  )}/reset-password/${resetToken}`;
 
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.
-    \nIf you didn't forget your password, please ignore this email!`;
+    \nIf you didn't forget your password, please ignore this email!\n Use this link (page) to reset your password: ${resetUrlPage}`;
 
   try {
     await sendEmail({
@@ -259,6 +276,15 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 exports.resetPassword = catchAsync(async (req, res, next) => {
   // 1) Get user based on the given token
   // req.params come from the URL
+
+  if (!isStrongPassword(req.body.password)) {
+    return next(
+      new AppError(
+        "Password must be at least 8 characters long and contain at least one letter and one number.",
+        400
+      )
+    );
+  }
 
   const hashedToken = crypto
     .createHash("sha256")
@@ -295,10 +321,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
   if (req.cookies.jwt) {
     try {
-      const decoded = jwt.verify(
-        req.cookies.jwt,
-        process.env.JWT_SECRET
-      );
+      const decoded = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
 
       const user = await User.findById(decoded.id);
       if (user) res.locals.user = user;
@@ -307,3 +330,17 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
   next();
 });
 
+exports.redirectIfLoggedIn = catchAsync(async (req, res, next) => {
+  // console.log(res.locals.user);
+  if (res.locals.user) {
+    // res.locals.user came from isLoggedIn in this controller file
+    let redirectTo = "/dashboard";
+
+    if (res.locals.user.userType === "admin") redirectTo = "/adminDashboard";
+    else if (res.locals.user.userType === "coach")
+      redirectTo = "/coachDashboard";
+
+    return res.redirect(redirectTo);
+  }
+  next();
+});

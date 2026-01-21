@@ -1,4 +1,34 @@
 extends base
 
 block content
-    h1 Login Page
+    //- If show navbar, then include navbar
+    if !hideNavbar 
+        include _navbar
+
+    a(href='/login') Login
+    a(href='/signup') Sign Up
+
+    h1 Login
+
+    form(id='loginForm' novalidate) 
+        // 🔥 Global message area
+        p.form-message#formMessage
+
+        label(for='email') Email
+        input(type='email' name='email' id='email' required)
+        small.form-error#emailError
+
+        label(for='password') Password
+        input(type='password' name='password' id='password' required)
+        small.form-error#passwordError 
+
+        a(href='/forgotPassword') Forgot password?
+
+        button(type='submit' id='loginBtn')
+            span.btn-text Log In
+            span.spinner.hidden Loading...
+
+    block scripts
+        script(src='/js/login.js')
+
+

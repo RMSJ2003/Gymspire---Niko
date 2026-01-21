@@ -6,11 +6,7 @@ var userController = require("../controllers/userController");
 
 var authController = require("../controllers/authController");
 
-var router = express.Router();
-router.route("/signup").post(authController.signup);
-router.route("/login").post(authController.login);
-router.post("/forgotPassword", authController.forgotPassword);
-router.patch("/resetPassword/:token", authController.resetPassword); // USED authController.protect -------------------------- START
+var router = express.Router(); // USED authController.protect -------------------------- START
 // Only logged in user can access these routes:
 
 router.use(authController.protect);

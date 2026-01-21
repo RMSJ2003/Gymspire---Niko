@@ -1,0 +1,15 @@
+.nav
+    //- If logged in
+    if user
+        if user.userType === 'admin'
+            a(href='/adminDashboard') Admin Dashboard
+        else if user.userType === 'coach'
+            a(href='/coachDashboard') Coach Dashboard
+        else
+            a(href='/dashboard') Dashboard
+
+        a(href='/api/v1/auth/logout') Logout
+    //- If not logged in
+    else
+        a(href='/login') Login
+        a(href='/signup') Sign Up

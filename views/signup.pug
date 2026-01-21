@@ -1,9 +1,16 @@
 extends base
 
 block content
+    if !hideNavbar
+        include _navbar
+
+
     //- "novalidate" disables browser auto-submit
     //- We use AJAX for submit
     form(id='signupForm' novalidate) 
+        // 🔥 Global message area
+        p.form-message#formMessage
+
         label(for='email') Email
         input(type='email' name='email' id='email' required)
         small.form-error#emailError
@@ -24,8 +31,7 @@ block content
 
         button(type='submit' id='submitBtn')
             span.btn-text Create Account
-            span.spinner.hidden Loading...
 
-        block scripts
+    block scripts
             script(src='/js/signup.js')
 
