@@ -58,7 +58,8 @@ app.use("/api/v1/exercise-db-api", exerciseDbApiRouter);
 app.use("/api/v1/exercises", exerciseRouter);
 app.use("/api/v1/admin", adminRouter); // 🔹 VIEW ROUTES LAST
 
-app.use(authController.isLoggedIn);
+app.use(authController.isLoggedIn); // To be able to use user details in pug files
+
 app.use("/", viewRouter); // 404 HANDLER
 
 app.use(function (req, res, next) {

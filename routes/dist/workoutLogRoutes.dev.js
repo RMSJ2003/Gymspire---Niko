@@ -20,8 +20,10 @@ router.route('/challenge/:challengeId') // We asked for challengeId to know wher
 .post(challengeController.getChallenge, requireActiveChallenge, autoFinishStaleWorkouts, workoutLogController.createMyChallengeWorkoutLog); // Create a challenge log (Start challenge)
 
 router.route('/solo').post(requireWorkoutPlan, autoFinishStaleWorkouts, workoutLogController.createMySoloWorkoutLog).get(workoutLogController.getMyWorkoutLogs);
+router.get('/:id', requireWorkoutPlan, workoutLogController.getMyWorkoutLog);
 router.route('/:workoutLogId/exercises/:exerciseIndex/sets/:setNumber').patch(workoutLogController.updateMyWorkoutSet);
 router.patch('/:workoutLogId/finish', workoutLogController.finishWorkoutLog);
 router.use(authController.restrictTo('coach'));
+router.get('/:challengeId/submissions', workoutLogController.getSubmissions);
 router.route('/:workoutLogId/verify').patch(workoutLogController.verifyChallengeWorkoutLog);
 module.exports = router;

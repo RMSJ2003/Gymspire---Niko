@@ -49,3 +49,33 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     token: req.params.token
   });
 });
+
+exports.profile = catchAsync(async (req, res, next) => {
+  res.status(200).render("profile", {
+    title: "Profile",
+  });
+});
+
+exports.workoutPlan = catchAsync(async (req, res, next) => {
+  res.status(200).render("workoutPlan", {
+    title: "Workout Plan",
+  });
+});
+
+exports.challenges = catchAsync(async (req, res, next) => {
+  res.status(200).render("challenges", {
+    title: "Challenges",
+  });
+});
+
+exports.workoutLogs = catchAsync(async (req, res, next) => {
+  res.status(200).render("workoutLogs", {
+    title: "Workout Logs",
+  });
+});
+
+exports.startSoloWorkout = catchAsync(async (req, res, next) => {
+  res.status(200).render("startSoloWorkout", {
+    title: "Start Solo Workout",
+  });
+});

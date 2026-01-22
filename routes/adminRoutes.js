@@ -10,7 +10,7 @@ router.get("/gymspire-time", adminController.getGymspireTime);
 
 router.get("/gym-usage", adminController.getGymUsageByHour);
 
-router.get("/gym-time-recommendation", adminController.getRecommendedGymTime);
+router.get("/get-gymspire-now-status", adminController.getGymspireNowStatus);
 
 router
   .route("/createCoach")

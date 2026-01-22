@@ -294,17 +294,36 @@ exports.getChallenge = catchAsync(function _callee3(req, res, next) {
     }
   });
 });
-exports.getAllChallenges = catchAsync(function _callee4(req, res, next) {
-  var challenges;
+exports.getgetChallenge = catchAsync(function _callee4(req, res, next) {
   return regeneratorRuntime.async(function _callee4$(_context4) {
     while (1) {
       switch (_context4.prev = _context4.next) {
         case 0:
-          _context4.next = 2;
+          res.status(200).json({
+            status: "success",
+            data: {
+              data: req.challenge
+            }
+          });
+
+        case 1:
+        case "end":
+          return _context4.stop();
+      }
+    }
+  });
+});
+exports.getAllChallenges = catchAsync(function _callee5(req, res, next) {
+  var challenges;
+  return regeneratorRuntime.async(function _callee5$(_context5) {
+    while (1) {
+      switch (_context5.prev = _context5.next) {
+        case 0:
+          _context5.next = 2;
           return regeneratorRuntime.awrap(Challenge.find().populate("exerciseDetails"));
 
         case 2:
-          challenges = _context4.sent;
+          challenges = _context5.sent;
           res.status(200).json({
             status: "success",
             results: challenges.length,
@@ -315,19 +334,19 @@ exports.getAllChallenges = catchAsync(function _callee4(req, res, next) {
 
         case 4:
         case "end":
-          return _context4.stop();
+          return _context5.stop();
       }
     }
   });
 });
-exports.getLeaderboard = catchAsync(function _callee5(req, res, next) {
+exports.getLeaderboard = catchAsync(function _callee6(req, res, next) {
   var challengeId, leaderboard;
-  return regeneratorRuntime.async(function _callee5$(_context5) {
+  return regeneratorRuntime.async(function _callee6$(_context6) {
     while (1) {
-      switch (_context5.prev = _context5.next) {
+      switch (_context6.prev = _context6.next) {
         case 0:
           challengeId = req.params.challengeId;
-          _context5.next = 3;
+          _context6.next = 3;
           return regeneratorRuntime.awrap(WorkoutLog.aggregate([// 1) Only this challenge
           {
             $match: {
@@ -373,16 +392,16 @@ exports.getLeaderboard = catchAsync(function _callee5(req, res, next) {
           }]));
 
         case 3:
-          leaderboard = _context5.sent;
+          leaderboard = _context6.sent;
           res.status(200).json({
-            status: 'success',
+            status: "success",
             results: leaderboard.length,
             data: leaderboard
           });
 
         case 5:
         case "end":
-          return _context5.stop();
+          return _context6.stop();
       }
     }
   });

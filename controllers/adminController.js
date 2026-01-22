@@ -47,6 +47,88 @@ exports.getGymUsageByHour = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getGymspireNowStatus = catchAsync(async (req, res, next) => {
+  // ================================
+  // STEP 1: Get current UTC time
+  // ================================
+  const now = new Date();
+  const currentHour = now.getUTCHours();
+  const currentHourLocal = now.getHours();
+
+  // ================================
+  // STEP 2: Enforce gym operating hours
+  // ================================
+  const openHour = parseInt(process.env.GYM_OPENING_HOUR); // ex: 5
+  const closeHour = parseInt(process.env.GYM_CLOSING_HOUR); // ex: 23
+
+  if (currentHour < openHour || currentHour >= closeHour) {
+    res.locals.currentHour = currentHour;
+    res.locals.currentLoad = 0;
+    res.locals.crowdLevel = crowdLevel;
+    res.locals.recommended = false;
+    res.locals.message = 'Not recommended to workout now. Gym is currently closed.';
+    
+    return next();
+  }
+
+  // ================================
+  // STEP 3: Recent activity window (last 2 hours) ⭐
+  // ================================
+  const endTime = new Date(now);
+  const startTime = new Date(now.getTime() - 2 * 60 * 60 * 1000);
+
+  console.log("NOW UTC:", now.toISOString());
+  console.log("WINDOW START:", startTime.toISOString());
+  console.log("WINDOW END:", endTime.toISOString());
+
+  // ================================
+  // STEP 4: Count recent workouts
+  // ================================
+  const workoutCount = await WorkoutLog.countDocuments({
+    date: {
+      $gte: startTime,
+      $lt: endTime,
+    },
+    status: { $in: ["ongoing", "done"] },
+  });
+
+  console.log("WORKOUT COUNT:", workoutCount);
+
+  // ================================
+  // STEP 5: Crowd thresholds
+  // ================================
+  let crowdLevel;
+  let recommended;
+  let message;
+
+  if (workoutCount <= 5) {
+    crowdLevel = "low";
+    recommended = true;
+    message = "Recommended to workout now. Low gym activity detected.";
+  } else if (workoutCount <= 15) {
+    crowdLevel = "medium";
+    recommended = true;
+    message = "Workout is acceptable now. Moderate gym activity detected.";
+  } else {
+    crowdLevel = "high";
+    recommended = false;
+    message = "Not recommended to workout now due to high gym activity.";
+  }
+
+  res.locals.currentHour = currentHourLocal;
+  res.locals.currentLoad = workoutCount;
+  res.locals.crowdLevel = crowdLevel;
+  res.locals.recommended = recommended;
+  res.locals.message = message;
+
+  console.log(currentHour);
+
+  // 6) Proceed to next middleware
+  next();
+
+});
+
+/* Old
 exports.getRecommendedGymTime = catchAsync(async (req, res, next) => {
   // STEP 1: Aggregate gym usage by hour (Manila time)
   const usage = await WorkoutLog.aggregate([
@@ -102,3 +184,4 @@ exports.getRecommendedGymTime = catchAsync(async (req, res, next) => {
     activityCount: bestHour.count,
   });
 });
+*/

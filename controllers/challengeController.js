@@ -202,6 +202,13 @@ exports.getChallenge = catchAsync(async (req, res, next) => {
   next();
 });
 
+exports.getgetChallenge = catchAsync(async (req, res, next) => {
+  res.status(200).json({
+    status: "success",
+    data: { data: req.challenge },
+  });
+});
+
 exports.getAllChallenges = catchAsync(async (req, res, next) => {
   const challenges = await Challenge.find().populate("exerciseDetails");
 
@@ -265,8 +272,8 @@ exports.getLeaderboard = catchAsync(async (req, res, next) => {
   ]);
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     results: leaderboard.length,
-    data: leaderboard
+    data: leaderboard,
   });
 });

@@ -1,15 +1,24 @@
-extends base
+extends base 
+//- base.pug
 
 block styles
     link(rel="stylesheet" href="/css/login.css")
 block content
     //- If show navbar, then include navbar
+<<<<<<< HEAD
     //- if !hideNavbar 
     //-     include _navbar
 
     //- REMOVE THIS
     //- a(href='/login') Login
     //- a(href='/signup') Sign Up
+=======
+    if !hideNavbar 
+        include _navbar
+        //- _navbar.pug
+        //- If it starts with underscore (_), then it is not a page 
+        //- but just a part of the page (partial)
+>>>>>>> 9dea5dafe6f0e90346650631fa9bab2eb1ba7015
 
    
 
@@ -37,5 +46,6 @@ block content
 
     block scripts
         script(src='/js/login.js')
+        //- login.js
 
 

@@ -1,7 +1,47 @@
 extends base
 
-block content 
-    include _navbar
+block content
+	include _navbar
 
-    h1 User Dashboard 
-    h2 Hello, #{user.username}
+	h1 User Dashboard
+	h2 Welcome, #{user.username}
+
+	h3 GymSpire Time Status
+
+	// Main recommendation result
+	p
+		if recommended
+			strong Recommended to workout now
+		else
+			strong Not recommended to workout now
+
+	// Explanation message
+	p #{message}
+
+	// Supporting info
+	p
+		| Current time: 
+		-
+			const period = currentHour >= 12 ? "PM" : "AM";
+			const displayHour = currentHour % 12 || 12;
+		time #{displayHour}:00 #{period}
+
+
+	p
+		| Current gym load: 
+		data(value=currentLoad) #{currentLoad}
+
+	p
+		| Crowd level: 
+		span #{crowdLevel}
+
+
+	a(href='/dashboard') Dashboard
+	a(href='/profile') Profile
+	a(href='/workoutPlan') Workout Plan	
+	a(href='/challenges') Challenges
+	a(href='/workoutLogs') Workout Logs
+	a(href='/startSoloWorkout') Start Solo Workout
+
+	block scripts
+		script(src='/js/dashboard.js')
