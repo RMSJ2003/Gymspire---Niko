@@ -122,3 +122,83 @@ exports.resetPassword = catchAsync(function _callee7(req, res, next) {
     }
   });
 });
+exports.profile = catchAsync(function _callee8(req, res, next) {
+  return regeneratorRuntime.async(function _callee8$(_context8) {
+    while (1) {
+      switch (_context8.prev = _context8.next) {
+        case 0:
+          res.status(200).render("profile", {
+            title: "Profile"
+          });
+
+        case 1:
+        case "end":
+          return _context8.stop();
+      }
+    }
+  });
+});
+exports.workoutPlan = catchAsync(function _callee9(req, res, next) {
+  return regeneratorRuntime.async(function _callee9$(_context9) {
+    while (1) {
+      switch (_context9.prev = _context9.next) {
+        case 0:
+          res.status(200).render("workoutPlan", {
+            title: "Workout Plan"
+          });
+
+        case 1:
+        case "end":
+          return _context9.stop();
+      }
+    }
+  });
+});
+exports.challenges = catchAsync(function _callee10(req, res, next) {
+  return regeneratorRuntime.async(function _callee10$(_context10) {
+    while (1) {
+      switch (_context10.prev = _context10.next) {
+        case 0:
+          res.status(200).render("challenges", {
+            title: "Challenges"
+          });
+
+        case 1:
+        case "end":
+          return _context10.stop();
+      }
+    }
+  });
+});
+exports.workoutLogs = catchAsync(function _callee11(req, res, next) {
+  return regeneratorRuntime.async(function _callee11$(_context11) {
+    while (1) {
+      switch (_context11.prev = _context11.next) {
+        case 0:
+          res.status(200).render("workoutLogs", {
+            title: "Workout Logs"
+          });
+
+        case 1:
+        case "end":
+          return _context11.stop();
+      }
+    }
+  });
+});
+exports.startSoloWorkout = catchAsync(function _callee12(req, res, next) {
+  return regeneratorRuntime.async(function _callee12$(_context12) {
+    while (1) {
+      switch (_context12.prev = _context12.next) {
+        case 0:
+          res.status(200).render("startSoloWorkout", {
+            title: "Start Solo Workout"
+          });
+
+        case 1:
+        case "end":
+          return _context12.stop();
+      }
+    }
+  });
+});

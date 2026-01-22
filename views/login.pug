@@ -1,12 +1,13 @@
-extends base
+extends base 
+//- base.pug
 
 block content
     //- If show navbar, then include navbar
     if !hideNavbar 
         include _navbar
-
-    a(href='/login') Login
-    a(href='/signup') Sign Up
+        //- _navbar.pug
+        //- If it starts with underscore (_), then it is not a page 
+        //- but just a part of the page (partial)
 
     h1 Login
 
@@ -30,5 +31,6 @@ block content
 
     block scripts
         script(src='/js/login.js')
+        //- login.js
 
 

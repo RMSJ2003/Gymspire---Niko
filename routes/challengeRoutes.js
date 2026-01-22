@@ -1,31 +1,39 @@
-const express = require('express');
-const challengeController = require('../controllers/challengeController');
-const authController = require('../controllers/authController');
-const requireWorkoutPlan = require('../middlewares/requireWorkoutPlan');
-const requireActiveChallenge = require('../middlewares/requireActiveChallenge');
+const express = require("express");
+const challengeController = require("../controllers/challengeController");
+const authController = require("../controllers/authController");
+const requireWorkoutPlan = require("../middlewares/requireWorkoutPlan");
+const requireActiveChallenge = require("../middlewares/requireActiveChallenge");
 
 const router = express.Router();
 
 router.use(authController.protect);
 
 router.post(
-    '/:joinCode',
-    requireWorkoutPlan,
-    challengeController.getChallenge,
-    requireActiveChallenge,
-    challengeController.joinChallenge
+  "/:joinCode/join",
+  requireWorkoutPlan,
+  challengeController.getChallenge,
+  requireActiveChallenge,
+  challengeController.joinChallenge
+);
+
+router.get(
+  "/:challengeId",
+  requireWorkoutPlan,
+  challengeController.getChallenge,
+  challengeController.getgetChallenge
 );
 
 router
-    .route('/')
-    .post( // Create challenge: exerciseIds sent via body
-        authController.restrictTo('judge'),
-        challengeController.createChallenge
-    )
-    .get(challengeController.getAllChallenges);
+  .route("/")
+  .post(
+    // Create challenge: exerciseIds sent via body
+    authController.restrictTo("coach"),
+    challengeController.createChallenge
+  )
+  .get(challengeController.getAllChallenges);
 
 router
-    .route('/:challengeId/leaderboard')
-    .get(challengeController.getLeaderboard);
+  .route("/:challengeId/leaderboard")
+  .get(challengeController.getLeaderboard);
 
 module.exports = router;

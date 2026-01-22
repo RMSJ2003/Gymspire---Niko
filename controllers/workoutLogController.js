@@ -238,8 +238,8 @@ exports.updateMyWorkoutSet = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.finishWorkoutLog = catchAsync(async (req, res, next) => {
-  const workoutLog = await WorkoutLog.findById(req.params.workoutLogId);
+exports.getMyWorkoutLog = catchAsync(async (req, res, next) => {
+  const workoutLog = await WorkoutLog.findById(req.params.id);
 
   if (!workoutLog) {
     return next(new AppError("Workout log not found", 404));
@@ -255,6 +255,40 @@ exports.finishWorkoutLog = catchAsync(async (req, res, next) => {
     ) {
       return next(new AppError("Not authorized", 403));
     }
+  }
+
+  if (workoutLog.challengeId) {
+    const challenge = await Challenge.findById(workoutLog.challengeId);
+
+    if (
+      !challenge ||
+      !challenge.participants.some(
+        (p) => p.toString() === req.user._id.toString()
+      )
+    ) {
+      return next(new AppError("Not authorized", 403));
+    }
+  }
+
+  if (workoutLog.status === "done") {
+    return next(new AppError("Workout already finished", 400));
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: workoutLog,
+  });
+});
+
+exports.finishWorkoutLog = catchAsync(async (req, res, next) => {
+  const workoutLog = await WorkoutLog.findById(req.params.workoutLogId);
+
+  if (!workoutLog) {
+    return next(new AppError("Workout log not found", 404));
+  }
+
+  if (workoutLog.userId.toString() !== req.user._id.toString()) {
+    return next(new AppError("Not authorized", 403));
   }
 
   if (workoutLog.challengeId) {
@@ -284,13 +318,24 @@ exports.finishWorkoutLog = catchAsync(async (req, res, next) => {
     return next(new AppError("Workout already finished", 400));
   }
 
-  // ✅ Finish workout
   workoutLog.status = "done";
-  await workoutLog.save(); // schema validators still apply
+  await workoutLog.save();
 
   res.status(200).json({
     status: "success",
     data: workoutLog,
+  });
+});
+
+exports.getSubmissions = catchAsync(async (req, res, next) => {
+  const { challengeId } = req.params;
+
+  const workoutLogs = await WorkoutLog.find({ status: "done", challengeId });
+
+  res.status(200).json({
+    message: "success",
+    results: workoutLogs.length,
+    data: workoutLogs,
   });
 });
 
@@ -309,10 +354,38 @@ exports.verifyChallengeWorkoutLog = catchAsync(async (req, res, next) => {
   if (!workoutLog.challengeId)
     return next(new AppError("Solo workouts cannot be verified", 400));
 
+  // Load challenge
+  const challenge = await Challenge.findById(workoutLog.challengeId);
+
+  if (!challenge) return next(new AppError("Challenge not found", 404));
+
+  // 🚫 Conflict of interest: coach is participant in this challenge
+  const isParticipant = challenge.participants.some(
+    (p) => p.toString() === req.user._id.toString()
+  );
+
+  if (isParticipant) {
+    return next(
+      new AppError(
+        "Coaches who are participants cannot verify workouts in this challenge.",
+        403
+      )
+    );
+  }
+
+  // 🚫 Prevent self-verification (extra safety)
+  if (workoutLog.userId.toString() === req.user._id.toString())
+    return next(
+      new AppError(
+        "Coaches are not allowed to verify their own workout log.",
+        403
+      )
+    );
+
   // Must be finished
   if (workoutLog.status !== "done")
     return next(
-      new AppError("Workout must be finished before verification", 409)
+      new AppError("Workout must be finished before verification", 401)
     );
 
   // Must have video
