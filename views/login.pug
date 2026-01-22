@@ -1,16 +1,20 @@
 extends base
 
+block styles
+    link(rel="stylesheet" href="/css/login.css")
 block content
     //- If show navbar, then include navbar
-    if !hideNavbar 
-        include _navbar
+    //- if !hideNavbar 
+    //-     include _navbar
 
-    a(href='/login') Login
-    a(href='/signup') Sign Up
+    //- REMOVE THIS
+    //- a(href='/login') Login
+    //- a(href='/signup') Sign Up
 
-    h1 Login
+   
 
     form(id='loginForm' novalidate) 
+        h1 Login
         // 🔥 Global message area
         p.form-message#formMessage
 
@@ -27,6 +31,9 @@ block content
         button(type='submit' id='loginBtn')
             span.btn-text Log In
             span.spinner.hidden Loading...
+
+        button(type='button' id='signupBtn') Sign Up
+            
 
     block scripts
         script(src='/js/login.js')

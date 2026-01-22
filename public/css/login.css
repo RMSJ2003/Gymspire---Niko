@@ -1,0 +1,136 @@
+/* =====================
+   LOGIN PAGE
+===================== */
+
+/* Center page content */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #0b0f1a;
+  font-family: Arial, sans-serif;
+}
+/* Page title */
+h1 {
+  text-align: center;
+  color: #22c55e;
+  margin: 24px 0;
+}
+
+/* Login form container */
+#loginForm {
+  width: 100%;
+  max-width: 420px;
+  background: #020617;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+}
+
+/* Labels */
+#loginForm label {
+  display: block;
+  margin-top: 12px;
+  color: #cbd5f5;
+}
+
+/* Inputs */
+#loginForm input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 4px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #fff;
+}
+
+#loginForm input:focus {
+  outline: none;
+  border-color: #22c55e;
+}
+
+/* Form error messages */
+.form-error {
+  font-size: 0.85rem;
+  color: #f87171;
+  min-height: 16px;
+}
+
+/* Forgot password link */
+#loginForm a[href="/forgotPassword"] {
+  display: block;
+  text-align: right;
+  margin: 10px 0 20px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+#loginForm a[href="/forgotPassword"]:hover {
+  color: #22c55e;
+}
+
+/* Submit button */
+#loginBtn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #22c55e;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+#loginBtn:hover {
+  background: #16a34a;
+}
+
+/* Submit button */
+#signupBtn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #22c55e;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+#signupBtn:hover {
+  background: #16a34a;
+}
+
+/* Spinner inside button */
+.spinner {
+  font-size: 0.85rem;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Form message (global error/success) */
+.form-message {
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+.form-message.error {
+  color: #f87171;
+}
+
+.form-message.success {
+  color: #22c55e;
+}

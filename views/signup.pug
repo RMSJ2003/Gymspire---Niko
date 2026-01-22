@@ -1,13 +1,16 @@
 extends base
 
 block content
-    if !hideNavbar
-        include _navbar
 
+    //- if !hideNavbar
+    //-     include _navbar
+    block styles
+     link(rel="stylesheet" href="/css/signup.css")
 
     //- "novalidate" disables browser auto-submit
     //- We use AJAX for submit
     form(id='signupForm' novalidate) 
+        h1 Sign Up 
         // 🔥 Global message area
         p.form-message#formMessage
 

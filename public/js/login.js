@@ -61,4 +61,8 @@ form.addEventListener("submit", async (e) => {
 });
 
 // JAVASCRIPT FOR DESIGN GOES HERE:
-
+// finds id then excecute
+const signupBtn = document.querySelector("#signupBtn");
+signupBtn.addEventListener("click", () => {
+  window.location.href = "/signup";
+});
