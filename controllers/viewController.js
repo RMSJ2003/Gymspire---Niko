@@ -99,6 +99,7 @@ exports.createWorkoutPlan = catchAsync(async (req, res, next) => {
     res.status(200).render("createWorkoutPlan", {
     title: "Create Workout Plan",
     currentUser: req.user,
+    exercises: req.exercises
   });
 });
 

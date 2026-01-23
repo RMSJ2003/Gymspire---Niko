@@ -1,0 +1,46 @@
+extends base
+
+block content
+  h1 #{title}
+
+  h2 #{user.username}
+
+  if user.pfpUrl
+    img(src=user.pfpUrl alt="Profile Picture" width="150")
+  else
+    img(src="/img/default-user.png" alt="Default Profile" width="150")
+
+  a(href="/dashboard") Dashboard
+
+  // 🔥 CORRECT STRUCTURE
+  if exercises.length === 0
+    p No exercises available.
+  else
+    form(id="createWorkoutPlanForm")
+      each exercise in exercises
+        .exercise-card
+          label
+            input(
+              type="checkbox"
+              name="exerciseIds"
+              value=exercise._id
+            )
+
+            h3= exercise.name
+            p Target: #{exercise.target}
+
+            if exercise.gifURL
+              img(src=exercise.gifURL alt=exercise.name width="200")
+
+            if exercise.instructions && exercise.instructions.length
+              h4 Instructions:
+              ul
+                each step in exercise.instructions
+                  li= step
+
+      button(type="submit") Create Workout Plan
+
+      p.form-message#formMessage
+  
+  block scripts
+    script(src='/js/createWorkoutPlan.js')
