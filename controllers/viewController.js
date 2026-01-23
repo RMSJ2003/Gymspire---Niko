@@ -94,3 +94,18 @@ exports.editProfile = catchAsync(async (req, res, next) => {
     currentUser: req.user,
   });
 });
+
+exports.createWorkoutPlan = catchAsync(async (req, res, next) => {
+    res.status(200).render("createWorkoutPlan", {
+    title: "Create Workout Plan",
+    currentUser: req.user,
+  });
+});
+
+exports.editWorkoutPlan = catchAsync(async (req, res, next) => {
+    res.status(200).render("editWorkoutPlan", {
+    title: "Edit Workout Plan",
+    currentUser: req.user,
+  });
+});
+

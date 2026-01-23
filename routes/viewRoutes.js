@@ -89,4 +89,17 @@ router.get(
   viewController.editProfile
 );
 
+router.get(
+  "/createWorkoutPlan",
+  authController.protect,
+  viewController.createWorkoutPlan
+);
+
+router.get(
+  "/editWorkoutPlan",
+  authController.protect,
+  viewController.editWorkoutPlan
+);
+
+
 module.exports = router;
