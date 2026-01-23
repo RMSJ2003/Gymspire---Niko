@@ -81,4 +81,10 @@ router.get(
   viewController.startSoloWorkout
 );
 
+router.get(
+  "/editProfile",
+  authController.protect,
+  viewController.editProfile
+);
+
 module.exports = router;

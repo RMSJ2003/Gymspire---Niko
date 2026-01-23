@@ -1,37 +1,42 @@
 extends base
 
 block content
-    if !hideNavbar
-        include _navbar
+	if !hideNavbar
+		include _navbar
 
+	h1 #{title} 
 
-    //- "novalidate" disables browser auto-submit
-    //- We use AJAX for submit
-    form(id='signupForm' novalidate) 
-        // 🔥 Global message area
-        p.form-message#formMessage
+	//- "novalidate" disables browser auto-submit
+	//- We use AJAX for submit
+	form(id='signupForm' enctype="multipart/form-data" novalidate)
 
-        label(for='email') Email
-        input(type='email' name='email' id='email' required)
-        small.form-error#emailError
+		p.form-message#formMessage
 
-        label(for='username') Username
-        input(type='text' name='username' id='username' required)
+		label(for='email') Email
+		input(type='email' name='email' id='email' required)
+		small.form-error#emailError
 
-        label(for='pfpUrl') Profile Picture URL
-        input(type='text' name='pfpUrl' id='pfpUrl' required)
+		label(for='username') Username
+		input(type='text' name='username' id='username' required)
 
-        label(for='password') Password
-        input(type='password' name='password' id='password' required)
-        small.form-error#passwordError
+		// PROFILE PHOTO UPLOAD
+		//- * means 
+		//- name must match "pfp" in multer (userController)
+		label(for='pfp') Profile Picture
+		input(type='file' name='pfp' id='pfp' accept='image/*')
+		small.form-error#pfpError
 
-        label(for='passwordConfirm') Confirm Password
-        input(type='password' name='passwordConfirm' id='passwordConfirm' required)
-        small.form-error#passwordConfirmError
+		label(for='password') Password
+		input(type='password' name='password' id='password' required)
+		small.form-error#passwordError
 
-        button(type='submit' id='submitBtn')
-            span.btn-text Create Account
+		label(for='passwordConfirm') Confirm Password
+		input(type='password' name='passwordConfirm' id='passwordConfirm' required)
+		small.form-error#passwordConfirmError
 
-    block scripts
-            script(src='/js/signup.js')
+		button(type='submit' id='submitBtn')
+			span.btn-text Create Account
+
+	block scripts
+		script(src='/js/signup.js')
 

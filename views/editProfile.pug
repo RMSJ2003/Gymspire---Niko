@@ -1,0 +1,13 @@
+extends base
+
+block content
+  h1 #{title} 
+
+  form(id="photoForm" enctype="multipart/form-data")
+    //- enctype="multipart/form-data" 
+    //- name="pfp" MUST match multer (in userController Image START AND END)
+    input(type="file" name="pfp" id="pfp" accept="image/*" required)
+    button(type="submit") Upload Profile Picture
+
+  block scripts 
+    script(src='/js/editProfile.js')

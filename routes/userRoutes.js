@@ -15,6 +15,12 @@ router.delete("/deleteMe", userController.deleteMe);
 
 router.route("/").get(userController.getAllUsers);
 
+router.patch(
+  '/updateMyPhoto',
+  userController.uploadUserPhoto,
+  userController.updateProfilePhoto
+);
+
 router
   .route("/:id")
   .get(userController.getUser)

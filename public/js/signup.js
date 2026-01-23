@@ -2,13 +2,12 @@ const form = document.querySelector("#signupForm");
 const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#password");
 const passwordConfirmInput = document.querySelector("#passwordConfirm");
+const pfpInput = document.querySelector("#pfp");
 
 const emailError = document.querySelector("#emailError");
 const passwordError = document.querySelector("#passwordError");
 const passwordConfirmError = document.querySelector("#passwordConfirmError");
-const formMessage = document.querySelector("#formMessage") || {
-  textContent: "",
-};
+const formMessage = document.querySelector("#formMessage") || { textContent: "" };
 
 const submitBtn = document.querySelector("#submitBtn");
 const btnText = submitBtn.querySelector(".btn-text");
@@ -50,7 +49,7 @@ passwordInput.addEventListener("input", validatePasswords);
 passwordConfirmInput.addEventListener("input", validatePasswords);
 
 // ===============================
-// Submit behavior
+// Submit behavior (WITH IMAGE UPLOAD 🔥)
 // ===============================
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -72,19 +71,24 @@ form.addEventListener("submit", async (e) => {
   submitBtn.disabled = true;
   btnText.textContent = "Creating account...";
 
-  let success = false; // 🔥 FLAG
+  let success = false;
 
   try {
+    // 🔥 BUILD FORMDATA (TEXT + FILE)
+    const formData = new FormData();
+    formData.append("email", emailInput.value);
+    formData.append("username", document.querySelector("#username").value);
+    formData.append("password", passwordInput.value);
+    formData.append("passwordConfirm", passwordConfirmInput.value);
+
+    // 🔥 Add profile photo if selected
+    if (pfpInput.files[0]) {
+      formData.append("pfp", pfpInput.files[0]);
+    }
+
     const res = await fetch("/api/v1/auth/signup", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: emailInput.value,
-        username: document.querySelector("#username").value,
-        password: passwordInput.value,
-        passwordConfirm: passwordConfirmInput.value,
-        pfpUrl: document.querySelector("#pfpUrl").value,
-      }),
+      body: formData,    // 🔥 NO HEADERS — browser sets multipart
     });
 
     const data = await res.json();
@@ -102,6 +106,7 @@ form.addEventListener("submit", async (e) => {
     setTimeout(() => {
       window.location.href = data.redirectTo || "/dashboard";
     }, 800);
+
   } catch (err) {
     const message = err.message || "Signup failed";
 

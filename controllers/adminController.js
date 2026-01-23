@@ -49,11 +49,10 @@ exports.getGymUsageByHour = catchAsync(async (req, res, next) => {
 
 exports.getGymspireNowStatus = catchAsync(async (req, res, next) => {
   // ================================
-  // STEP 1: Get current UTC time
+  // STEP 1: Get current  time
   // ================================
   const now = new Date();
-  const currentHour = now.getUTCHours();
-  const currentHourLocal = now.getHours();
+  const currentHour = now.getHours();
 
   // ================================
   // STEP 2: Enforce gym operating hours
@@ -64,10 +63,11 @@ exports.getGymspireNowStatus = catchAsync(async (req, res, next) => {
   if (currentHour < openHour || currentHour >= closeHour) {
     res.locals.currentHour = currentHour;
     res.locals.currentLoad = 0;
-    res.locals.crowdLevel = crowdLevel;
+    // res.locals.crowdLevel = 'none';
     res.locals.recommended = false;
-    res.locals.message = 'Not recommended to workout now. Gym is currently closed.';
-    
+    res.locals.message =
+      "Not recommended to workout now. Gym is currently closed.";
+
     return next();
   }
 
@@ -77,7 +77,6 @@ exports.getGymspireNowStatus = catchAsync(async (req, res, next) => {
   const endTime = new Date(now);
   const startTime = new Date(now.getTime() - 2 * 60 * 60 * 1000);
 
-  console.log("NOW UTC:", now.toISOString());
   console.log("WINDOW START:", startTime.toISOString());
   console.log("WINDOW END:", endTime.toISOString());
 
@@ -115,7 +114,7 @@ exports.getGymspireNowStatus = catchAsync(async (req, res, next) => {
     message = "Not recommended to workout now due to high gym activity.";
   }
 
-  res.locals.currentHour = currentHourLocal;
+  res.locals.currentHour = currentHour;
   res.locals.currentLoad = workoutCount;
   res.locals.crowdLevel = crowdLevel;
   res.locals.recommended = recommended;
@@ -125,7 +124,6 @@ exports.getGymspireNowStatus = catchAsync(async (req, res, next) => {
 
   // 6) Proceed to next middleware
   next();
-
 });
 
 /* Old

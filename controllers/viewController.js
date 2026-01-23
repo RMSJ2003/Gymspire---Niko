@@ -79,3 +79,9 @@ exports.startSoloWorkout = catchAsync(async (req, res, next) => {
     title: "Start Solo Workout",
   });
 });
+
+exports.editProfile = catchAsync(async (req, res, next) => {
+  res.status(200).render("editProfile", {
+    title: "Edit Profile",
+  });
+});

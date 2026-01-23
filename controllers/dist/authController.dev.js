@@ -57,45 +57,49 @@ var createSendToken = function createSendToken(user, statusCode, res) {
   });
 };
 
-exports.signup = catchAsync(function _callee(req, res, next) {
-  var _req$body, email, username, password, passwordConfirm, pfpUrl, newUser;
+var fs = require("fs");
 
+var path = require("path");
+
+exports.signup = catchAsync(function _callee(req, res, next) {
+  var newUser, ext, filename, filePath;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          _req$body = req.body, email = _req$body.email, username = _req$body.username, password = _req$body.password, passwordConfirm = _req$body.passwordConfirm, pfpUrl = _req$body.pfpUrl; // 🔐 Email rule
-
-          if (!(!email.endsWith("@iacademy.ph") && !email.endsWith("@iacademy.edu.ph"))) {
-            _context.next = 3;
-            break;
-          }
-
-          return _context.abrupt("return", next(new AppError("Users and admins must use an iACADEMY email address.", 400)));
-
-        case 3:
-          if (isStrongPassword(password)) {
-            _context.next = 5;
-            break;
-          }
-
-          return _context.abrupt("return", next(new AppError("Password must be at least 8 characters long and contain at least one letter and one number.", 400)));
-
-        case 5:
-          _context.next = 7;
+          _context.next = 2;
           return regeneratorRuntime.awrap(User.create({
-            email: email,
-            username: username,
-            password: password,
-            passwordConfirm: passwordConfirm,
-            pfpUrl: pfpUrl
+            email: req.body.email,
+            username: req.body.username,
+            password: req.body.password,
+            passwordConfirm: req.body.passwordConfirm
           }));
 
-        case 7:
+        case 2:
           newUser = _context.sent;
+
+          if (!req.file) {
+            _context.next = 11;
+            break;
+          }
+
+          ext = req.file.mimetype.split("/")[1];
+          filename = "user-".concat(newUser._id, ".").concat(ext);
+          filePath = path.join(__dirname, "..", "public", "img", "users", filename); // 🔥 Write file manually
+
+          fs.writeFileSync(filePath, req.file.buffer); // 3️⃣ Update user with photo URL
+
+          newUser.pfpUrl = "/img/users/".concat(filename);
+          _context.next = 11;
+          return regeneratorRuntime.awrap(newUser.save({
+            validateBeforeSave: false
+          }));
+
+        case 11:
+          // 4️⃣ Send token + login  🔥 FIXED
           createSendToken(newUser, 201, res);
 
-        case 9:
+        case 12:
         case "end":
           return _context.stop();
       }
@@ -103,13 +107,13 @@ exports.signup = catchAsync(function _callee(req, res, next) {
   });
 });
 exports.createCoach = catchAsync(function _callee2(req, res, next) {
-  var _req$body2, email, username, password, passwordConfirm, pfpUrl, newUser;
+  var _req$body, email, username, password, passwordConfirm, pfpUrl, newUser;
 
   return regeneratorRuntime.async(function _callee2$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          _req$body2 = req.body, email = _req$body2.email, username = _req$body2.username, password = _req$body2.password, passwordConfirm = _req$body2.passwordConfirm, pfpUrl = _req$body2.pfpUrl; // 1) Validate password strength (business logic)
+          _req$body = req.body, email = _req$body.email, username = _req$body.username, password = _req$body.password, passwordConfirm = _req$body.passwordConfirm, pfpUrl = _req$body.pfpUrl; // 1) Validate password strength (business logic)
 
           if (isStrongPassword(password)) {
             _context2.next = 3;
@@ -141,13 +145,13 @@ exports.createCoach = catchAsync(function _callee2(req, res, next) {
   });
 });
 exports.login = catchAsync(function _callee3(req, res, next) {
-  var _req$body3, email, password, user;
+  var _req$body2, email, password, user;
 
   return regeneratorRuntime.async(function _callee3$(_context3) {
     while (1) {
       switch (_context3.prev = _context3.next) {
         case 0:
-          _req$body3 = req.body, email = _req$body3.email, password = _req$body3.password; // 1) Checks if email and password exists
+          _req$body2 = req.body, email = _req$body2.email, password = _req$body2.password; // 1) Checks if email and password exists
 
           if (!(!email || !password)) {
             _context3.next = 3;

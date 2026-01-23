@@ -81,17 +81,16 @@ exports.getGymUsageByHour = catchAsync(function _callee2(req, res, next) {
   });
 });
 exports.getGymspireNowStatus = catchAsync(function _callee3(req, res, next) {
-  var now, currentHour, currentHourLocal, openHour, closeHour, endTime, startTime, workoutCount, crowdLevel, recommended, message;
+  var now, currentHour, openHour, closeHour, endTime, startTime, workoutCount, crowdLevel, recommended, message;
   return regeneratorRuntime.async(function _callee3$(_context3) {
     while (1) {
       switch (_context3.prev = _context3.next) {
         case 0:
           // ================================
-          // STEP 1: Get current UTC time
+          // STEP 1: Get current  time
           // ================================
           now = new Date();
-          currentHour = now.getUTCHours();
-          currentHourLocal = now.getHours(); // ================================
+          currentHour = now.getHours(); // ================================
           // STEP 2: Enforce gym operating hours
           // ================================
 
@@ -100,30 +99,29 @@ exports.getGymspireNowStatus = catchAsync(function _callee3(req, res, next) {
           closeHour = parseInt(process.env.GYM_CLOSING_HOUR); // ex: 23
 
           if (!(currentHour < openHour || currentHour >= closeHour)) {
-            _context3.next = 12;
+            _context3.next = 10;
             break;
           }
 
           res.locals.currentHour = currentHour;
-          res.locals.currentLoad = 0;
-          res.locals.crowdLevel = crowdLevel;
+          res.locals.currentLoad = 0; // res.locals.crowdLevel = 'none';
+
           res.locals.recommended = false;
-          res.locals.message = 'Not recommended to workout now. Gym is currently closed.';
+          res.locals.message = "Not recommended to workout now. Gym is currently closed.";
           return _context3.abrupt("return", next());
 
-        case 12:
+        case 10:
           // ================================
           // STEP 3: Recent activity window (last 2 hours) ⭐
           // ================================
           endTime = new Date(now);
           startTime = new Date(now.getTime() - 2 * 60 * 60 * 1000);
-          console.log("NOW UTC:", now.toISOString());
           console.log("WINDOW START:", startTime.toISOString());
           console.log("WINDOW END:", endTime.toISOString()); // ================================
           // STEP 4: Count recent workouts
           // ================================
 
-          _context3.next = 19;
+          _context3.next = 16;
           return regeneratorRuntime.awrap(WorkoutLog.countDocuments({
             date: {
               $gte: startTime,
@@ -134,7 +132,7 @@ exports.getGymspireNowStatus = catchAsync(function _callee3(req, res, next) {
             }
           }));
 
-        case 19:
+        case 16:
           workoutCount = _context3.sent;
           console.log("WORKOUT COUNT:", workoutCount); // ================================
           // STEP 5: Crowd thresholds
@@ -154,7 +152,7 @@ exports.getGymspireNowStatus = catchAsync(function _callee3(req, res, next) {
             message = "Not recommended to workout now due to high gym activity.";
           }
 
-          res.locals.currentHour = currentHourLocal;
+          res.locals.currentHour = currentHour;
           res.locals.currentLoad = workoutCount;
           res.locals.crowdLevel = crowdLevel;
           res.locals.recommended = recommended;
@@ -163,7 +161,7 @@ exports.getGymspireNowStatus = catchAsync(function _callee3(req, res, next) {
 
           next();
 
-        case 29:
+        case 26:
         case "end":
           return _context3.stop();
       }
