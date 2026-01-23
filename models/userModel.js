@@ -68,6 +68,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date, // The value of this field will change when someone change the password.
   passwordResetToken: String,
   passwordResetExpires: Date, // timer do reset the password
+  active: {
+    type: Boolean,
+    default: true, //ofc when user is created, active is set to true
+    select: false, // We set select to false cuz we don't want users to see active field
+  },
 });
 
 // START OF COMMENT FOR IMPORTING DEV DATA
@@ -96,7 +101,7 @@ userSchema.pre("save", function (next) {
 // END OF COMMENT FOR IMPORTING DEV DATA
 
 // Query middleware
-// Regular Expressino (RegEx) /^find/ means a string that starts with "find"
+// Regular Expression (RegEx) /^find/ means a string that starts with "find"
 userSchema.pre(/^find/, function (next) {
   // "this" points to the current query
   this.find({

@@ -4,6 +4,7 @@ var form = document.querySelector("#signupForm");
 var emailInput = document.querySelector("#email");
 var passwordInput = document.querySelector("#password");
 var passwordConfirmInput = document.querySelector("#passwordConfirm");
+var pfpInput = document.querySelector("#pfp");
 var emailError = document.querySelector("#emailError");
 var passwordError = document.querySelector("#passwordError");
 var passwordConfirmError = document.querySelector("#passwordConfirmError");
@@ -43,11 +44,11 @@ function validatePasswords() {
 emailInput.addEventListener("input", validateEmail);
 passwordInput.addEventListener("input", validatePasswords);
 passwordConfirmInput.addEventListener("input", validatePasswords); // ===============================
-// Submit behavior
+// Submit behavior (WITH IMAGE UPLOAD 🔥)
 // ===============================
 
 form.addEventListener("submit", function _callee(e) {
-  var success, res, data, message;
+  var success, formData, res, data, message;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -72,40 +73,42 @@ form.addEventListener("submit", function _callee(e) {
         case 10:
           submitBtn.disabled = true;
           btnText.textContent = "Creating account...";
-          success = false; // 🔥 FLAG
-
+          success = false;
           _context.prev = 13;
-          _context.next = 16;
+          // 🔥 BUILD FORMDATA (TEXT + FILE)
+          formData = new FormData();
+          formData.append("email", emailInput.value);
+          formData.append("username", document.querySelector("#username").value);
+          formData.append("password", passwordInput.value);
+          formData.append("passwordConfirm", passwordConfirmInput.value); // 🔥 Add profile photo if selected
+
+          if (pfpInput.files[0]) {
+            formData.append("pfp", pfpInput.files[0]);
+          }
+
+          _context.next = 22;
           return regeneratorRuntime.awrap(fetch("/api/v1/auth/signup", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              email: emailInput.value,
-              username: document.querySelector("#username").value,
-              password: passwordInput.value,
-              passwordConfirm: passwordConfirmInput.value,
-              pfpUrl: document.querySelector("#pfpUrl").value
-            })
+            body: formData // 🔥 NO HEADERS — browser sets multipart
+
           }));
 
-        case 16:
+        case 22:
           res = _context.sent;
-          _context.next = 19;
+          _context.next = 25;
           return regeneratorRuntime.awrap(res.json());
 
-        case 19:
+        case 25:
           data = _context.sent;
 
           if (res.ok) {
-            _context.next = 22;
+            _context.next = 28;
             break;
           }
 
           throw new Error(data.message || "Signup failed");
 
-        case 22:
+        case 28:
           // 🔥 SUCCESS UI
           success = true;
           formMessage.textContent = "Account created successfully! Redirecting...";
@@ -114,11 +117,11 @@ form.addEventListener("submit", function _callee(e) {
           setTimeout(function () {
             window.location.href = data.redirectTo || "/dashboard";
           }, 800);
-          _context.next = 32;
+          _context.next = 38;
           break;
 
-        case 28:
-          _context.prev = 28;
+        case 34:
+          _context.prev = 34;
           _context.t0 = _context["catch"](13);
           message = _context.t0.message || "Signup failed"; // 🔥 FIELD ERRORS FIRST
 
@@ -133,8 +136,8 @@ form.addEventListener("submit", function _callee(e) {
             formMessage.textContent = message;
           }
 
-        case 32:
-          _context.prev = 32;
+        case 38:
+          _context.prev = 38;
 
           // 🔥 ONLY RESET IF FAILED
           if (!success) {
@@ -142,12 +145,12 @@ form.addEventListener("submit", function _callee(e) {
             btnText.textContent = "Create Account";
           }
 
-          return _context.finish(32);
+          return _context.finish(38);
 
-        case 35:
+        case 41:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[13, 28, 32, 35]]);
+  }, null, null, [[13, 34, 38, 41]]);
 });

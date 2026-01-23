@@ -1,0 +1,30 @@
+<!DOCTYPE html >
+<html> 
+  <head> 
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Gymspire |  </title>
+    <link rel="stylesheet" href="/css/main.css"/>
+  </head>
+  <body>
+    <div class="nav"><a href="/login">Login</a><a href="/signup">Sign Up</a>
+    </div>
+    <h1> </h1>
+    <form id="signupForm" enctype="multipart/form-data" novalidate="novalidate">
+      <p class="form-message" id="formMessage"></p>
+      <label for="email">Email</label>
+      <input type="email" name="email" id="email" required="required"/><small class="form-error" id="emailError"></small>
+      <label for="username">Username</label>
+      <input type="text" name="username" id="username" required="required"/>
+      <!-- PROFILE PHOTO UPLOAD-->
+      <label for="pfp">Profile Picture</label>
+      <input type="file" name="pfp" id="pfp" accept="image/*"/><small class="form-error" id="pfpError"></small>
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" required="required"/><small class="form-error" id="passwordError"></small>
+      <label for="passwordConfirm">Confirm Password</label>
+      <input type="password" name="passwordConfirm" id="passwordConfirm" required="required"/><small class="form-error" id="passwordConfirmError"></small>
+      <button type="submit" id="submitBtn"><span class="btn-text">Create Account</span></button>
+    </form>
+    <script src="/js/signup.js"></script>
+  </body>
+</html>

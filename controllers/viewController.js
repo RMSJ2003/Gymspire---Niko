@@ -46,7 +46,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   res.status(200).render("auth/resetPassword", {
     title: "Reset Password",
     hideNavbar: true,
-    token: req.params.token
+    token: req.params.token,
   });
 });
 
@@ -57,8 +57,16 @@ exports.profile = catchAsync(async (req, res, next) => {
 });
 
 exports.workoutPlan = catchAsync(async (req, res, next) => {
+  let exercises = [];
+
+  if (req.workoutPlan && req.workoutPlan.exerciseDetails) {
+    exercises = req.workoutPlan.exerciseDetails;
+  }
+
   res.status(200).render("workoutPlan", {
     title: "Workout Plan",
+    exercises,
+    hasPlan: !!req.workoutPlan,
   });
 });
 
@@ -77,5 +85,12 @@ exports.workoutLogs = catchAsync(async (req, res, next) => {
 exports.startSoloWorkout = catchAsync(async (req, res, next) => {
   res.status(200).render("startSoloWorkout", {
     title: "Start Solo Workout",
+  });
+});
+
+exports.editProfile = catchAsync(async (req, res, next) => {
+  res.status(200).render("editProfile", {
+    title: "Edit Profile",
+    currentUser: req.user,
   });
 });

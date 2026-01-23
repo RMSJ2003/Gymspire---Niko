@@ -55,34 +55,41 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
+const fs = require("fs");
+const path = require("path");
+
 exports.signup = catchAsync(async (req, res, next) => {
-  const { email, username, password, passwordConfirm, pfpUrl } = req.body;
-
-  // 🔐 Email rule
-  if (!email.endsWith("@iacademy.ph") && !email.endsWith("@iacademy.edu.ph")) {
-    return next(
-      new AppError("Users and admins must use an iACADEMY email address.", 400)
-    );
-  }
-
-  // 🔐 Password strength
-  if (!isStrongPassword(password)) {
-    return next(
-      new AppError(
-        "Password must be at least 8 characters long and contain at least one letter and one number.",
-        400
-      )
-    );
-  }
-
+  // 1️⃣ Create user FIRST (no photo yet)
   const newUser = await User.create({
-    email,
-    username,
-    password,
-    passwordConfirm,
-    pfpUrl,
+    email: req.body.email,
+    username: req.body.username,
+    password: req.body.password,
+    passwordConfirm: req.body.passwordConfirm,
   });
 
+  // 2️⃣ If user uploaded a photo, save it using USER ID 🔥
+  if (req.file) {
+    const ext = req.file.mimetype.split("/")[1];
+    const filename = `user-${newUser._id}.${ext}`;
+
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "public",
+      "img",
+      "users",
+      filename
+    );
+
+    // 🔥 Write file manually
+    fs.writeFileSync(filePath, req.file.buffer);
+
+    // 3️⃣ Update user with photo URL
+    newUser.pfpUrl = `/img/users/${filename}`;
+    await newUser.save({ validateBeforeSave: false });
+  }
+
+  // 4️⃣ Send token + login  🔥 FIXED
   createSendToken(newUser, 201, res);
 });
 

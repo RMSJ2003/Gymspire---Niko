@@ -1,6 +1,26 @@
 extends base
 
 block content
+	h1 #{title}
 
-	h1 Workout Plan
+	h2 #{user.username}
 
+	if !hasPlan
+		p(style="color:red; font-weight:bold") You do not have a workout plan yet. Please create one first.
+
+	if exercises.length === 0
+		p No exercises in your workout plan yet.
+	else
+		each exercise in exercises
+			.exercise-card
+				h3= exercise.name
+				p Target: #{exercise.target}
+
+				if exercise.gifURL
+					img(src=exercise.gifURL, alt=exercise.name, width="200")
+
+				if exercise.instructions.length
+					h4 Instructions:
+					ul
+						each step in exercise.instructions
+							li= step

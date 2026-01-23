@@ -1,7 +1,42 @@
+const fs = require("fs");
+const path = require("path");
+
+const multer = require("multer");
 const User = require("../models/userModel");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const factory = require("./handlerFactory");
+
+// Image (Multer) - START
+
+// This phase:
+// - File is in req.file.buffer
+// - NOT saved yet
+// - We control filename ourselves
+const multerStorage = multer.memoryStorage();
+
+// Allow only images
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Please upload an image file", 400), false);
+  }
+};
+
+// Final upload middleware
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 🔥 5 MB limit
+  },
+});
+
+// This means: Input name must be pfp, File is available as req.file
+exports.uploadUserPhoto = upload.single("pfp");
+
+// Image - END
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -20,7 +55,7 @@ exports.getMe = (req, res, next) => {
 };
 
 exports.updateMe = catchAsync(async (req, res, next) => {
-  // 1) Create error if user POSTS password data
+  // 1) Block password updates
   if (req.body.password || req.body.passwordConfirm)
     return next(
       new AppError(
@@ -29,13 +64,34 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       )
     );
 
-  // 2) Update user document
-  // Only take the the specified property strings. Filter out other fields.
-  // So users can only change their email username and pfpUrl using the updateMe route
-  const filteredBody = filterObj(req.body, "email", "username", "pfpUrl");
+  const updates = {};
 
-  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
-    new: true, // Setting this to new will make this function return the updated object instead of the old one.
+  // Username update
+  if (req.body.username) {
+    updates.username = req.body.username;
+  }
+
+  // Photo update
+  if (req.file) {
+    const ext = req.file.mimetype.split("/")[1];
+    const filename = `user-${req.user._id}.${ext}`;
+
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "public",
+      "img",
+      "users",
+      filename
+    );
+
+    fs.writeFileSync(filePath, req.file.buffer);
+
+    updates.pfpUrl = `/img/users/${filename}`;
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, updates, {
+    new: true,
     runValidators: true,
   });
 
@@ -71,8 +127,41 @@ exports.updateUserRole = catchAsync(async (req, res, next) => {
   );
 
   res.status(200).json({
-    status: 'success',
-    data: user
+    status: "success",
+    data: user,
+  });
+});
+
+exports.updateProfilePhoto = catchAsync(async (req, res, next) => {
+  if (!req.file) return next(new AppError("Please upload a file", 400));
+
+  const ext = req.file.mimetype.split("/")[1];
+  const filename = `user-${req.user._id}.${ext}`;
+
+  const filePath = path.join(
+    __dirname,
+    "..",
+    "public",
+    "img",
+    "users",
+    filename
+  );
+
+  fs.writeFileSync(filePath, req.file.buffer);
+
+  const photoUrl = `/img/users/${filename}`;
+
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    { pfpUrl: photoUrl },
+    { new: true, runValidators: true }
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      user: updatedUser,
+    },
   });
 });
 

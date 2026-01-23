@@ -1,12 +1,45 @@
 "use strict";
 
+var fs = require("fs");
+
+var path = require("path");
+
+var multer = require("multer");
+
 var User = require("../models/userModel");
 
 var AppError = require("../utils/appError");
 
 var catchAsync = require("../utils/catchAsync");
 
-var factory = require("./handlerFactory");
+var factory = require("./handlerFactory"); // Image (Multer) - START
+// This phase:
+// - File is in req.file.buffer
+// - NOT saved yet
+// - We control filename ourselves
+
+
+var multerStorage = multer.memoryStorage(); // Allow only images
+
+var multerFilter = function multerFilter(req, file, cb) {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Please upload an image file", 400), false);
+  }
+}; // Final upload middleware
+
+
+var upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 🔥 5 MB limit
+
+  }
+}); // This means: Input name must be pfp, File is available as req.file
+
+exports.uploadUserPhoto = upload.single("pfp"); // Image - END
 
 var filterObj = function filterObj(obj) {
   for (var _len = arguments.length, allowedFields = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -28,7 +61,7 @@ exports.getMe = function (req, res, next) {
 };
 
 exports.updateMe = catchAsync(function _callee(req, res, next) {
-  var filteredBody, updatedUser;
+  var updates, ext, filename, filePath, updatedUser;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -41,18 +74,28 @@ exports.updateMe = catchAsync(function _callee(req, res, next) {
           return _context.abrupt("return", next(new AppError("This route is not for password updates. Please use /updateMyPassword", 400)));
 
         case 2:
-          // 2) Update user document
-          // Only take the the specified property strings. Filter out other fields.
-          // So users can only change their email username and pfpUrl using the updateMe route
-          filteredBody = filterObj(req.body, "email", "username", "pfpUrl");
-          _context.next = 5;
-          return regeneratorRuntime.awrap(User.findByIdAndUpdate(req.user.id, filteredBody, {
+          updates = {}; // Username update
+
+          if (req.body.username) {
+            updates.username = req.body.username;
+          } // Photo update
+
+
+          if (req.file) {
+            ext = req.file.mimetype.split("/")[1];
+            filename = "user-".concat(req.user._id, ".").concat(ext);
+            filePath = path.join(__dirname, "..", "public", "img", "users", filename);
+            fs.writeFileSync(filePath, req.file.buffer);
+            updates.pfpUrl = "/img/users/".concat(filename);
+          }
+
+          _context.next = 7;
+          return regeneratorRuntime.awrap(User.findByIdAndUpdate(req.user.id, updates, {
             "new": true,
-            // Setting this to new will make this function return the updated object instead of the old one.
             runValidators: true
           }));
 
-        case 5:
+        case 7:
           updatedUser = _context.sent;
           res.status(200).json({
             status: "success",
@@ -61,7 +104,7 @@ exports.updateMe = catchAsync(function _callee(req, res, next) {
             }
           });
 
-        case 7:
+        case 9:
         case "end":
           return _context.stop();
       }
@@ -118,13 +161,56 @@ exports.updateUserRole = catchAsync(function _callee3(req, res, next) {
         case 5:
           user = _context3.sent;
           res.status(200).json({
-            status: 'success',
+            status: "success",
             data: user
           });
 
         case 7:
         case "end":
           return _context3.stop();
+      }
+    }
+  });
+});
+exports.updateProfilePhoto = catchAsync(function _callee4(req, res, next) {
+  var ext, filename, filePath, photoUrl, updatedUser;
+  return regeneratorRuntime.async(function _callee4$(_context4) {
+    while (1) {
+      switch (_context4.prev = _context4.next) {
+        case 0:
+          if (req.file) {
+            _context4.next = 2;
+            break;
+          }
+
+          return _context4.abrupt("return", next(new AppError("Please upload a file", 400)));
+
+        case 2:
+          ext = req.file.mimetype.split("/")[1];
+          filename = "user-".concat(req.user._id, ".").concat(ext);
+          filePath = path.join(__dirname, "..", "public", "img", "users", filename);
+          fs.writeFileSync(filePath, req.file.buffer);
+          photoUrl = "/img/users/".concat(filename);
+          _context4.next = 9;
+          return regeneratorRuntime.awrap(User.findByIdAndUpdate(req.user._id, {
+            pfpUrl: photoUrl
+          }, {
+            "new": true,
+            runValidators: true
+          }));
+
+        case 9:
+          updatedUser = _context4.sent;
+          res.status(200).json({
+            status: "success",
+            data: {
+              user: updatedUser
+            }
+          });
+
+        case 11:
+        case "end":
+          return _context4.stop();
       }
     }
   });

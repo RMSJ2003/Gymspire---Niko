@@ -2,6 +2,7 @@ const express = require("express");
 const viewController = require("../controllers/viewController");
 const authController = require("../controllers/authController");
 const adminController = require('../controllers/adminController');
+const workoutPlanController = require('../controllers/workoutPlanController');
 
 const router = express.Router();
 
@@ -60,6 +61,7 @@ router.get(
 router.get(
   "/workoutPlan",
   authController.protect,
+  workoutPlanController.acquireMyWorkoutPlan,
   viewController.workoutPlan
 );
 
@@ -79,6 +81,12 @@ router.get(
   "/startSoloWorkout",
   authController.protect,
   viewController.startSoloWorkout
+);
+
+router.get(
+  "/editProfile",
+  authController.protect,
+  viewController.editProfile
 );
 
 module.exports = router;
