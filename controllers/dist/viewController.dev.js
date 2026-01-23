@@ -208,7 +208,8 @@ exports.editProfile = catchAsync(function _callee13(req, res, next) {
       switch (_context13.prev = _context13.next) {
         case 0:
           res.status(200).render("editProfile", {
-            title: "Edit Profile"
+            title: "Edit Profile",
+            currentUser: req.user
           });
 
         case 1:

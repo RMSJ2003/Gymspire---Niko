@@ -55,7 +55,7 @@ exports.getMe = (req, res, next) => {
 };
 
 exports.updateMe = catchAsync(async (req, res, next) => {
-  // 1) Create error if user POSTS password data
+  // 1) Block password updates
   if (req.body.password || req.body.passwordConfirm)
     return next(
       new AppError(
@@ -64,13 +64,34 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       )
     );
 
-  // 2) Update user document
-  // Only take the the specified property strings. Filter out other fields.
-  // So users can only change their email username and pfpUrl using the updateMe route
-  const filteredBody = filterObj(req.body, "email", "username", "pfpUrl");
+  const updates = {};
 
-  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
-    new: true, // Setting this to new will make this function return the updated object instead of the old one.
+  // Username update
+  if (req.body.username) {
+    updates.username = req.body.username;
+  }
+
+  // Photo update
+  if (req.file) {
+    const ext = req.file.mimetype.split("/")[1];
+    const filename = `user-${req.user._id}.${ext}`;
+
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "public",
+      "img",
+      "users",
+      filename
+    );
+
+    fs.writeFileSync(filePath, req.file.buffer);
+
+    updates.pfpUrl = `/img/users/${filename}`;
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, updates, {
+    new: true,
     runValidators: true,
   });
 

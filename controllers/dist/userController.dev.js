@@ -61,7 +61,7 @@ exports.getMe = function (req, res, next) {
 };
 
 exports.updateMe = catchAsync(function _callee(req, res, next) {
-  var filteredBody, updatedUser;
+  var updates, ext, filename, filePath, updatedUser;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -74,18 +74,28 @@ exports.updateMe = catchAsync(function _callee(req, res, next) {
           return _context.abrupt("return", next(new AppError("This route is not for password updates. Please use /updateMyPassword", 400)));
 
         case 2:
-          // 2) Update user document
-          // Only take the the specified property strings. Filter out other fields.
-          // So users can only change their email username and pfpUrl using the updateMe route
-          filteredBody = filterObj(req.body, "email", "username", "pfpUrl");
-          _context.next = 5;
-          return regeneratorRuntime.awrap(User.findByIdAndUpdate(req.user.id, filteredBody, {
+          updates = {}; // Username update
+
+          if (req.body.username) {
+            updates.username = req.body.username;
+          } // Photo update
+
+
+          if (req.file) {
+            ext = req.file.mimetype.split("/")[1];
+            filename = "user-".concat(req.user._id, ".").concat(ext);
+            filePath = path.join(__dirname, "..", "public", "img", "users", filename);
+            fs.writeFileSync(filePath, req.file.buffer);
+            updates.pfpUrl = "/img/users/".concat(filename);
+          }
+
+          _context.next = 7;
+          return regeneratorRuntime.awrap(User.findByIdAndUpdate(req.user.id, updates, {
             "new": true,
-            // Setting this to new will make this function return the updated object instead of the old one.
             runValidators: true
           }));
 
-        case 5:
+        case 7:
           updatedUser = _context.sent;
           res.status(200).json({
             status: "success",
@@ -94,7 +104,7 @@ exports.updateMe = catchAsync(function _callee(req, res, next) {
             }
           });
 
-        case 7:
+        case 9:
         case "end":
           return _context.stop();
       }

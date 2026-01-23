@@ -1,37 +1,34 @@
-const photoForm = document.getElementById("photoForm");
-if (photoForm) {
-  photoForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+const form = document.querySelector("#editProfileForm");
+const formMessage = document.querySelector("#formMessage");
 
-    const fileInput = document.getElementById("pfp");
+form.addEventListener("submit", async (e) => {
+  e.preventDefault(); // this already STOPS normal submit, no return needed
 
-    if (!fileInput || !fileInput.files[0]) {
-      alert("Please select an image");
-      return;
-    }
+  const formData = new FormData(form);
 
-    const formData = new FormData();
-    formData.append("pfp", fileInput.files[0]);
+  // Check if user changed anything
+  const username = formData.get("username");
+  const file = formData.get("pfp");
 
-    try {
-      const res = await fetch("/api/v1/users/updateMyPhoto", {
-        method: "PATCH",
-        body: formData,
-        credentials: "include",
-      });
+  if (!username && (!file || file.size === 0)) {
+    formMessage.textContent = "Nothing to update";
+    return;
+  }
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Upload failed");
-      }
-
-      alert("Profile picture updated!");
-      window.location.reload();
-
-    } catch (err) {
-      console.error(err);
-      alert(err.message || "Something went wrong");
-    }
+  const res = await fetch("/api/v1/users/updateMe", {
+    method: "PATCH",
+    body: formData,
   });
-}
+
+  const data = await res.json();
+
+  if (data.status === "success") {
+    formMessage.textContent = "Profile updated successfully";
+
+    setTimeout(() => {
+      location.reload();
+    }, 700);
+  } else {
+    formMessage.textContent = data.message || "Update failed";
+  }
+});

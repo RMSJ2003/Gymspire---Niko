@@ -3,11 +3,29 @@ extends base
 block content
   h1 #{title} 
 
-  form(id="photoForm" enctype="multipart/form-data")
-    //- enctype="multipart/form-data" 
-    //- name="pfp" MUST match multer (in userController Image START AND END)
-    input(type="file" name="pfp" id="pfp" accept="image/*" required)
-    button(type="submit") Upload Profile Picture
+  a(href='/dashboard') Dashboard
+
+
+  //- form(id="photoForm" enctype="multipart/form-data")
+  //-   //- enctype="multipart/form-data" 
+  //-   //- name="pfp" MUST match multer (in userController Image START AND END)
+  //-   input(type="file" name="pfp" id="pfp" accept="image/*" required)
+  //-   button(type="submit") Upload Profile Picture
+
+  form(id='editProfileForm' enctype="multipart/form-data")
+    p.form-message#formMessage
+
+    label(for='username') Username 
+    input(
+      type='text'
+      name='username'
+      id="username"
+      value=currentUser.username
+    )
+
+    input(type="file" name="pfp" id="pfp" accept="image/*")
+
+    button(type="submit") Save Changes
 
   block scripts 
     script(src='/js/editProfile.js')
