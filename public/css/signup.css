@@ -1,21 +1,16 @@
-/* =====================
-   SIGN UP PAGE
-===================== */
-
 /* Center page content */
 body {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #0b0f1a;
+  background: #0d265c;
   font-family: Arial, sans-serif;
 }
-
 /* Page title */
-h1 {
+h2 {
   text-align: center;
-  color: #22c55e;
+  color: #ececec;
   margin: 24px 0;
 }
 
@@ -23,18 +18,18 @@ h1 {
 #signupForm {
   width: 100%;
   max-width: 420px;
-  background: #354487;
+  background: #020617;
   padding: 32px;
   border-radius: 12px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+  box-sizing: border-box;
 }
 
 /* Labels */
 #signupForm label {
   display: block;
-  margin-top: 12px;
+  margin-top: 10px;
   color: #cbd5f5;
-  font-weight: 500;
 }
 
 /* Inputs */
@@ -44,14 +39,15 @@ h1 {
   margin-top: 4px;
   border-radius: 6px;
   border: 1px solid #334155;
-  background: #0f172a;
-  color: #fff;
+  background-color: whitesmoke;
+  color: #020617;
+  box-sizing: border-box;
 }
 
-#signupForm input:focus {
+/* #signupForm input:focus {
   outline: none;
-  border-color: #22c55e;
-}
+  border-color: #8ec4ff;
+} */
 
 /* Form error messages */
 .form-error {
@@ -68,9 +64,9 @@ h1 {
   margin-top: 20px;
   border: none;
   border-radius: 8px;
-  background: #22c55e;
+  background: whitesmoke;
   font-weight: bold;
-  color: #fff;
+  color: #020617;
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -80,7 +76,8 @@ h1 {
 }
 
 #submitBtn:hover {
-  background: #16a34a;
+  background: #0d265c;
+  color: whitesmoke;
 }
 
 /* Spinner inside button */

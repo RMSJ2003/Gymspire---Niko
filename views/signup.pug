@@ -9,8 +9,11 @@ block content
 
     //- "novalidate" disables browser auto-submit
     //- We use AJAX for submit
-    form(id='signupForm' novalidate) 
-        h1 Sign Up 
+    //-for picture upload
+    form(id='signupForm' novalidate enctype='multipart/form-data')
+    
+    
+        h2 Sign Up 
         // 🔥 Global message area
         p.form-message#formMessage
 
@@ -21,8 +24,9 @@ block content
         label(for='username') Username
         input(type='text' name='username' id='username' required)
 
-        label(for='pfpUrl') Profile Picture URL
-        input(type='text' name='pfpUrl' id='pfpUrl' required)
+        label(for='pfpUrl') Profile Picture
+        input(type='file' name='pfpUrl' id='pfpUrl' accept='image/*')
+        small.form-hint JPG, PNG only * MAX 2MB
 
         label(for='password') Password
         input(type='password' name='password' id='password' required)
