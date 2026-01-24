@@ -1,0 +1,13 @@
+extends base
+
+block content
+  h1 #{title}
+
+  h2 #{user.username}
+
+  if user.pfpUrl
+    img(src=user.pfpUrl alt="Profile Picture" width="150")
+  else
+    img(src="/img/default-user.png" alt="Default Profile" width="150")
+
+  a(href="/dashboard") Dashboard

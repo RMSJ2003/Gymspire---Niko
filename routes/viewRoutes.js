@@ -4,6 +4,7 @@ const authController = require("../controllers/authController");
 const adminController = require("../controllers/adminController");
 const workoutPlanController = require("../controllers/workoutPlanController");
 const exerciseController = require("../controllers/exerciseController");
+const requireWorkoutPlan = require("../middlewares/requireWorkoutPlan");
 
 const router = express.Router();
 
@@ -84,6 +85,8 @@ router.get(
 router.get(
   "/editWorkoutPlan",
   authController.protect,
+  requireWorkoutPlan,
+  exerciseController.getAllExercises,
   viewController.editWorkoutPlan,
 );
 
