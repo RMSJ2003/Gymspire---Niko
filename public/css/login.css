@@ -1,4 +1,8 @@
-/* Center page content */
+/* Reset & base */
+* {
+  box-sizing: border-box;
+}
+
 body {
   display: flex;
   justify-content: center;
@@ -6,15 +10,17 @@ body {
   min-height: 100vh;
   background: #0d265c;
   font-family: Arial, sans-serif;
+  padding: 16px;
 }
-/* Page title */
+
+/* Title */
 h2 {
   text-align: center;
   color: #ececec;
-  margin: 24px 0;
+  margin-bottom: 24px;
 }
 
-/* Login form container */
+/* Form container */
 #loginForm {
   width: 100%;
   max-width: 420px;
@@ -22,63 +28,71 @@ h2 {
   padding: 32px;
   border-radius: 12px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
-  box-sizing: border-box;
 }
 
 /* Labels */
 #loginForm label {
   display: block;
-  margin-top: 10px;
+  margin-top: 12px;
+  font-size: 0.9rem;
   color: #cbd5f5;
 }
 
 /* Inputs */
 #loginForm input {
   width: 100%;
-  padding: 10px;
-  margin-top: 4px;
+  padding: 12px;
+  margin-top: 6px;
   border-radius: 6px;
   border: 1px solid #334155;
   background-color: whitesmoke;
   color: #020617;
-  box-sizing: border-box;
+  font-size: 1rem;
 }
 
-/* Form error messages */
+/* Error text */
 .form-error {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #f87171;
   min-height: 16px;
 }
 
-/* Forgot password link */
+/* Forgot password */
 #loginForm a[href="/forgotPassword"] {
   display: block;
   text-align: right;
-  margin: 10px 0 20px;
+  margin: 12px 0 20px;
   font-size: 0.85rem;
   color: #94a3b8;
+  text-decoration: none;
 }
 
 #loginForm a[href="/forgotPassword"]:hover {
   color: whitesmoke;
 }
 
-/* Submit button */
-#loginBtn {
+/* Buttons */
+#loginBtn,
+#signupBtn {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   margin-top: 12px;
-  border: none;
   border-radius: 8px;
-  background: whitesmoke;
+  font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+}
+
+/* Login button */
+#loginBtn {
+  border: none;
+  background: whitesmoke;
+  color: #020617;
 }
 
 #loginBtn:hover {
@@ -86,29 +100,18 @@ h2 {
   color: whitesmoke;
 }
 
-/* Submit button */
+/* Signup button (secondary) */
 #signupBtn {
-  width: 100%;
-  padding: 12px;
-  margin-top: 12px;
-  border: none;
-  border-radius: 8px;
-  background: whitesmoke;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  transition: background 0.2s;
+  background: transparent;
+  border: 1px solid #94a3b8;
+  color: whitesmoke;
 }
 
 #signupBtn:hover {
   background: #0d265c;
-  color: whitesmoke;
 }
 
-/* Spinner inside button */
+/* Spinner */
 .spinner {
   font-size: 0.85rem;
 }
@@ -117,10 +120,10 @@ h2 {
   display: none;
 }
 
-/* Form message (global error/success) */
+/* Global message */
 .form-message {
   text-align: center;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   font-size: 0.9rem;
 }
 
@@ -130,4 +133,33 @@ h2 {
 
 .form-message.success {
   color: #22c55e;
+}
+
+/* ========================= */
+/* 📱 MOBILE (Phones) */
+/* ========================= */
+@media (max-width: 480px) {
+  body {
+    justify-content: center;
+    align-items: center; /* ✅ keep centered */
+  }
+
+  #loginForm {
+    width: 100%;
+    max-width: 360px;
+    padding: 22px 18px;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+}
+
+/* ========================= */
+/* 📱 TABLET */
+/* ========================= */
+@media (max-width: 768px) {
+  #loginForm {
+    max-width: 360px;
+  }
 }
