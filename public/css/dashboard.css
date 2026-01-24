@@ -32,7 +32,11 @@ body {
 .nav-logo {
   flex: 1;
 }
-
+.nav-logo img {
+  height: 50px; /* set the height of your logo */
+  width: auto; /* keep aspect ratio */
+  display: block; /* removes any inline gaps */
+}
 /* LINKS – CENTER */
 .nav-center {
   flex: 2;
@@ -70,7 +74,7 @@ body {
 /* Hover */
 .nav-center a:hover::before {
   box-shadow: inset 0 -2px 0 #22c55e;
-  background: url(/css/Kizaru.webp);
+  /* background: url(/css/Kizaru.webp); */
 }
 
 /* Hover text links */
@@ -167,6 +171,59 @@ span {
   object-fit: cover; /* fills the container, cropping if needed */
   display: block;
 }
+
+/* =========================
+   1st grid
+========================= */
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 400px; /* fixed height */
+  margin: 40px 0; /* optional spacing */
+}
+
+.image {
+  width: 100%;
+  height: 100%; /* MUST fill parent container */
+  overflow: hidden; /* crop any overflow */
+  display: block;
+}
+
+.image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Reverse container */
+.container.reverse {
+  direction: rtl;
+}
+
+.container.reverse .text {
+  direction: ltr; /* keep text readable */
+}
+
+/* Text styling */
+.text {
+  padding: 32px;
+  display: flex;
+  align-items: center; /* vertical center */
+}
+
+/* =========================
+  2nd grid
+========================= */
+
+.container.reverse {
+  direction: rtl;
+}
+
+.container.reverse .text {
+  direction: ltr; /* keeps text normal */
+}
+
 /* =========================
    RESPONSIVE
 ========================= */
