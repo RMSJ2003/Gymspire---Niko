@@ -1,9 +1,26 @@
 extends base
 
+block styles
+	link(rel="stylesheet" href="/css/dashboard.css")
 block content
-	include _navbar
-
-	h1 User Dashboard
+	//- include _navbar 
+	nav.navbar
+		.nav-logo
+			a.nav(href='/dashboard') 
+				img(src='/css/Kizaru.webp' alt='logo')
+		.nav-center 
+			
+			//- a(href='/dashboard') Dashboard
+			a(href='/challenges') Challenges
+			
+			a(href='/workoutPlan') Workout Plan	
+			a(href='/profile') Profile
+			a(href='/workoutLogs') Workout Logs
+			a(href='/startSoloWorkout') Start Solo Workout
+		.nav-right
+			form(action='/logout' method='POST')
+				button(type='submit' class='logout-btn') Logout
+	
 	h2 Welcome, #{user.username}
 
 	h3 GymSpire Time Status
@@ -35,13 +52,13 @@ block content
 		| Crowd level: 
 		span #{crowdLevel}
 
+	.clip
+		video(autoplay muted loop)
+			source(src="/css/vid_dashboard.mp4" type="video/mp4")
 
-	a(href='/dashboard') Dashboard
-	a(href='/profile') Profile
-	a(href='/workoutPlan') Workout Plan	
-	a(href='/challenges') Challenges
-	a(href='/workoutLogs') Workout Logs
-	a(href='/startSoloWorkout') Start Solo Workout
+
+
+	
 
 	block scripts
 		script(src='/js/dashboard.js')
