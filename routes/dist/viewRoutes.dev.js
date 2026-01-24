@@ -26,4 +26,5 @@ router.get("/workoutPlan", authController.protect, viewController.workoutPlan);
 router.get("/challenges", authController.protect, viewController.challenges);
 router.get("/workoutLogs", authController.protect, viewController.workoutLogs);
 router.get("/startSoloWorkout", authController.protect, viewController.startSoloWorkout);
+router.get("/editProfile", authController.protect, viewController.editProfile);
 module.exports = router;

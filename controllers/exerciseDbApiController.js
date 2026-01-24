@@ -5,17 +5,16 @@ const catchAsync = require('../utils/catchAsync');
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-const muscles = ["pectorals", "upper back", "delts", "triceps", "biceps", "forearms", "abs", "quads",
-    "hamstrings", "glutes", "calves"
-];
-
+// const muscles = ["pectorals", "upper back", "delts", "triceps", "biceps", "forearms", "abs", "quads",
+//     "hamstrings", "glutes", "calves"
+// ];
 
 exports.importApiExercises = catchAsync(async (req, res, next) => {
     const baseURL = `${process.env.EXERCISE_DB_URL}/api/v1/exercises/filter`;
 
     let totalImported = 0;
 
-    for (const muscle of muscles) {
+    for (const muscle of process.env.ALLOWED_MUSCLES.split(',')) { // muscles before
         try {
             const response = await axios.get(baseURL, {
                 params: {

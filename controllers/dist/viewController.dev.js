@@ -202,3 +202,20 @@ exports.startSoloWorkout = catchAsync(function _callee12(req, res, next) {
     }
   });
 });
+exports.editProfile = catchAsync(function _callee13(req, res, next) {
+  return regeneratorRuntime.async(function _callee13$(_context13) {
+    while (1) {
+      switch (_context13.prev = _context13.next) {
+        case 0:
+          res.status(200).render("editProfile", {
+            title: "Edit Profile",
+            currentUser: req.user
+          });
+
+        case 1:
+        case "end":
+          return _context13.stop();
+      }
+    }
+  });
+});

@@ -46,7 +46,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   res.status(200).render("auth/resetPassword", {
     title: "Reset Password",
     hideNavbar: true,
-    token: req.params.token
+    token: req.params.token,
   });
 });
 
@@ -57,8 +57,16 @@ exports.profile = catchAsync(async (req, res, next) => {
 });
 
 exports.workoutPlan = catchAsync(async (req, res, next) => {
+  let exercises = [];
+
+  if (req.workoutPlan && req.workoutPlan.exerciseDetails) {
+    exercises = req.workoutPlan.exerciseDetails;
+  }
+
   res.status(200).render("workoutPlan", {
     title: "Workout Plan",
+    exercises,
+    hasPlan: !!req.workoutPlan,
   });
 });
 
@@ -78,4 +86,41 @@ exports.startSoloWorkout = catchAsync(async (req, res, next) => {
   res.status(200).render("startSoloWorkout", {
     title: "Start Solo Workout",
   });
+});
+
+exports.editProfile = catchAsync(async (req, res, next) => {
+  res.status(200).render("editProfile", {
+    title: "Edit Profile",
+    currentUser: req.user,
+  });
+});
+
+exports.createWorkoutPlan = catchAsync(async (req, res, next) => {
+  res.status(200).render("createWorkoutPlan", {
+    title: "Create Workout Plan",
+    currentUser: req.user,
+    exercises: req.exercises,
+  });
+});
+
+exports.editWorkoutPlan = catchAsync(async (req, res, next) => {
+  const allExercises = req.exercises;
+  const currentPlan = req.workoutPlan;
+
+  // Extract current exercise IDs as strings
+  const selectedIds = currentPlan.exercises.map((id) => id.toString());
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      exercises: allExercises,
+    },
+  });
+
+  // res.status(200).render("editWorkoutPlan", {
+  //   title: "Edit Workout Plan",
+  //   user: req.user,
+  //   exercises: allExercises,
+  //   selectedIds,
+  // });
 });

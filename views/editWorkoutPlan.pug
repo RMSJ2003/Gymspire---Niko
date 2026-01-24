@@ -1,22 +1,13 @@
 extends base
 
-block content 
-  h1 #{title} 
+block content
+  h1 #{title}
 
   h2 #{user.username}
-  h2 #{user.email}
-
-  form(id="deleteForm")
-    button(type="submit") Delete Account
 
   if user.pfpUrl
     img(src=user.pfpUrl alt="Profile Picture" width="150")
   else
     img(src="/img/default-user.png" alt="Default Profile" width="150")
 
-
-  a(href='/dashboard') Dashboard
-
-  a(href='/editProfile') Edit Profile
-
-  
+  a(href="/dashboard") Dashboard

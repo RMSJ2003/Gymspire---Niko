@@ -2,42 +2,41 @@ extends base
 //- base.pug
 
 block styles
-    link(rel="stylesheet" href="/css/login.css")
+  link(rel="stylesheet" href="/css/login.css")
 block content
-    //- If show navbar, then include navbar
-    //- if !hideNavbar 
-    //-     include _navbar
+  //- If show navbar, then include navbar
+  if !hideNavbar 
+    include _navbar
+    //- _navbar.pug
+    //- If it starts with underscore (_), then it is not a page 
+    //- but just a part of the page (partial)
 
-    //- REMOVE THIS
-    //- a(href='/login') Login
-    //- a(href='/signup') Sign Up
+  h1 Login
 
-   
+  form(id='loginForm' novalidate) 
+    h2 Login
+    // 🔥 Global message area
+    p.form-message#formMessage
 
-    form(id='loginForm' novalidate) 
-        h2 Login
-        // 🔥 Global message area
-        p.form-message#formMessage
+    label(for='email') Email
+    input(type='email' name='email' id='email' required)
+    small.form-error#emailError
 
-        label(for='email') Email
-        input(type='email' name='email' id='email' required)
-        small.form-error#emailError
+    label(for='password') Password
+    input(type='password' name='password' id='password' required)
+    small.form-error#passwordError 
 
-        label(for='password') Password
-        input(type='password' name='password' id='password' required)
-        small.form-error#passwordError 
+    a(href='/forgotPassword') Forgot password?
 
-        a(href='/forgotPassword') Forgot password?
+    button(type='submit' id='loginBtn')
+      span.btn-text Log In
+      span.spinner.hidden Loading...
 
-        button(type='submit' id='loginBtn')
-            span.btn-text Log In
-            span.spinner.hidden Loading...
+    button(type='button' id='signupBtn') Sign Up
 
-        button(type='button' id='signupBtn') Sign Up
-            
 
-    block scripts
-        script(src='/js/login.js')
-        //- login.js
+  block scripts
+    script(src='/js/login.js')
+    //- login.js
 
 
