@@ -1,76 +1,82 @@
 extends base
 
 block styles
-	link(rel="stylesheet" href="/css/dashboard.css")
+  link(rel="stylesheet" href="/css/dashboard.css")
+
 block content
-	//- include _navbar 
-	nav.navbar
-		.nav-logo
-			a.nav(href='/dashboard') 
-				img(src='/img/gymlogo.jpg' alt='logo')
-		.nav-center 
-			
-			//- a(href='/dashboard') Dashboard
-			a(href='/challenges') Challenges
-			
-			a(href='/workoutPlan') Workout Plan	
-			a(href='/profile') Profile
-			a(href='/workoutLogs') Workout Logs
-			a(href='/startSoloWorkout') Start Solo Workout
-		.nav-right
-			form(action='/api/v1/auth/logout' method='GET')
-				button(type='submit' class='logout-btn') Logout
-	
-	h2 Welcome, #{user.username}
+  // =========================
+  // NAVBAR
+  // =========================
+  nav.navbar
+    .nav-logo
+      a(href="/dashboard")
+        img(src="/img/gymlogo.jpg" alt="GymSpire Logo")
 
-	if user.pfpUrl
-		img(src=user.pfpUrl alt="Profile Picture" width="150")
-	else
-		img(src="/img/default-user.png" alt="Default Profile" width="150")
+    .nav-center
+      a(href="/challenges") Challenges
+      a(href="/workoutPlan") Workout Plan
+      a(href="/workoutLogs") Workout Logs
+      a(href="/startSoloWorkout") Start Solo Workout
 
+    .nav-right
+      button.hamburger ☰
+      .panel
+        a(href="/profile") Profile
+        form(action="/api/v1/auth/logout" method="GET")
+          button(type="submit") Logout
 
-	h3 GymSpire Time Status
+  // =========================
+  // WELCOME SECTION
+  // =========================
+  .welcome-section
+    if user.pfpUrl
+      img.profile-pic(src=user.pfpUrl alt="Profile Picture")
+    else
+      img.profile-pic(src="/img/default-user.png" alt="Default Profile")
 
-	// Main recommendation result
-	p
-		if recommended
-			strong Recommended to workout now
-		else
-			strong Not recommended to workout now
+    h2 Welcome, #{user.username}
 
-	// Explanation message
-	p #{message}
+  // =========================
+  // STATUS SECTION
+  // =========================
+  .status-section
+    h3 GymSpire Time Status
 
-	// Supporting info
-	p
-		| Current time: 
-		-
-			const period = currentHour >= 12 ? "PM" : "AM";
-			const displayHour = currentHour % 12 || 12;
-		time #{displayHour}:00 #{period}
+    p
+      if recommended
+        strong Recommended to workout now
+      else
+        strong Not recommended to workout now
 
+    p #{message}
 
-	p
-		| Current gym load: 
-		data(value=currentLoad) #{currentLoad}
+    p
+      | Current time:
+      -
+        const period = currentHour >= 12 ? "PM" : "AM";
+        const displayHour = currentHour % 12 || 12;
+      span #{displayHour}:00 #{period}
 
-	p
-		| Crowd level: 
-		span #{crowdLevel}
+    p
+      | Current gym load:
+      span #{currentLoad}
 
-	.clip
-		video(autoplay muted loop)
-			source(src="/css/vid_dashboard.mp4" type="video/mp4")
+    p
+      | Crowd level:
+      span #{crowdLevel}
 
-	.container
-		.image
-			img(src='/img/1.jpg' alt='logo')
-		.text
-			p
-				| Paragraph Here 
+  // =========================
+  // DASHBOARD CARDS
+  // =========================
+  each item in ["Challenges", "Workout Plan", "Workout Logs", "Start Solo Workout"]
+    .container
+      .left-container
+        img.bg-img(src="/img/1.jpg" alt=item)
+        .buttons
+          button.feature-btn-main #{item}
+          button.feature-btn-clip &gt;
 
+      .right-container
+        .clip-overlay
 
-	
-
-	block scripts
-		script(src='/js/dashboard.js')
+  script(src="/js/dashboard.js")
