@@ -1,0 +1,82 @@
+extends base
+
+block content
+  include _navbar
+
+  h1 #{title}
+
+  h2 #{user.username}
+
+  if user.pfpUrl
+    img(src=user.pfpUrl alt="Profile Picture" width="150")
+  else
+    img(src="/img/default-user.png" alt="Default Profile" width="150")
+
+  // 🔥 CORRECT STRUCTURE
+  if exercises.length === 0
+    p No exercises available.
+  else
+    form(id="createChallengeForm")
+      // =====================
+      // Challenge Info
+      // =====================
+      label(for="name") Challenge Name
+      input(
+        type="text"
+        name="name"
+        id="name"
+        required
+        placeholder="Enter challenge name"
+      )
+
+      br
+      br
+
+      label(for="startTime") Start Time
+      input(
+        type="datetime-local"
+        name="startTime"
+        id="startTime"
+        required
+      )
+
+      br
+      br
+
+      label(for="endTime") End Time
+      input(
+        type="datetime-local"
+        name="endTime"
+        id="endTime"
+        required
+      )
+
+      hr
+
+      each exercise in exercises
+        .exercise-card
+          label
+            input(
+              type="checkbox"
+              name="exerciseIds"
+              value=exercise._id
+            )
+
+            h3= exercise.name
+            p Target: #{exercise.target}
+
+            if exercise.gifURL
+              img(src=exercise.gifURL alt=exercise.name width="200")
+
+            if exercise.instructions && exercise.instructions.length
+              h4 Instructions:
+              ul
+                each step in exercise.instructions
+                  li= step
+
+      button(type="submit") Create Challenge
+
+      p.form-message#formMessage
+  
+  block scripts
+    script(src='/js/createChallenge.js')

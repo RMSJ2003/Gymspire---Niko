@@ -77,8 +77,8 @@ exports.getGymspireNowStatus = catchAsync(async (req, res, next) => {
   const endTime = new Date(now);
   const startTime = new Date(now.getTime() - 2 * 60 * 60 * 1000);
 
-  console.log("WINDOW START:", startTime.toISOString());
-  console.log("WINDOW END:", endTime.toISOString());
+  // console.log("WINDOW START:", startTime.toISOString());
+  // console.log("WINDOW END:", endTime.toISOString());
 
   // ================================
   // STEP 4: Count recent workouts
@@ -91,7 +91,7 @@ exports.getGymspireNowStatus = catchAsync(async (req, res, next) => {
     status: { $in: ["ongoing", "done"] },
   });
 
-  console.log("WORKOUT COUNT:", workoutCount);
+  // console.log("WORKOUT COUNT:", workoutCount);
 
   // ================================
   // STEP 5: Crowd thresholds

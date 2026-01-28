@@ -1,15 +1,15 @@
 extends base
 
 block content
-    if !hideNavbar
-        include _navbar
+	if !hideNavbar
+			include _navbar
 
 
-    //- "novalidate" disables browser auto-submit
-    //- We use AJAX for submit
-    form(id='signupForm' novalidate) 
-        // 🔥 Global message area
-        p.form-message#formMessage
+	//- "novalidate" disables browser auto-submit
+	//- We use AJAX for submit
+	form(id='signupForm' novalidate) 
+		// 🔥 Global message area
+		p.form-message#formMessage
 
 		label(for='email') Email
 		input(type='email' name='email' id='email' required)
@@ -18,8 +18,8 @@ block content
 		label(for='username') Username
 		input(type='text' name='username' id='username' required)
 
-        label(for='pfpUrl') Profile Picture URL
-        input(type='text' name='pfpUrl' id='pfpUrl' required)
+		label(for='pfpUrl') Profile Picture URL
+		input(type="file" name="pfp" id="pfp" accept="image/*")
 
 		label(for='password') Password
 		input(type='password' name='password' id='password' required)

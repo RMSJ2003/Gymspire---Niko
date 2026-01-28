@@ -103,18 +103,18 @@ userSchema.pre("save", function (next) {
 // Query middleware
 // Regular Expression (RegEx) /^find/ means a string that starts with "find"
 userSchema.pre(/^find/, function (next) {
-  // "this" points to the current query
-  this.find({
-    active: {
-      $ne: false,
-    },
-  });
+  // 🔥 Allow bypassing inactive filter when explicitly requested
+  if (this.getOptions().includeInactive) {
+    return next();
+  }
+
+  this.find({ active: { $ne: false } });
   next();
 });
 
 userSchema.methods.correctPassword = async function (
   candidatePassword,
-  userPassword
+  userPassword,
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
@@ -128,7 +128,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     // returns the date as seconds since Jan 1, 1970 (UNIX epoch).
     const changedTimestamp = parseInt(
       this.passwordChangedAt.getTime() / 1000,
-      10
+      10,
     );
     console.log(changedTimestamp, JWTTimestamp);
 
@@ -154,7 +154,7 @@ userSchema.methods.createPasswordResetToken = function () {
     {
       resetToken,
     },
-    this.passwordResetToken
+    this.passwordResetToken,
   );
 
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes

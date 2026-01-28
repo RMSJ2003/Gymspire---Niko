@@ -3,18 +3,17 @@ const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
 module.exports = catchAsync(async (req, res, next) => {
-const workoutPlan = await WorkoutPlan.findOne({
+  const workoutPlan = await WorkoutPlan.findOne({
     userId: req.user._id,
   }).populate("exerciseDetails");
 
-
-  if (!workoutPlan)
-    return next(
-      new AppError(
-        "You do not have a workout plan. Please create one first.",
-        409,
-      ),
-    );
+  // 🔥 IF NO WORKOUT PLAN → REDIRECT TO WORKOUT PLAN PAGE
+  if (!workoutPlan) {
+    return res.status(200).render("noWorkoutPlan", {
+      title: "No Workout Plan",
+      user: req.user,
+    });
+  }
 
   // It attaches data to the request object so the next middleware / controller can
   // reuse it

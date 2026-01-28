@@ -1,17 +1,22 @@
 extends base
 
 block content
-  h1 #{title} 
+  include _navbar
 
-  a(href='/dashboard') Dashboard
+  h1 #{title}
 
-  form(id='editProfileForm' enctype="multipart/form-data")
+  if currentUser.pfpUrl
+    img(src=currentUser.pfpUrl alt="Profile Picture" width="150")
+  else
+    img(src="/img/default-user.png" alt="Default Profile" width="150")
+
+  form(id="editProfileForm" enctype="multipart/form-data")
     p.form-message#formMessage
 
-    label(for='username') Username 
+    label(for="username") Username
     input(
-      type='text'
-      name='username'
+      type="text"
+      name="username"
       id="username"
       value=currentUser.username
     )
@@ -20,5 +25,5 @@ block content
 
     button(type="submit") Save Changes
 
-  block scripts 
-    script(src='/js/editProfile.js')
+  block scripts
+    script(src="/js/editProfile.js")

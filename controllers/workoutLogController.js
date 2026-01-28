@@ -53,7 +53,7 @@ exports.createMySoloWorkoutLog = catchAsync(async (req, res, next) => {
   const invalidTargets = targets.filter((t) => !validTargets.includes(t));
   if (invalidTargets.length) {
     return next(
-      new AppError(`Invalid muscle targets: ${invalidTargets.join(", ")}`, 400)
+      new AppError(`Invalid muscle targets: ${invalidTargets.join(", ")}`, 400),
     );
   }
 
@@ -90,12 +90,12 @@ exports.createMyChallengeWorkoutLog = catchAsync(async (req, res, next) => {
   await ensureNoOngoingWorkoutLog(req.user._id);
 
   const joined = challenge.participants.some(
-    (id) => id.toString() === req.user._id.toString()
+    (id) => id.toString() === req.user._id.toString(),
   );
 
   if (!joined) {
     return next(
-      new AppError("You are not a participant of this challenge", 409)
+      new AppError("You are not a participant of this challenge", 409),
     );
   }
 
@@ -107,7 +107,7 @@ exports.createMyChallengeWorkoutLog = catchAsync(async (req, res, next) => {
 
   if (alreadyLogged) {
     return next(
-      new AppError("You already have a workout log for this challenge", 409)
+      new AppError("You already have a workout log for this challenge", 409),
     );
   }
 
@@ -159,81 +159,152 @@ exports.getMyWorkoutLogs = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.updateMyWorkoutSet = catchAsync(async (req, res, next) => {
-  const { workoutLogId, exerciseIndex, setNumber } = req.params;
-  const { weight, reps, unit } = req.body;
+// exports.updateMyWorkoutSet = catchAsync(async (req, res, next) => {
+//   const { workoutLogId, exerciseIndex, setNumber } = req.params;
+//   const { weight, reps, unit } = req.body;
 
-  // ======================================================
-  // STEP 1: Load workout log
-  // ======================================================
+//   // ======================================================
+//   // STEP 1: Load workout log
+//   // ======================================================
+//   const workoutLog = await WorkoutLog.findById(workoutLogId);
+//   if (!workoutLog) {
+//     return next(new AppError("Workout log not found", 404));
+//   }
+
+//   // ======================================================
+//   // STEP 2: Verify ownership
+//   // User can only modify their own workout log
+//   // ======================================================
+//   if (workoutLog.userId.toString() !== req.user._id.toString()) {
+//     return next(
+//       new AppError("You are not allowed to modify this workout", 403)
+//     );
+//   }
+
+//   // ======================================================
+//   // STEP 3: Verify workout state
+//   // ======================================================
+//   if (workoutLog.status === "done") {
+//     return next(new AppError("Workout already finished", 400));
+//   }
+
+//   if (workoutLog.status === "not yet started") {
+//     return next(new AppError("Workout not started yet", 400));
+//   }
+
+//   // ======================================================
+//   // STEP 4: Verify workout type permissions
+//   // ======================================================
+//   // If this is a challenge workout, ensure challengeId exists
+//   // (permission logic can be expanded later if needed)
+//   if (!workoutLog.workoutPlanId && !workoutLog.challengeId) {
+//     return next(new AppError("Invalid workout session type", 400));
+//   }
+
+//   // ======================================================
+//   // STEP 5: Validate exercise index
+//   // ======================================================
+//   const exercise = workoutLog.exercises[exerciseIndex];
+//   if (!exercise) {
+//     return next(new AppError("Exercise not found", 404));
+//   }
+
+//   // ======================================================
+//   // STEP 6: Validate set number
+//   // ======================================================
+//   const set = exercise.set.find((s) => s.setNumber === Number(setNumber));
+//   if (!set) {
+//     return next(new AppError("Set not found", 404));
+//   }
+
+//   // ======================================================
+//   // STEP 7: Update set values
+//   // ======================================================
+//   set.weight = weight;
+//   set.reps = reps;
+//   set.unit = unit || "LB";
+
+//   // ======================================================
+//   // STEP 8: Save workout log
+//   // ======================================================
+//   await workoutLog.save();
+
+//   // ======================================================
+//   // STEP 9: Send response
+//   // ======================================================
+//   res.status(200).json({
+//     status: "success",
+//     data: workoutLog,
+//   });
+// });
+
+exports.updateMyWorkoutSetsBulk = catchAsync(async (req, res, next) => {
+  const { workoutLogId } = req.params;
+  const { updates } = req.body;
+
+  // --------------------------------------------------
+  // 1) Validate input
+  // --------------------------------------------------
+  if (!Array.isArray(updates) || updates.length === 0) {
+    return next(new AppError("No set updates provided", 400));
+  }
+
+  // --------------------------------------------------
+  // 2) Load workout log
+  // --------------------------------------------------
   const workoutLog = await WorkoutLog.findById(workoutLogId);
   if (!workoutLog) {
     return next(new AppError("Workout log not found", 404));
   }
 
-  // ======================================================
-  // STEP 2: Verify ownership
-  // User can only modify their own workout log
-  // ======================================================
+  // --------------------------------------------------
+  // 3) Ownership check
+  // --------------------------------------------------
   if (workoutLog.userId.toString() !== req.user._id.toString()) {
-    return next(
-      new AppError("You are not allowed to modify this workout", 403)
-    );
+    return next(new AppError("Not authorized", 403));
   }
 
-  // ======================================================
-  // STEP 3: Verify workout state
-  // ======================================================
+  // --------------------------------------------------
+  // 4) Status guard
+  // --------------------------------------------------
   if (workoutLog.status === "done") {
     return next(new AppError("Workout already finished", 400));
   }
 
-  if (workoutLog.status === "not yet started") {
-    return next(new AppError("Workout not started yet", 400));
+  // --------------------------------------------------
+  // 5) Apply updates
+  // --------------------------------------------------
+  let updatedCount = 0;
+
+  workoutLog.exercises.forEach((exercise) => {
+    exercise.set.forEach((set) => {
+      const match = updates.find(
+        (u) => u.setId.toString() === set._id.toString(),
+      );
+
+      if (match) {
+        set.weight = Number(match.weight);
+        set.reps = Number(match.reps);
+        updatedCount++;
+      }
+    });
+  });
+
+  if (updatedCount === 0) {
+    return next(new AppError("No matching sets found to update", 400));
   }
 
-  // ======================================================
-  // STEP 4: Verify workout type permissions
-  // ======================================================
-  // If this is a challenge workout, ensure challengeId exists
-  // (permission logic can be expanded later if needed)
-  if (!workoutLog.workoutPlanId && !workoutLog.challengeId) {
-    return next(new AppError("Invalid workout session type", 400));
-  }
-
-  // ======================================================
-  // STEP 5: Validate exercise index
-  // ======================================================
-  const exercise = workoutLog.exercises[exerciseIndex];
-  if (!exercise) {
-    return next(new AppError("Exercise not found", 404));
-  }
-
-  // ======================================================
-  // STEP 6: Validate set number
-  // ======================================================
-  const set = exercise.set.find((s) => s.setNumber === Number(setNumber));
-  if (!set) {
-    return next(new AppError("Set not found", 404));
-  }
-
-  // ======================================================
-  // STEP 7: Update set values
-  // ======================================================
-  set.weight = weight;
-  set.reps = reps;
-  set.unit = unit || "LB";
-
-  // ======================================================
-  // STEP 8: Save workout log
-  // ======================================================
+  // --------------------------------------------------
+  // 6) Save once
+  // --------------------------------------------------
   await workoutLog.save();
 
-  // ======================================================
-  // STEP 9: Send response
-  // ======================================================
+  // --------------------------------------------------
+  // 7) Response
+  // --------------------------------------------------
   res.status(200).json({
     status: "success",
+    updatedSets: updatedCount,
     data: workoutLog,
   });
 });
@@ -263,7 +334,7 @@ exports.getMyWorkoutLog = catchAsync(async (req, res, next) => {
     if (
       !challenge ||
       !challenge.participants.some(
-        (p) => p.toString() === req.user._id.toString()
+        (p) => p.toString() === req.user._id.toString(),
       )
     ) {
       return next(new AppError("Not authorized", 403));
@@ -287,35 +358,26 @@ exports.finishWorkoutLog = catchAsync(async (req, res, next) => {
     return next(new AppError("Workout log not found", 404));
   }
 
+  // 🔒 Ensure only owner can finish their workout
   if (workoutLog.userId.toString() !== req.user._id.toString()) {
-    return next(new AppError("Not authorized", 403));
+    return next(
+      new AppError("You are not allowed to finish this workout", 403),
+    );
   }
 
-  if (workoutLog.challengeId) {
-    const challenge = await Challenge.findById(workoutLog.challengeId);
-
-    if (
-      !challenge ||
-      !challenge.participants.some(
-        (p) => p.toString() === req.user._id.toString()
-      )
-    ) {
-      return next(new AppError("Not authorized", 403));
-    }
-
-    // 🎥 REQUIRE VIDEO FOR CHALLENGE
-    if (!req.body.videoUrl || req.body.videoUrl.trim() === "") {
-      return next(
-        new AppError("videoUrl is required for challenge workouts", 400)
-      );
-    }
-
-    workoutLog.videoUrl = req.body.videoUrl;
-  }
-
-  // 🚫 Prevent double finish
+  // 🔒 Prevent double finishing
   if (workoutLog.status === "done") {
-    return next(new AppError("Workout already finished", 400));
+    return next(new AppError("Workout is already finished", 409));
+  }
+
+  // 🎥 Challenge workouts REQUIRE a video
+  if (workoutLog.challengeId && !req.file) {
+    return next(new AppError("Challenge workouts require a video", 400));
+  }
+
+  // ☁️ Save Cloudinary video URL if uploaded
+  if (req.file) {
+    workoutLog.videoUrl = req.file.path; // real playable URL
   }
 
   workoutLog.status = "done";
@@ -341,6 +403,7 @@ exports.getSubmissions = catchAsync(async (req, res, next) => {
 
 exports.verifyChallengeWorkoutLog = catchAsync(async (req, res, next) => {
   const { workoutLogId } = req.params;
+  console.log(req.body);
   const { decision, judgeNotes } = req.body;
 
   if (!["approved", "rejected"].includes(decision))
@@ -361,15 +424,15 @@ exports.verifyChallengeWorkoutLog = catchAsync(async (req, res, next) => {
 
   // 🚫 Conflict of interest: coach is participant in this challenge
   const isParticipant = challenge.participants.some(
-    (p) => p.toString() === req.user._id.toString()
+    (p) => p.toString() === req.user._id.toString(),
   );
 
   if (isParticipant) {
     return next(
       new AppError(
         "Coaches who are participants cannot verify workouts in this challenge.",
-        403
-      )
+        403,
+      ),
     );
   }
 
@@ -378,14 +441,14 @@ exports.verifyChallengeWorkoutLog = catchAsync(async (req, res, next) => {
     return next(
       new AppError(
         "Coaches are not allowed to verify their own workout log.",
-        403
-      )
+        403,
+      ),
     );
 
   // Must be finished
   if (workoutLog.status !== "done")
     return next(
-      new AppError("Workout must be finished before verification", 401)
+      new AppError("Workout must be finished before verification", 401),
     );
 
   // Must have video
@@ -411,4 +474,53 @@ exports.verifyChallengeWorkoutLog = catchAsync(async (req, res, next) => {
     status: "success",
     data: workoutLog,
   });
+});
+
+// Without JSON
+exports.acquireMyWorkoutLogs = catchAsync(async (req, res, next) => {
+  const workoutLogs = await WorkoutLog.find({
+    userId: req.user._id,
+  })
+    .sort({ date: -1 }) // newest first
+    .populate("verifiedBy", "username email") // 👈 LOAD verifier
+    .populate("challengeId", "name"); // 👈 OPTIONAL (challenge info)
+
+  req.myWorkoutLogs = workoutLogs;
+  next();
+});
+
+exports.acquireMyWorkoutLog = catchAsync(async (req, res, next) => {
+  const log = await WorkoutLog.findOne({
+    _id: req.params.id,
+    userId: req.user._id,
+  });
+
+  if (!log) {
+    return next(new AppError("Workout log not found", 404));
+  }
+
+  req.myWorkoutLog = log;
+
+  next();
+});
+
+exports.acquireSubmissions = catchAsync(async (req, res, next) => {
+  const { challengeId } = req.params;
+
+  const workoutLogs = await WorkoutLog.find({
+    status: "done",
+    challengeId,
+  }).populate("userId", "username email");
+
+  const formattedLogs = workoutLogs.map((log) => {
+    return {
+      ...log.toObject(),
+      formattedDate: new Date(log.date).toDateString(),
+    };
+  });
+
+  // Send to view
+  req.submissionLogs = formattedLogs;
+
+  next(); // 🔥 ONLY ONE NEXT
 });

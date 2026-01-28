@@ -1,0 +1,126 @@
+extends base
+
+block content
+  include _navbar
+
+  h1 #{title}
+  h2 Coach: #{user.username}
+
+  if submissions.length === 0
+    p No submissions yet for this challenge.
+  else
+    
+    each log in submissions
+      .submission-card(style="border:1px solid #ccc; padding:20px; margin-bottom:25px; border-radius:8px")
+        // Error message placeholder
+        p.error-message(
+          style="color:red; font-weight:bold; display:none; margin-top:10px;"
+        )
+
+        // =====================
+        // User & Meta Info
+        // =====================
+        if log.userId && log.userId.username
+          h3 Submission by #{log.userId.username}
+        else
+          h3 Submission by User
+
+        p Date: #{log.createdAt}
+
+        // =====================
+        // Status Badge
+        // =====================
+        p
+          | Status:
+          if log.judgeStatus === "approved"
+            span(style="color:green; font-weight:bold; margin-left:8px") Approved
+          else if log.judgeStatus === "rejected"
+            span(style="color:red; font-weight:bold; margin-left:8px") Rejected
+          else
+            span(style="color:orange; font-weight:bold; margin-left:8px") Pending
+
+        // =====================
+        // Exercises & Sets (FULL DETAIL)
+        // =====================
+        h4 Exercises & Sets
+
+        each ex in log.exercises
+          .exercise-block(style="margin-top:15px; padding:10px; border:1px solid #eee; border-radius:6px")
+
+            h4 #{ex.name} (#{ex.target})
+
+            table(border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse; width:100%; margin-top:8px")
+              thead
+                tr(style="background:#f2f2f2")
+                  th Set #
+                  th Type
+                  th Weight
+                  th Reps
+                  th Rest (sec)
+
+              tbody
+                each s in ex.set
+                  tr
+                    td #{s.setNumber}
+                    td #{s.type}
+                    td #{s.weight} #{s.unit}
+                    td #{s.reps}
+                    td #{s.restSeconds}
+
+
+        // =====================
+        // Video Preview
+        // =====================
+        if log.videoUrl
+          video(controls width="320" style="margin-top:10px")
+            source(src=log.videoUrl type="video/mp4")
+        else
+          p(style="color:red") ⚠️ No video submitted.
+
+        // =====================
+        // Verification Actions
+        // =====================
+        if log.judgeStatus === "pending"
+          form.verify-form(
+            data-log-id=log._id
+            action=`/api/v1/workout-logs/${log._id}/verify`
+            method="POST"
+            style="margin-top:15px;"
+          )
+
+
+            label(for="judgeNotes") Coach Notes
+            textarea(
+              name="judgeNotes"
+              rows="3"
+              placeholder="Enter feedback for the athlete..."
+              style="width:100%; margin-top:5px;"
+            )
+
+            br
+            br
+
+            button(
+              type="submit"
+              name="decision"
+              value="approved"
+              style="padding:8px 15px; margin-right:10px; background:#4CAF50; color:white; border:none; border-radius:4px; cursor:pointer"
+            ) ✅ Approve
+
+            button(
+              type="submit"
+              name="decision"
+              value="rejected"
+              style="padding:8px 15px; background:#f44336; color:white; border:none; border-radius:4px; cursor:pointer"
+            ) ❌ Reject
+
+        else
+          p(style="margin-top:15px; font-style:italic") This submission has already been reviewed.
+
+          if log.judgeNotes
+            p
+              strong Coach Notes:
+              |  #{log.judgeNotes}
+
+  block scripts
+    script(src="/js/reviewSubmissions.js")

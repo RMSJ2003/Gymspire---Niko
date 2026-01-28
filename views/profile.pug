@@ -1,22 +1,27 @@
 extends base
 
 block content 
+  include _navbar
+
   h1 #{title} 
 
   h2 #{user.username}
   h2 #{user.email}
 
   form(id="deleteForm")
-    button(type="submit") Delete Account
+    p.form-message#formMessage
+    p(style="color:red; font-weight:bold;")
+      | ⚠️ This action is permanent and cannot be undone.
+
+    button(type="submit" id="deleteBtn" style="background:red; color:white;")
+      | Delete Account
 
   if user.pfpUrl
     img(src=user.pfpUrl alt="Profile Picture" width="150")
   else
     img(src="/img/default-user.png" alt="Default Profile" width="150")
-
-
-  a(href='/dashboard') Dashboard
-
+  |  |  
   a(href='/editProfile') Edit Profile
 
-  
+  block scripts 
+    script(src='/js/profile.js')

@@ -60,8 +60,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     return next(
       new AppError(
         "This route is not for password updates. Please use /updateMyPassword",
-        400
-      )
+        400,
+      ),
     );
 
   const updates = {};
@@ -82,7 +82,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       "public",
       "img",
       "users",
-      filename
+      filename,
     );
 
     fs.writeFileSync(filePath, req.file.buffer);
@@ -123,7 +123,7 @@ exports.updateUserRole = catchAsync(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
     req.params.id,
     { userType },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   );
 
   res.status(200).json({
@@ -144,7 +144,7 @@ exports.updateProfilePhoto = catchAsync(async (req, res, next) => {
     "public",
     "img",
     "users",
-    filename
+    filename,
   );
 
   fs.writeFileSync(filePath, req.file.buffer);
@@ -154,7 +154,7 @@ exports.updateProfilePhoto = catchAsync(async (req, res, next) => {
   const updatedUser = await User.findByIdAndUpdate(
     req.user._id,
     { pfpUrl: photoUrl },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   );
 
   res.status(200).json({
@@ -171,4 +171,33 @@ exports.getUser = factory.getOne(User);
 
 exports.updateUser = factory.updateOne(User);
 
-exports.deleteUser = factory.deleteOne(User);
+// exports.deleteUser = factory.deleteOne(User);
+exports.deleteUser = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  if (user.userType === "admin") {
+    return next(
+      new AppError("Admin accounts cannot be deleted", 403)
+    );
+  }
+
+  user.active = false;
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    status: "success",
+    message: "User deactivated successfully",
+  });
+});
+
+// Without JSON
+exports.acquireAllUsers = catchAsync(async (req, res, next) => {
+  const users = await User.find();
+  req.users = users;
+
+  next();
+});

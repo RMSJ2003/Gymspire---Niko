@@ -4,7 +4,11 @@ const authController = require("../controllers/authController");
 const adminController = require("../controllers/adminController");
 const workoutPlanController = require("../controllers/workoutPlanController");
 const exerciseController = require("../controllers/exerciseController");
+const challengeController = require("../controllers/challengeController");
+const userController = require("../controllers/userController");
+const workoutLogController = require("../controllers/workoutLogController");
 const requireWorkoutPlan = require("../middlewares/requireWorkoutPlan");
+const requireWorkoutplanView = require("../middlewares/requireWorkoutplanView");
 
 const router = express.Router();
 
@@ -51,6 +55,7 @@ router.get(
   "/coachDashboard",
   authController.protect,
   authController.restrictTo("coach"),
+  adminController.getGymspireNowStatus,
   viewController.coachDashboard,
 );
 
@@ -63,13 +68,37 @@ router.get(
   viewController.workoutPlan,
 );
 
-router.get("/challenges", authController.protect, viewController.challenges);
+router.get(
+  "/challenges",
+  authController.protect,
+  challengeController.acquireAllChallenges,
+  viewController.challenges,
+);
 
-router.get("/workoutLogs", authController.protect, viewController.workoutLogs);
+router.get(
+  "/workoutLogs",
+  authController.protect,
+  workoutLogController.acquireMyWorkoutLogs,
+  viewController.workoutLogs,
+);
+
+router.get(
+  "/workoutLogs/:id",
+  authController.protect,
+  workoutLogController.acquireMyWorkoutLog,
+  viewController.workoutLog,
+);
+
+// router.get(
+//   "/editWorkoutLog/:id",
+//   authController.protect,
+//   viewController.editWorkoutLog
+// );
 
 router.get(
   "/startSoloWorkout",
   authController.protect,
+  requireWorkoutplanView,
   viewController.startSoloWorkout,
 );
 
@@ -86,8 +115,60 @@ router.get(
   "/editWorkoutPlan",
   authController.protect,
   requireWorkoutPlan,
-  exerciseController.getAllExercises,
+  exerciseController.acquireAllExericses,
   viewController.editWorkoutPlan,
+);
+
+router.get(
+  "/personalRecord",
+  authController.protect,
+  viewController.personalRecord,
+);
+
+router.get(
+  "/reviewSubmissions/:challengeId",
+  authController.protect,
+  authController.restrictTo("coach"),
+  workoutLogController.acquireSubmissions,
+  viewController.reviewSubmissions,
+);
+
+router.get(
+  "/createChallenge",
+  authController.protect,
+  authController.restrictTo("coach"),
+  exerciseController.acquireAllExericses,
+  viewController.createChallenge,
+);
+
+router.get(
+  "/users",
+  authController.protect,
+  authController.restrictTo("admin"),
+  userController.acquireAllUsers,
+  viewController.users,
+);
+
+router.get(
+  "/createAdmin",
+  authController.protect,
+  authController.restrictTo("admin"),
+  viewController.createAdmin,
+);
+
+router.get(
+  "/createCoach",
+  authController.protect,
+  authController.restrictTo("admin"),
+  viewController.createCoach,
+);
+
+router.get(
+  "/exercisesManagement",
+  authController.protect,
+  authController.restrictTo("admin"),
+  exerciseController.acquireAllExericses,
+  viewController.exercisesManagement,
 );
 
 module.exports = router;

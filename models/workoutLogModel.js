@@ -15,7 +15,7 @@ const workoutLogSchema = new mongoose.Schema({
     // Either solo workout or challenge workout. A log can only have a workoutPlanId OR
     // challengeId
     type: mongoose.Schema.ObjectId,
-    ref: "SharedWorkoutChallenge",
+    ref: "Challenge",
   },
   date: {
     type: Date,

@@ -1,0 +1,51 @@
+extends ../base
+
+block content
+  include ../_navbar
+
+  h1 #{title}
+
+  h2 #{user.username}
+
+  if user.pfpUrl
+    img(src=user.pfpUrl alt="Profile Picture" width="150")
+  else
+    img(src="/img/default-user.png" alt="Default Profile" width="150")
+
+  a(href='/createAdmin') Create Admin
+  a(href='/createCoach') Create Coach
+
+  if users.length === 0
+    p No users found.
+  else
+    table(border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse; width:100%;")
+      thead
+        tr(style="background:#f2f2f2")
+          th Profile
+          th Username
+          th Email
+          th Roles
+          th Actions
+
+      tbody
+        each u in users
+          tr
+            td
+              if u.pfpUrl
+                img(src=u.pfpUrl width="40")
+              else
+                img(src="/img/default-user.png" width="40")
+
+            td #{u.username}
+            td #{u.email}
+            td #{u.userType}
+
+            td
+              button.delete-user-btn(
+                data-user-id=u._id
+                style="background:#f44336; color:white; border:none; padding:6px 10px; cursor:pointer;"
+              ) Delete
+
+
+  block scripts
+    script(src="/js/users.js")

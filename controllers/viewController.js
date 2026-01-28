@@ -22,14 +22,14 @@ exports.dashboard = catchAsync(async (req, res, next) => {
 });
 
 exports.adminDashboard = catchAsync(async (req, res, next) => {
-  res.status(200).render("admin/dashboard", {
+  res.status(200).render("admin/adminDashboard", {
     title: "Admin Dashboard",
     hideNavbar: false,
   });
 });
 
 exports.coachDashboard = catchAsync(async (req, res, next) => {
-  res.status(200).render("coach/dashboard", {
+  res.status(200).render("coach/coachDashboard", {
     title: "Coach Dashboard",
     hideNavbar: false,
   });
@@ -71,20 +71,43 @@ exports.workoutPlan = catchAsync(async (req, res, next) => {
 });
 
 exports.challenges = catchAsync(async (req, res, next) => {
+  const challenges = req.challenges || [];
   res.status(200).render("challenges", {
     title: "Challenges",
+    user: req.user,
+    challenges,
   });
 });
 
 exports.workoutLogs = catchAsync(async (req, res, next) => {
   res.status(200).render("workoutLogs", {
-    title: "Workout Logs",
+    title: "My Workout Logs",
+    user: req.user,
+    workoutLogs: req.myWorkoutLogs,
+  });
+});
+
+exports.workoutLog = catchAsync(async (req, res, next) => {
+  res.status(200).render("workoutLog", {
+    title: "Workout Log",
+    user: req.user,
+    log: req.myWorkoutLog,
   });
 });
 
 exports.startSoloWorkout = catchAsync(async (req, res, next) => {
+  const workoutPlan = req.workoutPlan;
+
+  // 🔥 Extract unique muscle targets from workout plan
+  const muscles = workoutPlan.exerciseDetails.map((ex) => ({
+    name: ex.target,
+    exerciseName: ex.name,
+  }));
+
   res.status(200).render("startSoloWorkout", {
     title: "Start Solo Workout",
+    user: req.user,
+    muscles,
   });
 });
 
@@ -104,23 +127,88 @@ exports.createWorkoutPlan = catchAsync(async (req, res, next) => {
 });
 
 exports.editWorkoutPlan = catchAsync(async (req, res, next) => {
-  const allExercises = req.exercises;
-  const currentPlan = req.workoutPlan;
+  const exercises = req.exercises || [];
+  const workoutPlan = req.workoutPlan;
 
-  // Extract current exercise IDs as strings
-  const selectedIds = currentPlan.exercises.map((id) => id.toString());
+  // Extract current selected IDs
+  const selectedIds = workoutPlan
+    ? workoutPlan.exercises.map((id) => id.toString())
+    : [];
 
-  res.status(200).json({
-    status: "success",
-    data: {
-      exercises: allExercises,
-    },
+  // 🔥 REORDER EXERCISES: checked first, unchecked after
+  const selectedExercises = [];
+  const unselectedExercises = [];
+
+  exercises.forEach((exercise) => {
+    if (selectedIds.includes(exercise._id.toString())) {
+      selectedExercises.push(exercise);
+    } else {
+      unselectedExercises.push(exercise);
+    }
   });
 
-  // res.status(200).render("editWorkoutPlan", {
-  //   title: "Edit Workout Plan",
-  //   user: req.user,
-  //   exercises: allExercises,
-  //   selectedIds,
-  // });
+  const orderedExercises = [...selectedExercises, ...unselectedExercises];
+
+  res.status(200).render("editWorkoutPlan", {
+    title: "Edit Workout Plan",
+    user: req.user,
+    exercises: orderedExercises, // 👈 reordered list
+    selectedIds,
+  });
+});
+
+exports.personalRecord = catchAsync(async (req, res, next) => {
+  res.status(200).render("personalRecord", {
+    title: "My Personal Records",
+    currentUser: req.user,
+  });
+});
+
+exports.reviewSubmissions = (req, res) => {
+  res.render("reviewSubmissions", {
+    title: "Challenge Submissions",
+    user: req.user,
+    submissions: req.submissionLogs,
+  });
+};
+
+exports.createChallenge = catchAsync(async (req, res, next) => {
+  res.status(200).render("createChallenge", {
+    title: "Create Challenge",
+    exercises: req.exercises,
+    currentUser: req.user,
+  });
+});
+
+exports.users = catchAsync(async (req, res, next) => {
+  res.status(200).render("admin/users", {
+    title: "User Management",
+    users: req.users,
+    currentUser: req.user,
+  });
+});
+
+exports.createAdmin = catchAsync(async (req, res, next) => {
+  
+  res.status(200).render("admin/createAdmin", {
+    title: "Create Admin",
+    currentUser: req.user,
+  });
+});
+
+exports.createCoach = catchAsync(async (req, res, next) => {
+  
+  res.status(200).render("admin/createCoach", {
+    title: "Create Coach",
+    currentUser: req.user,
+  });
+});
+
+exports.exercisesManagement = catchAsync(async (req, res, next) => {
+  
+  res.status(200).render("admin/exercisesManagement", {
+    title: "Exercises Management (with dumbbells)",
+    exercises: req.exercises,
+    currentUser: req.user,
+  });
 });

@@ -1,6 +1,37 @@
 extends base
 
 block content
+	include _navbar
+	h1 #{title}
 
-	h1 #{title} 
-  
+	h2 #{user.username}
+
+	if user.pfpUrl
+		img(src=user.pfpUrl alt="Profile Picture" width="150")
+	else
+		img(src="/img/default-user.png" alt="Default Profile" width="150")
+
+	h3 Select muscles to train today
+
+	if muscles.length === 0
+		p No muscles found in your workout plan.
+	else
+		form(id="startSoloWorkoutForm")
+			each m in muscles
+				.muscle-row
+					label
+						input(
+							type="checkbox"
+							name="targets"
+							value=m.name
+						)
+						strong #{m.name}
+						span(style="margin-left:10px; color:gray") (#{m.exerciseName})
+
+			br
+			button(type="submit") Start Workout
+
+	p#startMessage
+
+	block scripts
+		script(src="/js/startSoloWorkout.js")

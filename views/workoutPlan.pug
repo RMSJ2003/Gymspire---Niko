@@ -1,6 +1,8 @@
 extends base
 
 block content
+	include _navbar
+
 	h1 #{title}
 
 	h2 #{user.username}
@@ -9,8 +11,6 @@ block content
 		img(src=user.pfpUrl alt="Profile Picture" width="150")
 	else
 		img(src="/img/default-user.png" alt="Default Profile" width="150")
-
-	a(href='/dashboard') Dashboard
 
 	if !hasPlan
 		p(style="color:red; font-weight:bold") You do not have a workout plan yet. Please create one first.

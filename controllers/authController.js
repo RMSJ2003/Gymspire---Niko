@@ -22,7 +22,7 @@ const signToken = (id) => {
     process.env.JWT_SECRET,
     {
       expiresIn: process.env.JWT_EXPIRES_IN,
-    }
+    },
   );
 };
 
@@ -31,7 +31,7 @@ const createSendToken = (user, statusCode, res) => {
 
   const cookieOptions = {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
     ),
     httpOnly: true, // The cookie can't be access or modified in anyway by the browser (important for xss attacks)
   };
@@ -59,6 +59,25 @@ const fs = require("fs");
 const path = require("path");
 
 exports.signup = catchAsync(async (req, res, next) => {
+  const existingUser = await User.findOne({ email: req.body.email })
+    .setOptions({ includeInactive: true })
+    .select("+active");
+
+  if (existingUser) {
+    console.log("era"); // ✅ NOW THIS LOGS
+
+    if (existingUser.active === false) {
+      return next(
+        new AppError(
+          "This email belongs to a deactivated account. Please contact support.",
+          400,
+        ),
+      );
+    }
+
+    return next(new AppError("Email already in use", 400));
+  }
+
   // 1️⃣ Create user FIRST (no photo yet)
   const newUser = await User.create({
     email: req.body.email,
@@ -78,7 +97,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       "public",
       "img",
       "users",
-      filename
+      filename,
     );
 
     // 🔥 Write file manually
@@ -101,9 +120,26 @@ exports.createCoach = catchAsync(async (req, res, next) => {
     return next(
       new AppError(
         "Password must be at least 8 characters long and contain at least one letter and one number.",
-        400
-      )
+        400,
+      ),
     );
+  }
+
+  const existingUser = await User.findOne({ email: req.body.email }).select(
+    "+active",
+  );
+
+  if (existingUser) {
+    if (existingUser.active === false) {
+      return next(
+        new AppError(
+          "This email belongs to a deactivated account. Please contact support.",
+          400,
+        ),
+      );
+    }
+
+    return next(new AppError("Email already in use", 400));
   }
 
   // 2) Create user (coach)
@@ -172,7 +208,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   if (!token)
     return next(
-      new AppError("Your are not logged in! Please log in to get access", 401)
+      new AppError("Your are not logged in! Please log in to get access", 401),
     );
 
   // 2) Validate the token
@@ -189,15 +225,15 @@ exports.protect = catchAsync(async (req, res, next) => {
     return next(
       new AppError(
         "The user belonging to this token does no longer exist.",
-        401
-      )
+        401,
+      ),
     );
 
   // 4) Check if user changed password after the JWT (token) was issued
   // .iat means issued at, and .exp means (expire)(not used in this code)
   if (currentUser.changedPasswordAfter(decoded.iat))
     return next(
-      new AppError("User currently changed password! Please login again.", 401)
+      new AppError("User currently changed password! Please login again.", 401),
     );
 
   // Grant access to the protected route.
@@ -209,7 +245,7 @@ exports.restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.userType))
       return next(
-        new AppError("You do not have permission to perform this action", 403)
+        new AppError("You do not have permission to perform this action", 403),
       );
 
     next();
@@ -243,11 +279,11 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   // // try {
 
   const resetURL = `${req.protocol}://${req.get(
-    "host"
+    "host",
   )}/api/v1/auth/resetPassword/${resetToken}`; // In here we will send the original reset token, not the encrypted one
 
   const resetUrlPage = `${req.protocol}://${req.get(
-    "host"
+    "host",
   )}/reset-password/${resetToken}`;
 
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.
@@ -288,8 +324,8 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     return next(
       new AppError(
         "Password must be at least 8 characters long and contain at least one letter and one number.",
-        400
-      )
+        400,
+      ),
     );
   }
 

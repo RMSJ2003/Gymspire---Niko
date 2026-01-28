@@ -1,0 +1,16 @@
+extends base
+
+block content
+  h1 No Workout Plan Found
+
+  h2 Hello, #{user.username}
+
+  p You need to create a workout plan before starting a solo workout.
+
+  a(href="/createWorkoutPlan")
+    button Create My Workout Plan
+
+  br
+  br
+
+  a(href="/dashboard") ← Back to Dashboard

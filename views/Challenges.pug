@@ -1,6 +1,94 @@
 extends base
 
 block content
+	include _navbar
 
-	h1 #{title} 
+	h1 #{title}
 
+	h2 #{user.username}
+
+	if user.pfpUrl
+		img(src=user.pfpUrl alt="Profile Picture" width="150")
+	else
+		img(src="/img/default-user.png" alt="Default Profile" width="150")
+
+	a(href='/createChallenge') Create Challenge
+
+	if challenges.length === 0
+		p No challenges available.
+	else
+		each challenge in challenges
+			.challenge-card
+				h2= challenge.name
+				p Join Code: #{challenge.joinCode}
+				p Starts: #{challenge.startTime.toDateString()}
+				p Ends: #{challenge.endTime.toDateString()}
+				p Participants: #{challenge.participants.length}
+
+				if challenge.participants.length
+					.participants-row
+						each p in challenge.participants
+							.participant
+								if p.pfpUrl
+									img(src=p.pfpUrl alt=p.username width="40")
+								else
+									img(src="/img/default-user.png" width="40")
+
+								span= p.username
+
+				// 🔥 CHECK IF USER ALREADY JOINED
+				- const alreadyJoined = challenge.participants.some(p => p._id.toString() === user._id.toString())
+
+				if alreadyJoined
+					p(style="color: green; font-weight: bold") You already joined this challenge
+				else
+					button.join-btn(
+						data-join-code=challenge.joinCode
+					) Join Challenge
+
+				// 🔥 START CHALLENGE BUTTON (only if joined)
+				if alreadyJoined
+					button.start-btn(
+						data-challenge-id=challenge._id
+					) Start Challenge
+
+				// 🔥 LEADERBOARD BUTTON
+				button.leaderboard-btn(
+					data-challenge-id=challenge._id
+				) View Leaderboard
+
+				// Review Submissions (per challenge)
+				if user.userType === 'coach'
+					a(
+						href=`/reviewSubmissions/${challenge._id}`
+						style="display:inline-block; margin-top:10px;"
+					) Review Submissions
+
+
+				// 🔥 LEADERBOARD CONTAINER (initially empty / hidden)
+				.leaderboard-container(
+					id=`leaderboard-${challenge._id}`
+					style="display:none; margin-top:15px;"
+				)
+
+				// Show exercises
+				if challenge.exerciseDetails && challenge.exerciseDetails.length
+					h3 Exercises in this challenge:
+
+					each exercise in challenge.exerciseDetails
+						.exercise-card
+							h4= exercise.name
+							p Target: #{exercise.target}
+
+							if exercise.gifURL
+								img(src=exercise.gifURL alt=exercise.name width="200")
+
+							if exercise.instructions && exercise.instructions.length
+								ul
+									each step in exercise.instructions
+										li= step
+
+	p#joinMessage
+
+	block scripts
+		script(src="/js/challenges.js")

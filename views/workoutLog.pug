@@ -1,0 +1,230 @@
+extends base
+
+block content
+  include _navbar
+
+  h1 #{title}
+
+  h2 #{user.username}
+
+  if user.pfpUrl
+    img(src=user.pfpUrl alt="Profile Picture" width="150")
+  else
+    img(src="/img/default-user.png" alt="Default Profile" width="150")
+
+  a(href="/workoutLogs") ← Back to Logs
+
+  h2 Date: #{log.date.toDateString()}
+  p Status: #{log.status}
+  p Strength Score: #{log.strengthScore || "Not calculated yet"}
+  if log.judgeNotes
+    p Judge Notes: #{log.judgeNotes}
+  else
+    p Judge Notes: No judge notes yet
+
+  if log.verifiedBy && log.verifiedBy.username
+    p Verified by: #{log.verifiedBy.username}
+  else
+    p Verified by: Not verified yet
+
+  if log.videoUrl
+    p Video:
+    video(
+      src=log.videoUrl
+      controls
+      preload="metadata"
+      style="max-width:100%; margin-top:8px;"
+    )
+  else
+    p Video: No video submitted
+
+  if log.challengeId
+    p Type: Challenge Workout
+  else
+    p Type: Solo Workout
+
+  if log.exercises && log.exercises.length
+    h3 Exercises Performed
+
+    each ex in log.exercises
+      .exercise-card
+        h4= ex.name
+        p Target: #{ex.target}
+
+        if ex.gifURL
+          img(src=ex.gifURL alt=ex.name width="200")
+
+        if ex.set && ex.set.length
+          table(border="1" cellpadding="6" cellspacing="0")
+            thead
+              tr
+                th Set #
+                th Type
+                th Weight
+                th Reps
+                th Rest (sec)
+
+            tbody
+              each s in ex.set
+                tr
+                  td= s.setNumber
+                  td= s.type
+
+                  // 🔒 DONE → ALL READ ONLY
+                  if log.status === "done"
+                    td #{s.weight} #{s.unit}
+                    td= s.reps
+                    td= s.restSeconds
+                  else
+                    if s.type === "warmup"
+                      td #{s.weight} #{s.unit}
+                      td= s.reps
+                      td= s.restSeconds
+                    else
+                      td
+                        input(
+                          type="number"
+                          value=s.weight
+                          min='0'
+                          data-set-id=s._id
+                          data-field="weight"
+                          class="set-input"
+                        )
+                        |  #{s.unit}
+
+                      td
+                        input(
+                          type="number"
+                          min='8'
+                          max='12'
+                          value=s.reps
+                          data-set-id=s._id
+                          data-field="reps"
+                          class="set-input"
+                        )
+
+                      td= s.restSeconds
+
+  // 🔥 SAVE BUTTON ONLY WHEN ONGOING
+  if log.status !== "done"
+    button#saveSetsBtn Save Working Sets
+    p#setMessage
+
+  // 🔥 FINISH BUTTON ONLY WHEN ONGOING
+  if log.status !== "done"
+    input(
+      type="file"
+      accept="video/*"
+      class="video-input"
+      data-log-id=log._id
+      style="display:none"
+    )
+
+    button#finish-btn(
+      data-log-id=log._id
+      data-is-challenge=log.challengeId ? "true" : "false"
+		) Finish Workout
+
+  block scripts
+    script.
+      const finishBtn = document.querySelector("#finish-btn");
+      const saveBtn = document.querySelector("#saveSetsBtn");
+
+      if (finishBtn) {
+        finishBtn.addEventListener("click", async () => {
+          const workoutLogId = finishBtn.dataset.logId;
+          const isChallenge = finishBtn.dataset.isChallenge === "true";
+
+          const formData = new FormData();
+
+          // 🔥 Challenge → require video upload
+          if (isChallenge) {
+            const videoInput = document.querySelector(
+              `.video-input[data-log-id="${workoutLogId}"]`
+            );
+
+            videoInput.click();
+
+            videoInput.onchange = async () => {
+              if (!videoInput.files.length) {
+                alert("Video is required for challenge workouts.");
+                return;
+              }
+
+              formData.append("video", videoInput.files[0]);
+              await submitFinish(workoutLogId, formData);
+            };
+
+            return;
+          }
+
+          // Solo workout → no video
+          await submitFinish(workoutLogId, formData);
+        });
+      }
+
+      async function submitFinish(workoutLogId, formData) {
+        try {
+          const res = await fetch(
+            `/api/v1/workout-logs/${workoutLogId}/finish`,
+            {
+              method: "PATCH",
+              credentials: "include",
+              body: formData
+            }
+          );
+
+          const data = await res.json();
+
+          if (res.ok) {
+            alert("Workout finished!");
+            location.reload();
+          } else {
+            alert(data.message || "Failed to finish workout.");
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Something went wrong while finishing workout.");
+        }
+      }
+
+      if (saveBtn) {
+        saveBtn.addEventListener("click", async () => {
+          const inputs = document.querySelectorAll(".set-input");
+          const updates = [];
+
+          inputs.forEach((input) => {
+            const setId = input.dataset.setId;
+            const field = input.dataset.field;
+            const value = input.value;
+
+            let existing = updates.find((u) => u.setId === setId);
+            if (!existing) {
+              existing = { setId };
+              updates.push(existing);
+            }
+
+            existing[field] = value;
+          });
+
+          const res = await fetch(
+            `/api/v1/workout-logs/${"#{log._id}"}/sets/bulk`,
+            {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ updates })
+            }
+          );
+
+          const data = await res.json();
+
+          const msg = document.querySelector("#setMessage");
+          if (res.ok) {
+            msg.textContent = "Working sets saved successfully!";
+            msg.style.color = "green";
+          } else {
+            msg.textContent = data.message || "Failed to save sets";
+            msg.style.color = "red";
+          }
+        });
+      }

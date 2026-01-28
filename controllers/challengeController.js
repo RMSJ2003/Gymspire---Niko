@@ -13,72 +13,118 @@ const { enforceMuscleRest } = require("../services/restRule.service");
 exports.createChallenge = catchAsync(async (req, res, next) => {
   const { name, exerciseIds, startTime, endTime } = req.body;
 
-  // 0) Validate if exerciseIds is an array
-  if (!Array.isArray(exerciseIds) || exerciseIds.length === 0)
-    return next(new AppError("exerciseIds must be a non-empty array", 400));
+  // =========================
+  // 0) Validate name
+  // =========================
+  if (!name || typeof name !== "string" || name.trim().length === 0) {
+    return next(new AppError("Challenge name is required", 400));
+  }
 
-  // 1) Validate if exerciseIds array contain valid elements
+  // =========================
+  // 1) Validate start & end time existence
+  // =========================
+  if (!startTime || !endTime) {
+    return next(new AppError("Start time and end time are required", 400));
+  }
+
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+  const now = new Date();
+
+  // Invalid date format
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return next(new AppError("Invalid date format", 400));
+  }
+
+  // Start time must not be in the past
+  if (start < now) {
+    return next(new AppError("Start time cannot be in the past", 400));
+  }
+
+  // End time must be after start time
+  if (end <= start) {
+    return next(new AppError("End time must be after start time", 400));
+  }
+
+  // =========================
+  // 2) Validate exerciseIds array
+  // =========================
+  if (!Array.isArray(exerciseIds) || exerciseIds.length === 0) {
+    return next(new AppError("exerciseIds must be a non-empty array", 400));
+  }
+
+  // =========================
+  // 3) Validate ObjectId format
+  // =========================
   const validObjectIds = exerciseIds.filter((id) =>
-    mongoose.Types.ObjectId.isValid(id)
+    mongoose.Types.ObjectId.isValid(id),
   );
 
   const invalidFormatIds = exerciseIds.filter(
-    (id) => !mongoose.Types.ObjectId.isValid(id)
+    (id) => !mongoose.Types.ObjectId.isValid(id),
   );
 
   if (invalidFormatIds.length > 0) {
     return next(
       new AppError(
         `Invalid exerciseIds format: ${invalidFormatIds.join(", ")}`,
-        400
-      )
+        400,
+      ),
     );
   }
 
-  // 2) Fetch exercises
+  // =========================
+  // 4) Fetch exercises
+  // =========================
   const exercisesFromDb = await Exercise.find({
-    _id: {
-      $in: validObjectIds,
-    },
+    _id: { $in: validObjectIds },
   });
 
-  // 3) Validate existence
+  // =========================
+  // 5) Validate existence
+  // =========================
   const foundIds = exercisesFromDb.map((ex) => ex._id.toString());
 
   const notFoundIds = validObjectIds.filter((id) => !foundIds.includes(id));
 
   if (notFoundIds.length > 0) {
     return next(
-      new AppError(`ExerciseIds not found: ${notFoundIds.join(", ")}`, 400)
+      new AppError(`ExerciseIds not found: ${notFoundIds.join(", ")}`, 400),
     );
   }
 
-  // 4) Validate NO duplicate targets
+  // =========================
+  // 6) Validate NO duplicate targets
+  // =========================
   const targets = exercisesFromDb.map((ex) => ex.target);
   const uniqueTargets = new Set(targets);
 
   if (targets.length !== uniqueTargets.size) {
     return next(
-      new AppError("Each muscle group can only have ONE exercise.", 400)
+      new AppError("Each muscle group can only have ONE exercise.", 400),
     );
   }
 
-  // 5) Save ObjectIds of exercises
+  // =========================
+  // 7) Prepare data
+  // =========================
   const exercises = exercisesFromDb.map((ex) => ex._id);
-
-  // 6) Generate the join code
   const joinCode = generateJoinCode();
 
-  // 7) Create the challenge
+  // =========================
+  // 8) Create challenge
+  // =========================
   const newChallenge = await Challenge.create({
-    name,
+    name: name.trim(),
     joinCode,
-    startTime,
-    endTime,
+    startTime: start,
+    endTime: end,
     exercises,
   });
 
-  // 8) Send response
+  // =========================
+  // 9) Send response
+  // =========================
   res.status(200).json({
     status: "success",
     data: newChallenge,
@@ -87,7 +133,7 @@ exports.createChallenge = catchAsync(async (req, res, next) => {
 
 exports.joinChallenge = catchAsync(async (req, res, next) => {
   // ------------------------------------------------------------------
-  // STEP 1: Validate join code (challenge must exist)
+  // STEP 1: Validate join code
   // ------------------------------------------------------------------
   const challenge = req.challenge;
 
@@ -95,26 +141,30 @@ exports.joinChallenge = catchAsync(async (req, res, next) => {
     return next(new AppError("Invalid join code", 404));
   }
 
-  // // ------------------------------------------------------------------
-  // // STEP 2: Prevent joining if challenge already started or finished
-  // // ------------------------------------------------------------------
-  // const now = new Date();
+  // ------------------------------------------------------------------
+  // 🔥 STEP 2.5: Prevent coaches who already VERIFIED before from joining
+  // ------------------------------------------------------------------
+  if (req.user.userType === "coach") {
+    const hasVerifiedBefore = await WorkoutLog.exists({
+      verifiedBy: req.user._id,
+      judgeStatus: "approved",
+    });
 
-  // // Checks if the challenge has not started yet.
-  // if (now < challenge.startTime) return next(
-  //     new AppError('Challenge not started yet', 409)
-  // );
-
-  // // Checks if the challenge has ended already
-  // if (now > challenge.endTime) return next(
-  //     new AppError('Challenge has already ended', 409)
-  // );
+    if (hasVerifiedBefore) {
+      return next(
+        new AppError(
+          "You cannot join challenges because you have previously verified participants.",
+          403,
+        ),
+      );
+    }
+  }
 
   // ------------------------------------------------------------------
   // STEP 3: Prevent duplicate join
   // ------------------------------------------------------------------
   const alreadyJoined = challenge.participants.some(
-    (id) => id.toString() === req.user._id.toString()
+    (id) => id.toString() === req.user._id.toString(),
   );
 
   if (alreadyJoined) {
@@ -122,23 +172,19 @@ exports.joinChallenge = catchAsync(async (req, res, next) => {
   }
 
   // ------------------------------------------------------------------
-  // STEP 4: Fetch user's most recent workout (solo OR challenge)
+  // STEP 4: Fetch last workout
   // ------------------------------------------------------------------
   const lastWorkoutLog = await WorkoutLog.findOne({
     userId: req.user._id,
-  }).sort({
-    date: -1,
-  });
+  }).sort({ date: -1 });
 
   // ------------------------------------------------------------------
   // STEP 5: Extract challenge muscle targets
-  // (these are the muscles the challenge will train)
   // ------------------------------------------------------------------
   const challengeTargets = challenge.exercises.map((ex) => ex.target);
 
   // ------------------------------------------------------------------
-  // STEP 6: Enforce 24-hour muscle rest rule
-  // Uses shared domain service
+  // STEP 6: Enforce rest rule
   // ------------------------------------------------------------------
   try {
     enforceMuscleRest({
@@ -150,7 +196,7 @@ exports.joinChallenge = catchAsync(async (req, res, next) => {
   }
 
   // ------------------------------------------------------------------
-  // STEP 7: Successful join
+  // STEP 7: Join challenge
   // ------------------------------------------------------------------
   challenge.participants.push(req.user._id);
   await challenge.save();
@@ -276,4 +322,17 @@ exports.getLeaderboard = catchAsync(async (req, res, next) => {
     results: leaderboard.length,
     data: leaderboard,
   });
+});
+
+// Without JSON
+exports.acquireAllChallenges = catchAsync(async (req, res, next) => {
+  const challenges = await Challenge.find()
+    .populate("exerciseDetails")
+    .populate({
+      path: "participants",
+      select: "username pfpUrl", // only send what UI needs
+    });
+
+  req.challenges = challenges;
+  next();
 });
