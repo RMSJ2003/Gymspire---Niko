@@ -1,22 +1,25 @@
 extends base
 
+block styles
+  link(rel="stylesheet" href="/css/profile.css")
+
 block content 
-  h1 #{title} 
+  .profile-page
+    h1 #{title}
 
-  h2 #{user.username}
-  h2 #{user.email}
+    if user.pfpUrl
+      img.profile-pic(src=user.pfpUrl alt="Profile Picture")
+    else
+      img.profile-pic(src="/img/default-user.png" alt="Default Profile")
 
-  form(id="deleteForm")
-    button(type="submit") Delete Account
+    hr.profile-divider
 
-  if user.pfpUrl
-    img(src=user.pfpUrl alt="Profile Picture" width="150")
-  else
-    img(src="/img/default-user.png" alt="Default Profile" width="150")
+    .profile-details
+      h2 #{user.username}
+      h2 #{user.email}
 
+      form(id="deleteForm")
+        button(type="submit") Delete Account
 
-  a(href='/dashboard') Dashboard
-
-  a(href='/editProfile') Edit Profile
-
-  
+      a(href='/editProfile') Edit Profile
+      a(href='/dashboard') Dashboard

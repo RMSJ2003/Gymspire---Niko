@@ -25,11 +25,14 @@ block content
   // WELCOME SECTION
   // =========================
   .welcome-section
-    if user.pfpUrl
-      img.profile-pic(src=user.pfpUrl alt="Profile Picture")
-    else
-      img.profile-pic(src="/img/default-user.png" alt="Default Profile")
-    h2 Welcome, #{user.username}
+      img.app-logo(src="/img/gymlogo.jpg" alt="GymSpire Logo")
+      h2 Welcome, #{user.username}
+  //- .welcome-section
+  //-   if user.pfpUrl
+  //-     img.profile-pic(src=user.pfpUrl alt="Profile Picture")
+  //-   else
+  //-     img.profile-pic(src="/img/default-user.png" alt="Default Profile")
+  //-   h2 Welcome, #{user.username}
 
   // =========================
   // STATUS SECTION
