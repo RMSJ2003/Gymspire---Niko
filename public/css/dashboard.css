@@ -8,15 +8,10 @@
 }
 
 body {
-  background: #0b1220; /* dark gym vibe */
+  background: #0b1220;
   font-family: Arial, sans-serif;
   min-height: 100vh;
-  padding-top: 12vh; /* space for fixed navbar */
-}
-
-h2,
-h3,
-p {
+  padding-top: 12vh; /* navbar height */
   color: white;
 }
 
@@ -41,36 +36,6 @@ p {
   max-height: 3rem;
 }
 
-.nav-center {
-  display: flex;
-  gap: 2vw;
-}
-
-.nav-center a {
-  color: #cbd5f5;
-  text-decoration: none;
-  font-weight: 600;
-  position: relative;
-}
-
-.nav-center a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -0.2rem;
-  width: 0%;
-  height: 2px;
-  background: #22c55e;
-  transition: width 0.3s ease;
-}
-
-.nav-center a:hover::after {
-  width: 100%;
-}
-
-/* =========================
-   HAMBURGER PANEL
-========================= */
 .nav-right {
   position: relative;
 }
@@ -95,11 +60,12 @@ p {
   color: #020617;
 }
 
+/* SLIDE PANEL */
 .panel {
   position: fixed;
   top: 0;
   right: 0;
-  width: 10vw;
+  width: 12vw;
   min-width: 10rem;
   height: 100vh;
   background: #020617;
@@ -137,7 +103,7 @@ p {
 .welcome-section,
 .status-section {
   width: 100%;
-  min-height: 30vh;
+  min-height: 20vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -157,121 +123,157 @@ p {
 }
 
 /* =========================
-   DASHBOARD CARDS
+   DASHBOARD GRID
 ========================= */
-.container {
-  width: 100%;
-  height: 45vh;
-  display: flex;
-  margin: 4vh 0;
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 2rem;
+  padding: 2rem;
+  margin-top: 1rem;
 }
 
-/* LEFT SIDE */
-.left-container {
-  width: 50%;
-  height: 100%;
+.card {
+  background: #111827;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
   position: relative;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  overflow: hidden;
+  padding: 1rem;
+  height: 200px; /* fixed square height */
 }
 
-.bg-img {
-  position: absolute;
-  inset: 0;
+.card h3 {
+  margin-bottom: auto; /* pushes button to bottom */
+}
+
+.card-actions {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.buttons {
-  position: relative;
   display: flex;
-  gap: 1vw;
-  margin-bottom: 4vh;
-  z-index: 2;
+  justify-content: center; /* center items horizontally */
+  align-items: center;
+  gap: 0.5rem; /* small gap between button and info */
+  margin-top: 1rem;
 }
 
-.feature-btn-main {
-  padding: 1rem 2.5vw;
+.card-link {
+  padding: 0.5rem 1rem;
   background: #22c55e;
   color: white;
-  border: none;
-  border-radius: 0.6rem;
-  cursor: pointer;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
 }
 
-.feature-btn-clip {
-  width: 3.5rem;
-  height: 3.5rem;
+.card-link:hover {
+  background: #16a34a;
+}
+
+.info-btn {
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   border: none;
+  background: #cbd5f5;
+  color: #0b1220;
+  font-weight: bold;
   cursor: pointer;
-  background: white;
-  color: #22c55e;
-  font-size: 1.2rem;
-}
-
-.feature-btn-clip:hover {
-  background: #22c55e;
-  color: white;
-}
-
-/* RIGHT SIDE */
-.right-container {
-  width: 50%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-/* VIDEO CLIP EFFECT */
-.clip-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  transform: translateX(-100%);
-  transition: transform 0.7s ease;
-  z-index: 1;
-}
-
-.clip-video {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 /* =========================
-   RESPONSIVE
+   MOBILE MODAL
 ========================= */
+.modal {
+  position: fixed;
+  inset: 0; /* top:0; right:0; bottom:0; left:0 */
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center; /* vertically center */
+  justify-content: center; /* horizontally center */
+  z-index: 2000;
+  padding: 1rem;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  position: relative;
+  width: 90%;
+  max-width: 500px;
+  background: #111827;
+  border-radius: 1rem;
+  padding: 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem; /* space between video and text */
+}
+
+/* Close button */
+#closeModal {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: #22c55e;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  line-height: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 2.2rem;
+  height: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10; /* make sure it’s above the video */
+}
+
+/* Video clip at top */
+#modalVideo {
+  width: 100%;
+  max-height: 250px;
+  border-radius: 0.75rem;
+  object-fit: cover; /* keeps aspect ratio */
+}
+
+/* Text below video */
+#modalText {
+  color: white;
+  font-size: 1rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* MOBILE STYLING */
 @media (max-width: 900px) {
-  .nav-center {
-    display: none;
+  .dashboard {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 1.5rem;
   }
 
-  .container {
-    flex-direction: column;
+  .card {
     height: auto;
   }
 
-  .left-container,
-  .right-container {
-    width: 100%;
-    height: 35vh;
-  }
-}
-
-@media (max-width: 500px) {
-  .profile-pic {
-    width: 12vh;
-    height: 12vh;
+  #modalVideo {
+    height: 200px;
   }
 
-  .feature-btn-clip {
-    display: none;
+  .modal-content {
+    width: 95%;
+    padding: 0.8rem;
+  }
+
+  #modalText {
+    font-size: 0.95rem;
   }
 }

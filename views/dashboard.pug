@@ -4,6 +4,8 @@ block styles
   link(rel="stylesheet" href="/css/dashboard.css")
 
 block content
+
+
   // =========================
   // NAVBAR
   // =========================
@@ -11,12 +13,6 @@ block content
     .nav-logo
       a(href="/dashboard")
         img(src="/img/gymlogo.jpg" alt="GymSpire Logo")
-
-    .nav-center
-      a(href="/challenges") Challenges
-      a(href="/workoutPlan") Workout Plan
-      a(href="/workoutLogs") Workout Logs
-      a(href="/startSoloWorkout") Start Solo Workout
 
     .nav-right
       button.hamburger ☰
@@ -40,54 +36,56 @@ block content
   // =========================
   .status-section
     h3 GymSpire Time Status
-
     p
       if recommended
         strong Recommended to workout now
       else
         strong Not recommended to workout now
-
     p #{message}
-
     p
       | Current time:
-      -
-        const period = currentHour >= 12 ? "PM" : "AM"
-        const displayHour = currentHour % 12 || 12
+      - const period = currentHour >= 12 ? "PM" : "AM";
+      - const displayHour = currentHour % 12 || 12;
       span #{displayHour}:00 #{period}
-
     p
       | Current gym load:
       span #{currentLoad}
-
     p
       | Crowd level:
       span #{crowdLevel}
 
   // =========================
-  // DASHBOARD CARDS
+  // DASHBOARD GRID
   // =========================
-  -
-    const cards = [
-      { name: "Challenges", clip: "/clip/challenges.mp4" },
-      { name: "Workout Plan", clip: "/clip/workout_plan.mp4" },
-      { name: "Workout Logs", clip: "/clip/workout_logs.mp4" },
-      { name: "Start Solo Workout", clip: "/clip/solo.mp4" }
-    ]
-
-  each card, index in cards
-    .container
-      .left-container
-        img.bg-img(src="/img/1.jpg" alt=card.name)
-        .buttons
-          button.feature-btn-main #{card.name}
-          button.feature-btn-clip(data-index=index) &gt;
-
-      .right-container
-        .clip-overlay
-          video.clip-video(src=card.clip muted autoplay loop playsinline)
+  .dashboard
+    - const cards = ["Challenges", "Workout Plan", "Workout Logs", "Start Solo Workout"];
+    each item, index in cards
+      .card
+        h3 #{item}
+        .card-actions
+          a.card-link(href=`/${item.replace(" ", "").toLowerCase()}`) #{item}
+          button.info-btn(data-index=index title="More Info") i
 
   // =========================
-  // JS SCRIPT
+  // MODAL
+  // =========================
+  .modal.hidden#modal
+    .modal-content
+      button#closeModal ×
+      video#modalVideo(autoplay muted loop playsinline)
+      p#modalText
+
+  // =========================
+  // DASHBOARD JS
   // =========================
   script(src="/js/dashboard.js")
+
+
+
+
+
+
+  //- a(href="/challenges") Challenges
+  //-     a(href="/workoutPlan") Workout Plan
+  //-     a(href="/workoutLogs") Workout Logs
+  //-     a(href="/startSoloWorkout") Start Solo Workout
