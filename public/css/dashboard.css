@@ -7,16 +7,17 @@
   box-sizing: border-box;
 }
 
+body {
+  background: #0b1220; /* Recommended dark gym theme */
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  padding-top: 12vh; /* space for fixed navbar */
+}
+
 h2,
 h3,
 p {
-  color: rgb(255, 255, 255);
-}
-
-body {
-  background: #151414;
-  font-family: Arial, sans-serif;
-  min-height: 100vh;
+  color: white;
 }
 
 /* =========================
@@ -24,11 +25,16 @@ body {
 ========================= */
 .navbar {
   width: 100%;
-  background: #020617;
+  background: #1a1f33; /* Slightly lighter than body */
   padding: 1rem 2vw;
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
 }
 
 .nav-logo img {
@@ -36,7 +42,6 @@ body {
   max-height: 3rem;
 }
 
-/* Center links */
 .nav-center {
   display: flex;
   gap: 2vw;
@@ -65,7 +70,7 @@ body {
 }
 
 /* =========================
-   HAMBURGER + PANEL
+   HAMBURGER PANEL
 ========================= */
 .nav-right {
   position: relative;
@@ -84,7 +89,6 @@ body {
   border-radius: 0.5rem;
   color: #22c55e;
   cursor: pointer;
-  padding: 0;
 }
 
 .hamburger:hover {
@@ -163,7 +167,7 @@ body {
   margin: 4vh 0;
 }
 
-/* LEFT */
+/* LEFT SIDE */
 .left-container {
   width: 50%;
   height: 100%;
@@ -210,12 +214,7 @@ body {
   font-size: 1.2rem;
 }
 
-.feature-btn-clip:hover {
-  background: #22c55e;
-  color: white;
-}
-
-/* RIGHT */
+/* RIGHT SIDE */
 .right-container {
   width: 50%;
   height: 100%;
@@ -223,22 +222,33 @@ body {
   overflow: hidden;
 }
 
-/* CLIP EFFECT */
+/* =========================
+   VIDEO CLIP EFFECT
+========================= */
+/* VIDEO CLIP EFFECT WITH SLIDE */
 .clip-overlay {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to right,
-    rgba(34, 197, 94, 0.3),
-    rgba(34, 197, 94, 0.85)
-  );
-  transform: translateX(-100%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  transform: translateX(-100%); /* start off-screen left */
   transition: transform 0.7s ease;
+  pointer-events: none; /* let clicks pass through */
 }
 
-/* TRIGGER CLIP FROM LEFT OF RIGHT CONTAINER */
-.left-container:has(.feature-btn-clip:hover) + .right-container .clip-overlay {
-  transform: translateX(0);
+.clip-overlay.active {
+  transform: translateX(0); /* slide in */
+  pointer-events: auto;
+}
+
+.clip-video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* =========================

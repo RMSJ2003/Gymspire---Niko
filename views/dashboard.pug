@@ -74,9 +74,13 @@ block content
         img.bg-img(src="/img/1.jpg" alt=item)
         .buttons
           button.feature-btn-main #{item}
-          button.feature-btn-clip &gt;
+          button.feature-btn-clip(data-target=item) &gt;
 
       .right-container
         .clip-overlay
+          video.clip-video(src="/clip/vid_dashboard.mp4" muted autoplay loop playsinline)
 
+  // =========================
+  // JS SCRIPT
+  // =========================
   script(src="/js/dashboard.js")
