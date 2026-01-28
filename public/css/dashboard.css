@@ -175,12 +175,25 @@ body {
 .info-btn {
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: 50%;
-  border: none;
-  background: #cbd5f5;
-  color: #0b1220;
+  background: #020617; /* dark background */
+  border: 2px solid #22c55e; /* green border */
+  color: #22c55e; /* text color */
   font-weight: bold;
+  font-size: 1.2rem;
   cursor: pointer;
+  display: inline-flex; /* prevents stretching from parent flex */
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.4rem; /* small rounding like buttons */
+  line-height: 1;
+  box-sizing: border-box; /* ensures border doesn’t change size */
+  flex-shrink: 0; /* prevents shrinking in flex container */
+  transition: 0.3s;
+}
+
+.info-btn:hover {
+  background: #22c55e;
+  color: #020617;
 }
 
 /* =========================
@@ -216,24 +229,31 @@ body {
 }
 
 /* Close button */
+/* Modal close button and info buttons - same style */
 #closeModal {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: #22c55e;
-  border: none;
-  color: white;
-  font-size: 1.5rem;
+  position: absolute; /* keeps it on top of modal */
+  top: 0.5rem; /* distance from top */
+  right: 0.5rem; /* distance from right */
+  width: 2.5rem;
+  height: 2.5rem;
+  background: #020617;
+  border: 2px solid #22c55e;
+  color: #22c55e;
   font-weight: bold;
-  line-height: 1;
-  border-radius: 50%;
+  font-size: 1.2rem;
+  border-radius: 0.4rem;
   cursor: pointer;
-  width: 2.2rem;
-  height: 2.2rem;
-  display: flex;
+  display: flex; /* centers the × inside the button */
   align-items: center;
   justify-content: center;
-  z-index: 10; /* make sure it’s above the video */
+  line-height: 1;
+  z-index: 100; /* make sure it stays above video */
+  box-sizing: border-box; /* ensures border doesn’t push it out */
+}
+
+#closeModal:hover {
+  background: #22c55e;
+  color: #020617;
 }
 
 /* Video clip at top */
