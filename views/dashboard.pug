@@ -33,7 +33,6 @@ block content
       img.profile-pic(src=user.pfpUrl alt="Profile Picture")
     else
       img.profile-pic(src="/img/default-user.png" alt="Default Profile")
-
     h2 Welcome, #{user.username}
 
   // =========================
@@ -53,8 +52,8 @@ block content
     p
       | Current time:
       -
-        const period = currentHour >= 12 ? "PM" : "AM";
-        const displayHour = currentHour % 12 || 12;
+        const period = currentHour >= 12 ? "PM" : "AM"
+        const displayHour = currentHour % 12 || 12
       span #{displayHour}:00 #{period}
 
     p
@@ -68,17 +67,25 @@ block content
   // =========================
   // DASHBOARD CARDS
   // =========================
-  each item in ["Challenges", "Workout Plan", "Workout Logs", "Start Solo Workout"]
+  -
+    const cards = [
+      { name: "Challenges", clip: "/clip/challenges.mp4" },
+      { name: "Workout Plan", clip: "/clip/workout_plan.mp4" },
+      { name: "Workout Logs", clip: "/clip/workout_logs.mp4" },
+      { name: "Start Solo Workout", clip: "/clip/solo.mp4" }
+    ]
+
+  each card, index in cards
     .container
       .left-container
-        img.bg-img(src="/img/1.jpg" alt=item)
+        img.bg-img(src="/img/1.jpg" alt=card.name)
         .buttons
-          button.feature-btn-main #{item}
-          button.feature-btn-clip(data-target=item) &gt;
+          button.feature-btn-main #{card.name}
+          button.feature-btn-clip(data-index=index) &gt;
 
       .right-container
         .clip-overlay
-          video.clip-video(src="/clip/vid_dashboard.mp4" muted autoplay loop playsinline)
+          video.clip-video(src=card.clip muted autoplay loop playsinline)
 
   // =========================
   // JS SCRIPT
