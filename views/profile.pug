@@ -3,7 +3,12 @@ extends base
 block styles
   link(rel="stylesheet" href="/css/profile.css")
 
-block content 
+block content
+  // 🔹 TOP BAR
+  .top-bar
+    a.dashboard-btn(href='/dashboard') Dashboard
+    a.back-btn(href='javascript:history.back()') Back
+
   .profile-page
     .profile-card
       h1 #{title}
