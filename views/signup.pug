@@ -2,15 +2,13 @@ extends base
 
 block styles
   link(rel="stylesheet" href="/css/signup.css")
+
 block content
-	if !hideNavbar
-			include _navbar
-
-
   //- "novalidate" disables browser auto-submit
   //- We use AJAX for submit
   form(id='signupForm' novalidate)
     h2 Create Account
+
     // 🔥 Global message area
     p.form-message#formMessage
 
@@ -21,8 +19,8 @@ block content
     label(for='username') Username
     input(type='text' name='username' id='username' required)
 
-		label(for='pfpUrl') Profile Picture URL
-		input(type="file" name="pfp" id="pfp" accept="image/*")
+    label(for='pfpUrl') Profile Picture URL
+    input(type='file' name='pfp' id='pfp' accept='image/*')
 
     label(for='password') Password
     input(type='password' name='password' id='password' required)
@@ -37,5 +35,3 @@ block content
 
   block scripts
     script(src='/js/signup.js')
-
-
