@@ -80,18 +80,27 @@ body {
 /* ==========================
    MOBILE RESPONSIVE
 ========================== */
-@media (max-width: 600px) {
-  .exercise-card {
-    padding: 0.6rem 0.8rem;
+@media (max-width: 900px) {
+  .profile-card {
+    padding: 2rem 1rem;
   }
 
-  .top-buttons {
-    flex-direction: column;
-    gap: 0.5rem;
+  .profile-pic {
+    width: 140px;
+    height: 140px;
   }
 
-  .top-buttons a {
-    width: 100%;
-    text-align: center;
+  .profile-divider {
+    width: 70%;
+  }
+
+  .profile-details h2 {
+    font-size: 1rem;
+  }
+
+  .profile-actions a,
+  #deleteForm button {
+    min-width: 140px;
+    padding: 0.5rem 1.2rem;
   }
 }

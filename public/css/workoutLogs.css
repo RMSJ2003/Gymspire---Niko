@@ -1,0 +1,180 @@
+/* =========================
+   PAGE LAYOUT
+========================= */
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #1d2d4b, #1a1f2e);
+  color: white;
+  padding: 2rem 1rem;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* =========================
+   TOP BAR BUTTONS
+========================= */
+.top-bar {
+  position: fixed;
+  top: 1rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1rem;
+  z-index: 999;
+}
+
+.top-bar a {
+  padding: 0.5rem 1rem;
+  border: 2px solid #22c55e;
+  background-color: transparent;
+  color: #22c55e;
+  font-weight: bold;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.top-bar a:hover {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+/* =========================
+   CENTERED CONTENT
+========================= */
+.center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* horizontal center */
+  justify-content: flex-start;
+  text-align: center;
+  margin-top: 6rem; /* space below top bar */
+  gap: 1rem; /* spacing between elements */
+}
+
+/* =========================
+   PROFILE PICTURE
+========================= */
+.profile-pic {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #22c55e;
+  margin: 1rem 0;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.profile-pic:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(34, 197, 94, 0.5);
+}
+
+/* =========================
+   CREATE PERSONAL RECORD BUTTON
+========================= */
+a.create-challenge {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  background-color: #22c55e;
+  color: #020617;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: 0.3s;
+}
+
+a.create-challenge:hover {
+  background-color: #16a34a;
+}
+
+/* =========================
+   WORKOUT LOG CARD
+========================= */
+.workout-log-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 1rem;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  max-width: 450px;
+}
+
+.workout-log-card h3 {
+  color: #22c55e;
+  margin-bottom: 0.5rem;
+}
+
+/* =========================
+   FINISH BUTTON
+========================= */
+button.finish-btn {
+  background-color: #22c55e;
+  color: #020617;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: 0.3s;
+}
+
+button.finish-btn:hover {
+  background-color: #16a34a;
+}
+
+/* =========================
+   NO LOGS MESSAGE
+========================= */
+.no-logs-message {
+  text-align: center;
+  margin-top: 2rem;
+  font-weight: bold;
+  color: #f87171;
+}
+
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+@media (max-width: 600px) {
+  /* Keep top bar buttons SAME SIZE */
+  .top-bar a {
+    width: auto !important;
+    display: inline-block !important;
+    padding: 0.5rem 1rem; /* same as desktop */
+    font-size: inherit;
+  }
+
+  /* Center content spacing for small screens */
+  .center-content {
+    margin-top: 5rem;
+    gap: 1rem;
+  }
+
+  /* Profile pic */
+  .profile-pic {
+    width: 120px;
+    height: 120px;
+  }
+
+  /* Keep create button same size, but responsive */
+  a.create-challenge {
+    width: auto;
+    text-align: center;
+  }
+
+  /* Workout log card */
+  .workout-log-card {
+    padding: 1rem;
+  }
+
+  /* Finish button */
+  button.finish-btn {
+    width: 100%;
+  }
+}

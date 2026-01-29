@@ -4,7 +4,11 @@ block styles
   link(rel="stylesheet" href="/css/editProfile.css")
 
 block content
-  include _navbar
+  // 🔹 TOP BAR
+  .top-bar
+    a.dashboard-btn(href='/dashboard') Dashboard
+    a.back-btn(href='javascript:history.back()') Back
+
   .edit-profile-page
     .edit-card
       h1 #{title}

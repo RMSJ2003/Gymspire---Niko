@@ -1,6 +1,6 @@
-/* ==========================
-   GLOBAL RESET & FONT
-========================== */
+/* =========================
+   GLOBAL RESET
+========================= */
 * {
   margin: 0;
   padding: 0;
@@ -11,39 +11,42 @@ body {
   font-family: Arial, sans-serif;
   background: linear-gradient(135deg, #1d2d4b, #1a1f2e);
   color: white;
-  min-height: 100vh;
-  padding: 2rem 1rem;
+  padding: 5rem 1rem 2rem 1rem; /* space for fixed top bar */
 }
 
-/* ==========================
-   TOP BAR BUTTONS - BORDER STYLE LIKE WORKOUTPLAN
-========================== */
+/* =========================
+   TOP BAR (Dashboard / Back)
+========================= */
 .top-bar {
+  position: fixed;
+  top: 1rem;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  padding: 0 1rem;
+  z-index: 999;
 }
 
 .top-bar a {
-  padding: 0.5rem 1rem;
-  background-color: transparent; /* No background */
-  border: 2px solid #22c55e; /* Green border */
-  color: #22c55e; /* Green text */
+  padding: 0.5rem 1.2rem;
+  border: 2px solid #22c55e;
+  background: transparent;
+  color: #22c55e;
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
-  transition: 0.3s;
+  transition: 0.3s ease;
 }
 
 .top-bar a:hover {
-  background-color: #22c55e;
-  color: #020617;
+  background: rgba(34, 197, 94, 0.1);
 }
 
-/* ==========================
-   PROFILE PICTURE
-========================== */
+/* =========================
+   PROFILE PIC
+========================= */
 .profile-pic {
   width: 150px;
   height: 150px;
@@ -54,9 +57,9 @@ body {
   margin: 0 auto 1rem auto;
 }
 
-/* ==========================
+/* =========================
    CREATE CHALLENGE BUTTON
-========================== */
+========================= */
 .create-challenge {
   display: block;
   width: fit-content;
@@ -74,13 +77,12 @@ body {
   background-color: #16a34a;
 }
 
-/* ==========================
+/* =========================
    CHALLENGE CARDS
-========================== */
+========================= */
 .challenge-card {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(34, 197, 94, 0.3);
   border-radius: 1rem;
   padding: 1.5rem;
@@ -92,9 +94,9 @@ body {
   margin-bottom: 0.5rem;
 }
 
-/* ==========================
-   PARTICIPANTS ROW
-========================== */
+/* =========================
+   PARTICIPANTS
+========================= */
 .participants-row {
   display: flex;
   flex-wrap: wrap;
@@ -115,17 +117,17 @@ body {
   object-fit: cover;
 }
 
-/* ==========================
-   BUTTONS (JOIN, START, LEADERBOARD)
-========================== */
+/* =========================
+   BUTTONS
+========================= */
 button {
   cursor: pointer;
-  border: none;
   border-radius: 0.4rem;
   padding: 0.5rem 1rem;
   font-weight: bold;
   margin: 0.2rem 0.2rem 0.2rem 0;
   transition: 0.3s;
+  border: none;
 }
 
 .join-btn {
@@ -155,9 +157,9 @@ button {
   background-color: #d97706;
 }
 
-/* ==========================
+/* =========================
    REVIEW LINK
-========================== */
+========================= */
 .review-link {
   display: inline-block;
   margin-top: 0.5rem;
@@ -170,13 +172,9 @@ button {
   text-decoration: underline;
 }
 
-/* ==========================
-   LEADERBOARD CONTAINER
-========================== */
-.leaderboard-container {
-  margin-top: 10px;
-}
-
+/* =========================
+   LEADERBOARD
+========================= */
 .leaderboard-container table {
   width: 100%;
   border-collapse: collapse;
@@ -194,9 +192,9 @@ button {
   background-color: rgba(34, 197, 94, 0.2);
 }
 
-/* ==========================
+/* =========================
    EXERCISE CARDS
-========================== */
+========================= */
 .exercise-card {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(34, 197, 94, 0.2);
@@ -207,7 +205,6 @@ button {
 
 .exercise-card h4 {
   color: #22c55e;
-  margin-bottom: 0.3rem;
 }
 
 .exercise-gif {
@@ -216,12 +213,12 @@ button {
   margin: 0.3rem 0;
 }
 
-/* ==========================
-   JOIN STATUS MESSAGE
-========================== */
+/* =========================
+   JOIN STATUS
+========================= */
 .join-status {
   font-weight: bold;
-  color: green;
+  color: #22c55e;
   margin: 0.3rem 0;
 }
 
@@ -231,30 +228,30 @@ button {
   text-align: center;
 }
 
-/* ==========================
-   MOBILE RESPONSIVE
-========================== */
-@media (max-width: 600px) {
-  .participants-row {
-    flex-direction: column;
+/* =========================
+   📱 MOBILE FIX
+========================= */
+@media (max-width: 900px) {
+  .profile-card {
+    padding: 2rem 1rem;
   }
 
-  .exercise-card {
-    padding: 0.6rem 0.8rem;
+  .profile-pic {
+    width: 140px;
+    height: 140px;
   }
 
-  .create-challenge {
-    padding: 0.5rem 1rem;
+  .profile-divider {
+    width: 70%;
   }
 
-  button,
-  .top-bar a {
-    width: 100%;
-    margin-bottom: 0.5rem;
+  .profile-details h2 {
+    font-size: 1rem;
   }
 
-  .top-bar {
-    flex-direction: column;
-    align-items: stretch;
+  .profile-actions a,
+  #deleteForm button {
+    min-width: 140px;
+    padding: 0.5rem 1.2rem;
   }
 }

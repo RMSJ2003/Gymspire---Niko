@@ -1,69 +1,70 @@
 extends base
 
+block styles
+  link(rel="stylesheet" href="/css/workoutLogs.css")
+
 block content
-	include _navbar
-	h1 #{title}
 
-	h2 #{user.username}
+  // 🔹 TOP BAR
+  .top-bar
+    a.dashboard-btn(href='/dashboard') Dashboard
+    a.back-btn(href='javascript:history.back()') Back
 
-	if user.pfpUrl
-		img(src=user.pfpUrl alt="Profile Picture" width="150")
-	else	
-		img(src="/img/default-user.png" alt="Default Profile" width="150")
+  // 🔹 CENTERED CONTENT
+  .center-content
+    h1 #{title}
+    h2 #{user.username}
 
-	a(href="/personalRecord") My Personal Record
+    if user.pfpUrl
+      img.profile-pic(src=user.pfpUrl alt="Profile Picture")
+    else
+      img.profile-pic(src="/img/default-user.png" alt="Default Profile")
 
-	if workoutLogs.length === 0
-		p You have no workout logs yet.
-	else
-		each log in workoutLogs
-			.workout-log-card
-				a(href=`/workoutLogs/${log._id}`)
-					h3 Workout on #{log.date.toDateString()}
-					p Status: #{log.status}
+    a.create-challenge(href="/personalRecord") My Personal Record
 
-					if log.challengeId
-						p Type: Challenge
-						p Strength Score: #{log.strengthScore || "Not finished"}
-						p Judge Status: #{log.judgeStatus || "Pending"}
-						if log.judgeNotes
-							p Judge Notes: #{log.judgeNotes}
-						else
-							p Judge Notes: No judge notes yet
-						if log.verifiedBy && log.verifiedBy.username
-							p Verified by: #{log.verifiedBy.username}
-						else
-							p Verified by: Not verified yet
-						if log.videoUrl
-							p Video:
-							video(
-								src=log.videoUrl
-								controls
-								preload="metadata"
-								style="max-width:100%; margin-top:8px;"
-							)
-						else
-							p Video: No video submitted
-					else
-						p Type: Solo
+    if workoutLogs.length === 0
+      p.no-logs-message You have no workout logs yet.
+    else
+      each log in workoutLogs
+        .workout-log-card
+          a(href=`/workoutLogs/${log._id}`)
+            h3 Workout on #{log.date.toDateString()}
+            p Status: #{log.status}
 
-				// 🔥 FINISH BUTTON (ONLY IF NOT DONE)
-				if log.status !== "done"
-					input(
-						type="file"
-						accept="video/*"
-						class="video-input"
-						data-log-id=log._id
-						style="display:none"
-					)
+            if log.challengeId
+              p Type: Challenge
+              p Strength Score: #{log.strengthScore || "Not finished"}
+              p Judge Status: #{log.judgeStatus || "Pending"}
+              p Judge Notes: #{log.judgeNotes || "No judge notes yet"}
+              p Verified by: #{(log.verifiedBy && log.verifiedBy.username) || "Not verified yet"}
+              if log.videoUrl
+                p Video:
+                video(
+                  src=log.videoUrl
+                  controls
+                  preload="metadata"
+                  style="max-width:100%; margin-top:8px;"
+                )
+              else
+                p Video: No video submitted
+            else
+              p Type: Solo
 
-					button.finish-btn(
-						data-log-id=log._id
-						data-is-challenge=log.challengeId ? "true" : "false"
-					) Finish Workout
+          // 🔥 FINISH BUTTON (ONLY IF NOT DONE)
+          if log.status !== "done"
+            input(
+              type="file"
+              accept="video/*"
+              class="video-input"
+              data-log-id=log._id
+              style="display:none"
+            )
+            button.finish-btn(
+              data-log-id=log._id
+              data-is-challenge=log.challengeId ? "true" : "false"
+            ) Finish Workout
 
+  p#finishMessage
 
-	p#finishMessage
-
-	block scripts
-		script(src="/js/workoutLogs.js")
+block scripts
+  script(src="/js/workoutLogs.js")
