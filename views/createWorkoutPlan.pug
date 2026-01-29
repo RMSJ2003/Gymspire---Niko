@@ -10,41 +10,11 @@ block content
   else
     img(src="/img/default-user.png" alt="Default Profile" width="150")
 
-  a(href="/dashboard") Dashboard
-
+  // 🔥 CORRECT STRUCTURE
   if exercises.length === 0
     p No exercises available.
   else
-    form#createChallengeForm
-
-      // 🔥 Challenge Info
-      label(for="name") Challenge Name
-      input(
-        type="text"
-        name="name"
-        id="name"
-        required
-      )
-
-      label(for="startTime") Start Time
-      input(
-        type="datetime-local"
-        name="startTime"
-        id="startTime"
-        required
-      )
-
-      label(for="endTime") End Time
-      input(
-        type="datetime-local"
-        name="endTime"
-        id="endTime"
-        required
-      )
-
-      hr
-
-      // 🔥 Exercises
+    form(id="createWorkoutPlanForm")
       each exercise in exercises
         .exercise-card
           label
@@ -66,9 +36,9 @@ block content
                 each step in exercise.instructions
                   li= step
 
-      button(type="submit") Create Challenge
+      button(type="submit") Create Workout Plan
 
       p.form-message#formMessage
-
+  
   block scripts
-    script(src="/js/createChallenge.js")
+    script(src='/js/createWorkoutPlan.js')

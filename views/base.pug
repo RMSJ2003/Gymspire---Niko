@@ -1,21 +1,23 @@
 doctype html 
 
 html 
-    head 
-        meta(charset='UTF-8')
-        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+  head 
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
 
-        title Gymspire | #{title} 
+    title Gymspire | #{title} 
 
-        link(rel="stylesheet" href="/css/main.css")
-        block styles
-    body
-        //- include ./partials/navbar
+    link(rel="stylesheet" href="/css/main.css")
+    block styles
 
-        //- if error
-        //-     .alert.alert-error= error
+  body
+    //- include ./partials/navbar
 
-        //- This will be overwritten 
-        block content
+    //- if error
+    //-     .alert.alert-error= error
 
-        //- script(scr='/js/main.js')
+    //- This will be overwritten 
+    block content
+
+    // ✅ add this to allow pages to inject JS
+    block scripts

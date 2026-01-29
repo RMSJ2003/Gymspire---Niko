@@ -1,37 +1,41 @@
 extends base
 
+block styles
+  link(rel="stylesheet" href="/css/signup.css")
 block content
 	if !hideNavbar
 			include _navbar
 
 
-	//- "novalidate" disables browser auto-submit
-	//- We use AJAX for submit
-	form(id='signupForm' novalidate) 
-		// 🔥 Global message area
-		p.form-message#formMessage
+  //- "novalidate" disables browser auto-submit
+  //- We use AJAX for submit
+  form(id='signupForm' novalidate)
+    h2 Create Account
+    // 🔥 Global message area
+    p.form-message#formMessage
 
-		label(for='email') Email
-		input(type='email' name='email' id='email' required)
-		small.form-error#emailError
+    label(for='email') Email
+    input(type='email' name='email' id='email' required)
+    small.form-error#emailError
 
-		label(for='username') Username
-		input(type='text' name='username' id='username' required)
+    label(for='username') Username
+    input(type='text' name='username' id='username' required)
 
 		label(for='pfpUrl') Profile Picture URL
 		input(type="file" name="pfp" id="pfp" accept="image/*")
 
-		label(for='password') Password
-		input(type='password' name='password' id='password' required)
-		small.form-error#passwordError
+    label(for='password') Password
+    input(type='password' name='password' id='password' required)
+    small.form-error#passwordError
 
-		label(for='passwordConfirm') Confirm Password
-		input(type='password' name='passwordConfirm' id='passwordConfirm' required)
-		small.form-error#passwordConfirmError
+    label(for='passwordConfirm') Confirm Password
+    input(type='password' name='passwordConfirm' id='passwordConfirm' required)
+    small.form-error#passwordConfirmError
 
-		button(type='submit' id='submitBtn')
-			span.btn-text Create Account
+    button(type='submit' id='submitBtn')
+      span.btn-text Create Account
 
-	block scripts
-		script(src='/js/signup.js')
+  block scripts
+    script(src='/js/signup.js')
+
 
