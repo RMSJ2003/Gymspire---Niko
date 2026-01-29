@@ -80,6 +80,8 @@ exports.challenges = catchAsync(async (req, res, next) => {
 });
 
 exports.workoutLogs = catchAsync(async (req, res, next) => {
+  console.log(req.workoutLogs)
+
   res.status(200).render("workoutLogs", {
     title: "My Workout Logs",
     user: req.user,
@@ -130,17 +132,15 @@ exports.editWorkoutPlan = catchAsync(async (req, res, next) => {
   const exercises = req.exercises || [];
   const workoutPlan = req.workoutPlan;
 
-  // Extract current selected IDs
-  const selectedIds = workoutPlan
-    ? workoutPlan.exercises.map((id) => id.toString())
-    : [];
+  // ✅ exerciseIds are already strings
+  const selectedIds = workoutPlan ? workoutPlan.exerciseIds : [];
 
-  // 🔥 REORDER EXERCISES: checked first, unchecked after
+  // 🔥 Reorder: selected first
   const selectedExercises = [];
   const unselectedExercises = [];
 
   exercises.forEach((exercise) => {
-    if (selectedIds.includes(exercise._id.toString())) {
+    if (selectedIds.includes(exercise.exerciseId)) {
       selectedExercises.push(exercise);
     } else {
       unselectedExercises.push(exercise);
@@ -152,8 +152,8 @@ exports.editWorkoutPlan = catchAsync(async (req, res, next) => {
   res.status(200).render("editWorkoutPlan", {
     title: "Edit Workout Plan",
     user: req.user,
-    exercises: orderedExercises, // 👈 reordered list
-    selectedIds,
+    exercises: orderedExercises,
+    selectedIds, // array of exerciseId strings
   });
 });
 
@@ -189,7 +189,6 @@ exports.users = catchAsync(async (req, res, next) => {
 });
 
 exports.createAdmin = catchAsync(async (req, res, next) => {
-  
   res.status(200).render("admin/createAdmin", {
     title: "Create Admin",
     currentUser: req.user,
@@ -197,7 +196,6 @@ exports.createAdmin = catchAsync(async (req, res, next) => {
 });
 
 exports.createCoach = catchAsync(async (req, res, next) => {
-  
   res.status(200).render("admin/createCoach", {
     title: "Create Coach",
     currentUser: req.user,
@@ -205,7 +203,6 @@ exports.createCoach = catchAsync(async (req, res, next) => {
 });
 
 exports.exercisesManagement = catchAsync(async (req, res, next) => {
-  
   res.status(200).render("admin/exercisesManagement", {
     title: "Exercises Management (with dumbbells)",
     exercises: req.exercises,

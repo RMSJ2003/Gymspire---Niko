@@ -12,18 +12,46 @@ block content
 
   a(href="/dashboard") Dashboard
 
-  // 🔥 CORRECT STRUCTURE
   if exercises.length === 0
     p No exercises available.
   else
-    form(id="createWorkoutPlanForm")
+    form#createChallengeForm
+
+      // 🔥 Challenge Info
+      label(for="name") Challenge Name
+      input(
+        type="text"
+        name="name"
+        id="name"
+        required
+      )
+
+      label(for="startTime") Start Time
+      input(
+        type="datetime-local"
+        name="startTime"
+        id="startTime"
+        required
+      )
+
+      label(for="endTime") End Time
+      input(
+        type="datetime-local"
+        name="endTime"
+        id="endTime"
+        required
+      )
+
+      hr
+
+      // 🔥 Exercises
       each exercise in exercises
         .exercise-card
           label
             input(
               type="checkbox"
               name="exerciseIds"
-              value=exercise._id
+              value=exercise.exerciseId
             )
 
             h3= exercise.name
@@ -38,9 +66,9 @@ block content
                 each step in exercise.instructions
                   li= step
 
-      button(type="submit") Create Workout Plan
+      button(type="submit") Create Challenge
 
       p.form-message#formMessage
-  
+
   block scripts
-    script(src='/js/createWorkoutPlan.js')
+    script(src="/js/createChallenge.js")

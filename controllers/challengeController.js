@@ -129,7 +129,7 @@ exports.createChallenge = catchAsync(async (req, res, next) => {
     status: "success",
     data: newChallenge,
   });
-});
+}); 
 
 exports.joinChallenge = catchAsync(async (req, res, next) => {
   // ------------------------------------------------------------------

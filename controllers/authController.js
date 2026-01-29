@@ -113,9 +113,12 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 
 exports.createCoach = catchAsync(async (req, res, next) => {
-  const { email, username, password, passwordConfirm, pfpUrl } = req.body;
+  const { email, username, password, passwordConfirm } = req.body;
 
-  // 1) Validate password strength (business logic)
+  if (!password) {
+    return next(new AppError("Password is required", 400));
+  }
+
   if (!isStrongPassword(password)) {
     return next(
       new AppError(
@@ -125,24 +128,30 @@ exports.createCoach = catchAsync(async (req, res, next) => {
     );
   }
 
-  const existingUser = await User.findOne({ email: req.body.email }).select(
-    "+active",
-  );
-
+  const existingUser = await User.findOne({ email }).select("+active");
   if (existingUser) {
-    if (existingUser.active === false) {
-      return next(
-        new AppError(
-          "This email belongs to a deactivated account. Please contact support.",
-          400,
-        ),
-      );
-    }
-
     return next(new AppError("Email already in use", 400));
   }
 
-  // 2) Create user (coach)
+  // 🔥 HANDLE IMAGE
+  let pfpUrl;
+  if (req.file) {
+    const ext = req.file.mimetype.split("/")[1];
+    const filename = `coach-${Date.now()}.${ext}`;
+
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "public",
+      "img",
+      "users",
+      filename,
+    );
+
+    fs.writeFileSync(filePath, req.file.buffer);
+    pfpUrl = `/img/users/${filename}`;
+  }
+
   const newUser = await User.create({
     email,
     username,
@@ -152,8 +161,85 @@ exports.createCoach = catchAsync(async (req, res, next) => {
     userType: "coach",
   });
 
-  createSendToken(newUser, 201, res);
+  res.status(201).json({
+    status: "success",
+    message: "Coach account created successfully",
+    data: {
+      user: {
+        id: newUser._id,
+        email: newUser.email,
+        username: newUser.username,
+        userType: newUser.userType,
+        pfpUrl: newUser.pfpUrl,
+      },
+    },
+  });
 });
+
+exports.createAdmin = catchAsync(async (req, res, next) => {
+  const { email, username, password, passwordConfirm } = req.body;
+
+  if (!password) {
+    return next(new AppError("Password is required", 400));
+  }
+
+  if (!isStrongPassword(password)) {
+    return next(
+      new AppError(
+        "Password must be at least 8 characters long and contain at least one letter and one number.",
+        400,
+      ),
+    );
+  }
+
+  const existingUser = await User.findOne({ email }).select("+active");
+  if (existingUser) {
+    return next(new AppError("Email already in use", 400));
+  }
+
+  // 🔥 HANDLE IMAGE
+  let pfpUrl;
+  if (req.file) {
+    const ext = req.file.mimetype.split("/")[1];
+    const filename = `admin-${Date.now()}.${ext}`;
+
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "public",
+      "img",
+      "users",
+      filename,
+    );
+
+    fs.writeFileSync(filePath, req.file.buffer);
+    pfpUrl = `/img/users/${filename}`;
+  }
+
+  const newUser = await User.create({
+    email,
+    username,
+    password,
+    passwordConfirm,
+    pfpUrl,
+    userType: "coach",
+  });
+
+  res.status(201).json({
+    status: "success",
+    message: "Coach account created successfully",
+    data: {
+      user: {
+        id: newUser._id,
+        email: newUser.email,
+        username: newUser.username,
+        userType: newUser.userType,
+        pfpUrl: newUser.pfpUrl,
+      },
+    },
+  });
+});
+
 
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;

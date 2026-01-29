@@ -11,3 +11,32 @@ block content
 		img(src=user.pfpUrl alt="Profile Picture" width="150")
 	else
 		img(src="/img/default-user.png" alt="Default Profile" width="150")
+
+	form(id='createAdminForm' novalidate) 
+		// 🔥 Global message area
+		p.form-message#formMessage
+
+		label(for='email') Email
+		input(type='email' name='email' id='email' required)
+		small.form-error#emailError
+
+		label(for='username') Username
+		input(type='text' name='username' id='username' required)
+
+		label(for='pfp') Profile Picture URL
+		input(type="file" name="pfp" id="pfp" accept="image/*")
+
+		label(for='password') Password
+		input(type='password' name='password' id='password' required)
+		small.form-error#passwordError
+
+		label(for='passwordConfirm') Confirm Password
+		input(type='password' name='passwordConfirm' id='passwordConfirm' required)
+		small.form-error#passwordConfirmError
+
+		button(type='submit' id='submitBtn')
+			span.btn-text Create Admin
+
+	block scripts
+		script(src='/js/createAdmin.js')
+

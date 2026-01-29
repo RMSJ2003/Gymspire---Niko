@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
       importMessage.style.color = "#333";
 
       try {
-        const res = await fetch("/api/v1/exercise-db", {
+        const res = await fetch("/api/v1/exercise-db-api", {
           method: "GET",
           credentials: "include",
         });
@@ -82,6 +82,16 @@ document.addEventListener("DOMContentLoaded", () => {
           credentials: "include",
         });
 
+        // ✅ 204 = success but no body
+        if (res.status === 204) {
+          deleteMessage.textContent = "All exercises deleted successfully.";
+          deleteMessage.style.color = "green";
+
+          setTimeout(() => window.location.reload(), 800);
+          return;
+        }
+
+        // For non-204 responses, safely parse JSON
         const data = await res.json();
 
         if (!res.ok) {

@@ -24,21 +24,16 @@ block content
 
 					if log.challengeId
 						p Type: Challenge
-
 						p Strength Score: #{log.strengthScore || "Not finished"}
-
 						p Judge Status: #{log.judgeStatus || "Pending"}
-
 						if log.judgeNotes
 							p Judge Notes: #{log.judgeNotes}
 						else
 							p Judge Notes: No judge notes yet
-
 						if log.verifiedBy && log.verifiedBy.username
 							p Verified by: #{log.verifiedBy.username}
 						else
 							p Verified by: Not verified yet
-
 						if log.videoUrl
 							p Video:
 							video(
@@ -49,7 +44,6 @@ block content
 							)
 						else
 							p Video: No video submitted
-
 					else
 						p Type: Solo
 

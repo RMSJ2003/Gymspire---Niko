@@ -19,7 +19,7 @@ exports.importApiExercises = catchAsync(async (req, res, next) => {
             const response = await axios.get(baseURL, {
                 params: {
                     offset: 0,
-                    limit: 500, // 🔥 LOWER LIMIT
+                    limit: 25, // 🔥 LOWER LIMIT
                     muscles: muscle, // ✅ correct key
                     equipment: 'dumbbell'
                 }

@@ -16,7 +16,6 @@ form.addEventListener("submit", async (e) => {
   }
 
   const exerciseIds = Array.from(checked).map((input) => input.value);
-
   try {
     const res = await fetch("/api/v1/workout-plans", {
       method: "POST",

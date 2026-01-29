@@ -5,20 +5,19 @@ const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
 exports.createMyWorkoutPlan = catchAsync(async (req, res, next) => {
-  const { exerciseIds } = req.body;
+  let { exerciseIds } = req.body;
 
-  // 0) Validate input
+  // 0️⃣ Must be a non-empty array
   if (!Array.isArray(exerciseIds) || exerciseIds.length === 0) {
-    return next(new AppError("Please provide an array of exercise _ids", 400));
+    return next(new AppError("exerciseIds must be a non-empty array", 400));
   }
 
-  // 1) Validate ObjectId FORMAT first
-  const validObjectIds = exerciseIds.filter((id) =>
-    mongoose.Types.ObjectId.isValid(id),
-  );
+  // 1️⃣ Remove duplicates
+  exerciseIds = [...new Set(exerciseIds)];
 
+  // 2️⃣ Validate format (ExerciseDB IDs are strings)
   const invalidFormatIds = exerciseIds.filter(
-    (id) => !mongoose.Types.ObjectId.isValid(id),
+    (id) => typeof id !== "string" || id.trim() === "",
   );
 
   if (invalidFormatIds.length > 0) {
@@ -30,17 +29,15 @@ exports.createMyWorkoutPlan = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 2) Fetch exercises
+  // 3️⃣ Fetch exercises using exerciseId
   const exercisesFromDb = await Exercise.find({
-    _id: {
-      $in: validObjectIds,
-    },
+    exerciseId: { $in: exerciseIds },
   });
 
-  // 3) Validate existence
-  const foundIds = exercisesFromDb.map((ex) => ex._id.toString());
+  // 4️⃣ Validate existence
+  const foundIds = exercisesFromDb.map((ex) => ex.exerciseId);
 
-  const notFoundIds = validObjectIds.filter((id) => !foundIds.includes(id));
+  const notFoundIds = exerciseIds.filter((id) => !foundIds.includes(id));
 
   if (notFoundIds.length > 0) {
     return next(
@@ -48,7 +45,7 @@ exports.createMyWorkoutPlan = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 4) Validate NO duplicate targets
+  // 5️⃣ Validate NO duplicate targets (muscle groups)
   const targets = exercisesFromDb.map((ex) => ex.target);
   const uniqueTargets = new Set(targets);
 
@@ -58,7 +55,7 @@ exports.createMyWorkoutPlan = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 5) Guard: one workout plan per user
+  // 6️⃣ Guard: one workout plan per user
   const existingWorkoutPlan = await WorkoutPlan.findOne({
     userId: req.user._id,
   });
@@ -67,12 +64,10 @@ exports.createMyWorkoutPlan = catchAsync(async (req, res, next) => {
     return next(new AppError("You already have a workout plan.", 400));
   }
 
-  // 6) Save ObjectIds
-  const exercises = exercisesFromDb.map((ex) => ex._id);
-
+  // 7️⃣ Create workout plan
   const newWorkoutPlan = await WorkoutPlan.create({
     userId: req.user._id,
-    exercises,
+    exerciseIds, // 🔥 Store ExerciseDB IDs
   });
 
   res.status(201).json({
@@ -91,42 +86,25 @@ exports.getMyWorkoutPlan = catchAsync(async (req, res, next) => {
 });
 
 exports.updateMyWorkoutPlan = catchAsync(async (req, res, next) => {
-  const { exerciseIds } = req.body;
+  let { exerciseIds } = req.body;
 
   // 0) Validate input
   if (!Array.isArray(exerciseIds) || exerciseIds.length === 0) {
-    return next(new AppError("Please provide an array of exercise _ids", 400));
+    return next(new AppError("Please provide an array of exerciseIds", 400));
   }
 
-  // 1) Validate ObjectId FORMAT first
-  const validObjectIds = exerciseIds.filter((id) =>
-    mongoose.Types.ObjectId.isValid(id),
-  );
+  // 1) Normalize & dedupe (🔥 important)
+  exerciseIds = [...new Set(exerciseIds.map(String))];
 
-  const invalidFormatIds = exerciseIds.filter(
-    (id) => !mongoose.Types.ObjectId.isValid(id),
-  );
-
-  if (invalidFormatIds.length > 0) {
-    return next(
-      new AppError(
-        `Invalid exerciseIds format: ${invalidFormatIds.join(", ")}`,
-        400,
-      ),
-    );
-  }
-
-  // 2) Fetch exercises
+  // 2) Fetch exercises by exerciseId (NOT _id)
   const exercisesFromDb = await Exercise.find({
-    _id: {
-      $in: validObjectIds,
-    },
+    exerciseId: { $in: exerciseIds },
   });
 
   // 3) Validate existence
-  const foundIds = exercisesFromDb.map((ex) => ex._id.toString());
+  const foundIds = exercisesFromDb.map((ex) => ex.exerciseId);
 
-  const notFoundIds = validObjectIds.filter((id) => !foundIds.includes(id));
+  const notFoundIds = exerciseIds.filter((id) => !foundIds.includes(id));
 
   if (notFoundIds.length > 0) {
     return next(
@@ -144,16 +122,10 @@ exports.updateMyWorkoutPlan = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 5) Update workout plan
-  const exercises = exercisesFromDb.map((ex) => ex._id);
-
+  // 5) Update workout plan with exerciseIds (strings)
   const updatedWorkoutPlan = await WorkoutPlan.findOneAndUpdate(
-    {
-      userId: req.user._id,
-    },
-    {
-      exercises,
-    },
+    { userId: req.user._id },
+    { exerciseIds },
     {
       new: true,
       runValidators: true,
@@ -189,7 +161,8 @@ exports.acquireMyWorkoutPlan = catchAsync(async (req, res, next) => {
   }).populate("exerciseDetails");
 
   if (!workoutPlan) {
-    req.message = 'You do not have a workout plan yet. Please create one first.';
+    req.message =
+      "You do not have a workout plan yet. Please create one first.";
     return next();
   }
 
