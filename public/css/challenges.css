@@ -1,0 +1,224 @@
+/* ==========================
+   GLOBAL RESET & FONT
+========================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #1d2d4b, #1a1f2e);
+  color: white;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
+/* ==========================
+   PROFILE PICTURE
+========================== */
+.profile-pic {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #22c55e;
+  display: block;
+  margin: 0 auto 1rem auto;
+}
+
+/* ==========================
+   CREATE CHALLENGE BUTTON
+========================== */
+.create-challenge {
+  display: block;
+  width: fit-content;
+  margin: 1rem auto;
+  padding: 0.6rem 1.2rem;
+  background-color: #22c55e;
+  color: #020617;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: 0.3s;
+}
+
+.create-challenge:hover {
+  background-color: #16a34a;
+}
+
+/* ==========================
+   CHALLENGE CARDS
+========================== */
+.challenge-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.challenge-card h2 {
+  color: #22c55e;
+  margin-bottom: 0.5rem;
+}
+
+.participants-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.participant {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.participant img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ==========================
+   BUTTONS
+========================== */
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 0.4rem;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  margin: 0.2rem 0.2rem 0.2rem 0;
+  transition: 0.3s;
+}
+
+.join-btn {
+  background-color: #22c55e;
+  color: #020617;
+}
+
+.join-btn:hover {
+  background-color: #16a34a;
+}
+
+.start-btn {
+  background-color: #2563eb;
+  color: white;
+}
+
+.start-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.leaderboard-btn {
+  background-color: #f59e0b;
+  color: #020617;
+}
+
+.leaderboard-btn:hover {
+  background-color: #d97706;
+}
+
+/* ==========================
+   REVIEW LINK
+========================== */
+.review-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #22c55e;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.review-link:hover {
+  text-decoration: underline;
+}
+
+/* ==========================
+   LEADERBOARD CONTAINER
+========================== */
+.leaderboard-container {
+  margin-top: 10px;
+}
+
+.leaderboard-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+.leaderboard-container th,
+.leaderboard-container td {
+  border: 1px solid #22c55e;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.leaderboard-container th {
+  background-color: rgba(34, 197, 94, 0.2);
+}
+
+/* ==========================
+   EXERCISE CARDS
+========================== */
+.exercise-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 0.6rem;
+  padding: 0.8rem 1rem;
+  margin: 0.5rem 0;
+}
+
+.exercise-card h4 {
+  color: #22c55e;
+  margin-bottom: 0.3rem;
+}
+
+.exercise-gif {
+  max-width: 200px;
+  border-radius: 0.5rem;
+  margin: 0.3rem 0;
+}
+
+/* ==========================
+   JOIN STATUS MESSAGE
+========================== */
+.join-status {
+  font-weight: bold;
+  color: green;
+  margin: 0.3rem 0;
+}
+
+#joinMessage {
+  margin-top: 1rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* ==========================
+   MOBILE RESPONSIVE
+========================== */
+@media (max-width: 600px) {
+  .participants-row {
+    flex-direction: column;
+  }
+
+  .exercise-card {
+    padding: 0.6rem 0.8rem;
+  }
+
+  .create-challenge {
+    padding: 0.5rem 1rem;
+  }
+
+  button {
+    width: 100%;
+  }
+}

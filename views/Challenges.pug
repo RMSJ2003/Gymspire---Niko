@@ -1,94 +1,77 @@
 extends base
 
+block styles
+  link(rel="stylesheet" href="/css/challenges.css")
+
 block content
-	include _navbar
+  include _navbar
 
-	h1 #{title}
+  .dashboard-header
+    a.dashboard-link(href="/dashboard") Dashboard
+    a.logout-link(href="/logout") Logout
 
-	h2 #{user.username}
+  h1 #{title}
+  h2 #{user.username}
 
-	if user.pfpUrl
-		img(src=user.pfpUrl alt="Profile Picture" width="150")
-	else
-		img(src="/img/default-user.png" alt="Default Profile" width="150")
+  if user.pfpUrl
+    img.profile-pic(src=user.pfpUrl alt="Profile Picture")
+  else
+    img.profile-pic(src="/img/default-user.png" alt="Default Profile")
 
-	a(href='/createChallenge') Create Challenge
+  a.create-challenge(href='/createChallenge') Create Challenge
 
-	if challenges.length === 0
-		p No challenges available.
-	else
-		each challenge in challenges
-			.challenge-card
-				h2= challenge.name
-				p Join Code: #{challenge.joinCode}
-				p Starts: #{challenge.startTime.toDateString()}
-				p Ends: #{challenge.endTime.toDateString()}
-				p Participants: #{challenge.participants.length}
+  if challenges.length === 0
+    p.no-challenges No challenges available.
+  else
+    each challenge in challenges
+      .challenge-card
+        h2= challenge.name
+        p Join Code: #{challenge.joinCode}
+        p Starts: #{challenge.startTime.toDateString()}
+        p Ends: #{challenge.endTime.toDateString()}
+        p Participants: #{challenge.participants.length}
 
-				if challenge.participants.length
-					.participants-row
-						each p in challenge.participants
-							.participant
-								if p.pfpUrl
-									img(src=p.pfpUrl alt=p.username width="40")
-								else
-									img(src="/img/default-user.png" width="40")
+        if challenge.participants.length
+          .participants-row
+            each p in challenge.participants
+              .participant
+                if p.pfpUrl
+                  img(src=p.pfpUrl alt=p.username width="40")
+                else
+                  img(src="/img/default-user.png" width="40")
+                span.username= p.username
 
-								span= p.username
+        - const alreadyJoined = challenge.participants.some(p => p._id.toString() === user._id.toString())
 
-				// 🔥 CHECK IF USER ALREADY JOINED
-				- const alreadyJoined = challenge.participants.some(p => p._id.toString() === user._id.toString())
+        if alreadyJoined
+          p.join-status You already joined this challenge
+        else
+          button.join-btn(data-join-code=challenge.joinCode) Join Challenge
 
-				if alreadyJoined
-					p(style="color: green; font-weight: bold") You already joined this challenge
-				else
-					button.join-btn(
-						data-join-code=challenge.joinCode
-					) Join Challenge
+        if alreadyJoined
+          button.start-btn(data-challenge-id=challenge._id) Start Challenge
 
-				// 🔥 START CHALLENGE BUTTON (only if joined)
-				if alreadyJoined
-					button.start-btn(
-						data-challenge-id=challenge._id
-					) Start Challenge
+        button.leaderboard-btn(data-challenge-id=challenge._id) View Leaderboard
 
-				// 🔥 LEADERBOARD BUTTON
-				button.leaderboard-btn(
-					data-challenge-id=challenge._id
-				) View Leaderboard
+        if user.userType === 'coach'
+          a.review-link(href=`/reviewSubmissions/${challenge._id}`) Review Submissions
 
-				// Review Submissions (per challenge)
-				if user.userType === 'coach'
-					a(
-						href=`/reviewSubmissions/${challenge._id}`
-						style="display:inline-block; margin-top:10px;"
-					) Review Submissions
+        .leaderboard-container(id=`leaderboard-${challenge._id}` style="display:none; margin-top:10px;")
 
+        if challenge.exerciseDetails && challenge.exerciseDetails.length
+          h3 Exercises in this challenge:
+          each exercise in challenge.exerciseDetails
+            .exercise-card
+              h4= exercise.name
+              p Target: #{exercise.target}
+              if exercise.gifURL
+                img.exercise-gif(src=exercise.gifURL alt=exercise.name width="200")
+              if exercise.instructions && exercise.instructions.length
+                ul
+                  each step in exercise.instructions
+                    li= step
 
-				// 🔥 LEADERBOARD CONTAINER (initially empty / hidden)
-				.leaderboard-container(
-					id=`leaderboard-${challenge._id}`
-					style="display:none; margin-top:15px;"
-				)
+  p#joinMessage
 
-				// Show exercises
-				if challenge.exerciseDetails && challenge.exerciseDetails.length
-					h3 Exercises in this challenge:
-
-					each exercise in challenge.exerciseDetails
-						.exercise-card
-							h4= exercise.name
-							p Target: #{exercise.target}
-
-							if exercise.gifURL
-								img(src=exercise.gifURL alt=exercise.name width="200")
-
-							if exercise.instructions && exercise.instructions.length
-								ul
-									each step in exercise.instructions
-										li= step
-
-	p#joinMessage
-
-	block scripts
-		script(src="/js/challenges.js")
+block scripts
+  script(src="/js/challenges.js")
