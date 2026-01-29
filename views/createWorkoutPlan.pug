@@ -1,5 +1,9 @@
 extends base
 
+block styles
+  link(rel="stylesheet" href="/css/dashboard.css")
+  link(rel="stylesheet" href="/css/createWorkoutPlan.css")
+
 block content
   h1 #{title}
 
@@ -10,37 +14,36 @@ block content
   else
     img(src="/img/default-user.png" alt="Default Profile" width="150")
 
-  a(href="/dashboard") Dashboard
+  a(href="/dashboard") ← Dashboard
 
-  // 🔥 CORRECT STRUCTURE
   if exercises.length === 0
     p No exercises available.
   else
-    form(id="createWorkoutPlanForm")
-      each exercise in exercises
-        .exercise-card
-          label
-            input(
-              type="checkbox"
-              name="exerciseIds"
-              value=exercise._id
-            )
+    form#createWorkoutPlanForm
+      .exercise-container
+        each exercise, index in exercises
+          .exercise-card
+            label
+              input(type="checkbox" name="exerciseIds" value=exercise._id)
+              h3= exercise.name
+              p Target: #{exercise.target}
 
-            h3= exercise.name
-            p Target: #{exercise.target}
-
-            if exercise.gifURL
-              img(src=exercise.gifURL alt=exercise.name width="200")
-
-            if exercise.instructions && exercise.instructions.length
-              h4 Instructions:
-              ul
-                each step in exercise.instructions
-                  li= step
+            // Info button to trigger modal
+            button.info-btn(
+              type="button"
+              data-video=exercise.gifURL
+              data-instructions=JSON.stringify(exercise.instructions || [])
+            ) i
 
       button(type="submit") Create Workout Plan
-
       p.form-message#formMessage
-  
-  block scripts
-    script(src='/js/createWorkoutPlan.js')
+
+  // Modal (hidden by default)
+  .modal.hidden#modal
+    .modal-content
+      button#closeModal ×
+      video#modalVideo(autoplay muted loop playsinline)
+      p#modalText
+
+block scripts
+  script(src='/js/createWorkoutPlan.js')
