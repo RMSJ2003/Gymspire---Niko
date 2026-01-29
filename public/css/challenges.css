@@ -16,6 +16,32 @@ body {
 }
 
 /* ==========================
+   TOP BAR BUTTONS - BORDER STYLE LIKE WORKOUTPLAN
+========================== */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.top-bar a {
+  padding: 0.5rem 1rem;
+  background-color: transparent; /* No background */
+  border: 2px solid #22c55e; /* Green border */
+  color: #22c55e; /* Green text */
+  font-weight: bold;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.top-bar a:hover {
+  background-color: #22c55e;
+  color: #020617;
+}
+
+/* ==========================
    PROFILE PICTURE
 ========================== */
 .profile-pic {
@@ -66,6 +92,9 @@ body {
   margin-bottom: 0.5rem;
 }
 
+/* ==========================
+   PARTICIPANTS ROW
+========================== */
 .participants-row {
   display: flex;
   flex-wrap: wrap;
@@ -87,7 +116,7 @@ body {
 }
 
 /* ==========================
-   BUTTONS
+   BUTTONS (JOIN, START, LEADERBOARD)
 ========================== */
 button {
   cursor: pointer;
@@ -218,7 +247,14 @@ button {
     padding: 0.5rem 1rem;
   }
 
-  button {
+  button,
+  .top-bar a {
     width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .top-bar {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

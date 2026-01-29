@@ -1,14 +1,13 @@
 extends base
 
 block styles
-  link(rel="stylesheet" href="/css/challenges.css")
+  link(rel="stylesheet", href="/css/challenges.css")
 
 block content
-  include _navbar
-
-  .dashboard-header
-    a.dashboard-link(href="/dashboard") Dashboard
-    a.logout-link(href="/logout") Logout
+  // 🔹 TOP BAR
+  .top-bar
+    a.dashboard-btn(href='/dashboard') Dashboard
+    a.back-btn(href='javascript:history.back()') Back
 
   h1 #{title}
   h2 #{user.username}
@@ -21,7 +20,7 @@ block content
   a.create-challenge(href='/createChallenge') Create Challenge
 
   if challenges.length === 0
-    p.no-challenges No challenges available.
+    p No challenges available.
   else
     each challenge in challenges
       .challenge-card
@@ -36,10 +35,10 @@ block content
             each p in challenge.participants
               .participant
                 if p.pfpUrl
-                  img(src=p.pfpUrl alt=p.username width="40")
+                  img(src=p.pfpUrl alt=p.username)
                 else
-                  img(src="/img/default-user.png" width="40")
-                span.username= p.username
+                  img(src="/img/default-user.png")
+                span= p.username
 
         - const alreadyJoined = challenge.participants.some(p => p._id.toString() === user._id.toString())
 
@@ -65,7 +64,7 @@ block content
               h4= exercise.name
               p Target: #{exercise.target}
               if exercise.gifURL
-                img.exercise-gif(src=exercise.gifURL alt=exercise.name width="200")
+                img.exercise-gif(src=exercise.gifURL alt=exercise.name)
               if exercise.instructions && exercise.instructions.length
                 ul
                   each step in exercise.instructions

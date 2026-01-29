@@ -1,147 +1,97 @@
-/* =========================
+/* ==========================
+   TOP BUTTONS ROW (like challenges)
+========================== */
+.top-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem 0;
+}
+
+.top-buttons a {
+  text-decoration: none;
+  color: #22c55e;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 0.4rem;
+  border: 1px solid #22c55e;
+  transition: 0.3s;
+}
+
+.top-buttons a:hover {
+  background-color: #22c55e;
+  color: #020617;
+}
+
+/* ==========================
    PAGE LAYOUT
-========================= */
+========================== */
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #0b1220, #1a1f2e);
+  background: linear-gradient(135deg, #1d2d4b, #1a1f2e);
   color: white;
-}
-
-.workout-page {
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 2rem 1rem;
+  padding: 1rem;
 }
 
-/* =========================
-   CARD CONTAINER
-========================= */
-.workout-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  padding: 2rem;
-  border-radius: 1rem;
-  width: 100%;
-  max-width: 700px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  border: 1px solid rgba(34, 197, 94, 0.4);
-}
-
-/* Page Title */
-.workout-card h1 {
-  font-size: 2rem;
-  color: #22c55e;
-  text-align: center;
-}
-
-.workout-card h2 {
-  font-size: 1.2rem;
-  text-align: center;
-}
-
-/* =========================
-   PROFILE IMAGE
-========================= */
-.workout-profile-pic {
+.profile-pic {
   width: 150px;
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid #22c55e;
+  display: block;
+  margin: 0 auto 1rem auto;
 }
 
-/* =========================
-   EXERCISE CARDS
-========================= */
 .exercise-card {
-  width: 100%;
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 0.6rem;
   padding: 1rem;
-  border-radius: 0.75rem;
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  border: 1px solid rgba(34, 197, 94, 0.4);
+  margin: 1rem 0;
 }
 
 .exercise-card h3 {
   color: #22c55e;
-  margin-bottom: 0.3rem;
-}
-
-.exercise-card p {
   margin-bottom: 0.5rem;
 }
 
-.exercise-card img {
-  max-width: 100%;
+.exercise-gif {
+  max-width: 200px;
   border-radius: 0.5rem;
   margin: 0.5rem 0;
 }
 
-.exercise-card h4 {
-  margin: 0.5rem 0 0.2rem;
-  color: #22c55e;
-}
-
-.exercise-card ul {
-  list-style-type: disc;
-  margin-left: 1.5rem;
-}
-
-/* =========================
-   BUTTONS & LINKS
-========================= */
-.btn {
-  display: block;
-  margin: 0.5rem auto;
+.create-plan {
+  display: inline-block;
+  margin-top: 1rem;
   padding: 0.6rem 1.2rem;
-  border-radius: 0.5rem;
-  background: #22c55e;
-  color: white;
-  font-weight: 600;
-  text-decoration: none;
-  transition: 0.3s;
-}
-
-.btn:hover {
-  background: #16a34a;
-}
-
-/* =========================
-   FORM MESSAGE
-========================= */
-.form-message {
-  text-align: center;
-  font-size: 0.9rem;
-  min-height: 1.2rem;
+  background-color: #22c55e;
+  color: #020617;
   font-weight: bold;
-  color: #ef4444;
+  text-decoration: none;
+  border-radius: 0.5rem;
 }
 
-/* =========================
+.create-plan:hover {
+  background-color: #16a34a;
+}
+
+/* ==========================
    MOBILE RESPONSIVE
-========================= */
+========================== */
 @media (max-width: 600px) {
-  .workout-card {
-    padding: 1.5rem;
-  }
-
   .exercise-card {
-    padding: 0.8rem;
+    padding: 0.6rem 0.8rem;
   }
 
-  .workout-profile-pic {
-    width: 120px;
-    height: 120px;
+  .top-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .top-buttons a {
+    width: 100%;
+    text-align: center;
   }
 }

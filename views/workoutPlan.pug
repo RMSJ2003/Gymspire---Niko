@@ -4,41 +4,35 @@ block styles
   link(rel="stylesheet" href="/css/workoutPlan.css")
 
 block content
-  include _navbar
 
-  .workout-page
-    .workout-card
-      h1 #{title}
-      h2 #{user.username}
 
-      // Profile Picture
-      if user.pfpUrl
-        img.workout-profile-pic(src=user.pfpUrl alt="Profile Picture")
-      else
-        img.workout-profile-pic(src="/img/default-user.png" alt="Default Profile")
+  // Top buttons row (Dashboard left, Back right)
+  .top-buttons
+    a.dashboard-btn(href='/dashboard') Dashboard
+    a.back-btn(href='javascript:history.back()') Back
 
-      // Warning if no plan
-      if !hasPlan
-        p.form-message(style="color:red; font-weight:bold") You do not have a workout plan yet. Please create one first.
+  h1 #{title}
+  h2 #{user.username}
 
-      // Create / Edit plan button
-      if !hasPlan
-        a.btn(href='/createWorkoutPlan') Create Workout Plan
-      else
-        a.btn(href='/editWorkoutPlan') Edit Workout Plan
+  if user.pfpUrl
+    img.profile-pic(src=user.pfpUrl alt="Profile Picture")
+  else
+    img.profile-pic(src="/img/default-user.png" alt="Default Profile")
 
-      // Exercises
-      if exercises.length > 0
-        each exercise in exercises
-          .exercise-card
-            h3= exercise.name
-            p Target: #{exercise.target}
+  if !workoutPlan || workoutPlan.exercises.length === 0
+    p You have no exercises in your workout plan yet.
+    a.create-plan(href='/createWorkoutPlan') Create a Workout Plan
+  else
+    each ex, idx in workoutPlan.exercises
+      .exercise-card
+        h3 #{idx + 1}. #{ex.name}
+        if ex.gifURL
+          img.exercise-gif(src=ex.gifURL alt=ex.name)
+        if ex.instructions && ex.instructions.length
+          ul
+            each step in ex.instructions
+              li= step
+        p Target: #{ex.target}
 
-            if exercise.gifURL
-              img.exercise-gif(src=exercise.gifURL alt=exercise.name)
-
-            if exercise.instructions.length
-              h4 Instructions:
-              ul
-                each step in exercise.instructions
-                  li= step
+block scripts
+  script(src="/js/workoutPlan.js")
