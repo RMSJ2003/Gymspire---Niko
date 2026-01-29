@@ -9,25 +9,25 @@ block content
     .edit-card
       h1 #{title}
 
-  if currentUser.pfpUrl
-    img(src=currentUser.pfpUrl alt="Profile Picture" width="150")
-  else
-    img(src="/img/default-user.png" alt="Default Profile" width="150")
+      // Profile Picture
+      if currentUser.pfpUrl
+        img.edit-profile-pic(src=currentUser.pfpUrl alt="Profile Picture")
+      else
+        img.edit-profile-pic(src="/img/default-user.png" alt="Default Profile")
 
-  form(id="editProfileForm" enctype="multipart/form-data")
-    p.form-message#formMessage
+      // Form
+      form#editProfileForm(enctype="multipart/form-data")
+        p.form-message#formMessage
 
-    label(for="username") Username
-    input(
-      type="text"
-      name="username"
-      id="username"
-      value=currentUser.username
-    )
+        label(for="username") Username
+        input(
+          type="text"
+          name="username"
+          id="username"
+          value=currentUser.username
+        )
 
-    input(type="file" name="pfp" id="pfp" accept="image/*")
+        label(for="pfp") Profile Picture
+        input(type="file" name="pfp" id="pfp" accept="image/*")
 
-    button(type="submit") Save Changes
-
-  block scripts
-    script(src="/js/editProfile.js")
+        button(type="submit") Save Changes

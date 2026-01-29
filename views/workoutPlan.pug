@@ -1,38 +1,44 @@
 extends base
 
+block styles
+  link(rel="stylesheet" href="/css/workoutPlan.css")
+
 block content
-	include _navbar
+  include _navbar
 
-	h1 #{title}
+  .workout-page
+    .workout-card
+      h1 #{title}
+      h2 #{user.username}
 
-	h2 #{user.username}
+      // Profile Picture
+      if user.pfpUrl
+        img.workout-profile-pic(src=user.pfpUrl alt="Profile Picture")
+      else
+        img.workout-profile-pic(src="/img/default-user.png" alt="Default Profile")
 
-	if user.pfpUrl
-		img(src=user.pfpUrl alt="Profile Picture" width="150")
-	else
-		img(src="/img/default-user.png" alt="Default Profile" width="150")
+      // Warning if no plan
+      if !hasPlan
+        p.form-message(style="color:red; font-weight:bold") You do not have a workout plan yet. Please create one first.
 
-	if !hasPlan
-		p(style="color:red; font-weight:bold") You do not have a workout plan yet. Please create one first.
+      // Create / Edit plan button
+      if !hasPlan
+        a.btn(href='/createWorkoutPlan') Create Workout Plan
+      else
+        a.btn(href='/editWorkoutPlan') Edit Workout Plan
 
-	if !hasPlan
-		a(href='/createWorkoutPlan') Create Workout Plan
-	else
-		a(href='/editWorkoutPlan') Edit Workout Plan
+      // Exercises
+      if exercises.length > 0
+        each exercise in exercises
+          .exercise-card
+            h3= exercise.name
+            p Target: #{exercise.target}
 
-	if exercises.length === 0
-		p No exercises in your workout plan yet.
-	else
-		each exercise in exercises
-			.exercise-card
-				h3= exercise.name
-				p Target: #{exercise.target}
+            if exercise.gifURL
+              img.exercise-gif(src=exercise.gifURL alt=exercise.name)
 
-				if exercise.gifURL
-					img(src=exercise.gifURL, alt=exercise.name, width="200")
-
-				if exercise.instructions.length
-					h4 Instructions:
-					ul
-						each step in exercise.instructions
-							li= step
+            if exercise.instructions.length
+              h4 Instructions:
+              ul
+                each step in exercise.instructions
+                  li= step

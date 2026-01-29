@@ -1,44 +1,50 @@
 extends base
 
+block styles
+  link(rel="stylesheet" href="/css/createWorkoutPlan.css")
+
 block content
-  h1 #{title}
+  // Top Buttons
+  .top-buttons
+    a.button-dashboard(href="/dashboard") Dashboard
+    a.button-logout(href="/logout") Logout
 
-  h2 #{user.username}
+  // Main Workout Page
+  .workout-page
+    .workout-card
+      h1 #{title}
+      h2 #{user.username}
 
-  if user.pfpUrl
-    img(src=user.pfpUrl alt="Profile Picture" width="150")
-  else
-    img(src="/img/default-user.png" alt="Default Profile" width="150")
+      if user.pfpUrl
+        img.workout-profile-pic(src=user.pfpUrl alt="Profile Picture")
+      else
+        img.workout-profile-pic(src="/img/default-user.png" alt="Default Profile")
 
-  // 🔥 CORRECT STRUCTURE
-  if exercises.length === 0
-    p No exercises available.
-  else
-    form(id="createWorkoutPlanForm")
-      each exercise in exercises
-        .exercise-card
-          label
-            input(
-              type="checkbox"
-              name="exerciseIds"
-              value=exercise.exerciseId
-            )
+      // Exercises
+      if exercises.length === 0
+        p.form-message(style="color:red; font-weight:bold") No exercises available. Please create a workout plan first.
+        a(href='/createWorkoutPlan') Create Workout Plan
+      else
+        form#createWorkoutPlanForm
+          each exercise in exercises
+            .exercise-row
+              input(type="checkbox" name="exerciseIds" value=exercise.exerciseId)
+              span.exercise-title= exercise.name
+              button.type-info-btn(type="button" data-id=exercise.exerciseId) i
 
-            h3= exercise.name
-            p Target: #{exercise.target}
+          button(type="submit") Create Workout Plan
+          p.form-message#formMessage
 
-            if exercise.gifURL
-              img(src=exercise.gifURL alt=exercise.name width="200")
+  // Modal
+  .modal.hidden
+    .modal-content
+      button#closeModal &times;
+      img#modalGif
+      p#modalText
 
-            if exercise.instructions && exercise.instructions.length
-              h4 Instructions:
-              ul
-                each step in exercise.instructions
-                  li= step
-
-      button(type="submit") Create Workout Plan
-
-      p.form-message#formMessage
+  // Pass exercises data safely to JS
+  script.
+    window.exercisesData = !{JSON.stringify(exercises)};
   
-  block scripts
-    script(src='/js/createWorkoutPlan.js')
+block scripts
+  script(src='/js/createWorkoutPlan.js')

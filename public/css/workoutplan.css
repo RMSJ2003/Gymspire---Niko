@@ -1,0 +1,147 @@
+/* =========================
+   PAGE LAYOUT
+========================= */
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #0b1220, #1a1f2e);
+  color: white;
+}
+
+.workout-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+}
+
+/* =========================
+   CARD CONTAINER
+========================= */
+.workout-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+/* Page Title */
+.workout-card h1 {
+  font-size: 2rem;
+  color: #22c55e;
+  text-align: center;
+}
+
+.workout-card h2 {
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+/* =========================
+   PROFILE IMAGE
+========================= */
+.workout-profile-pic {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #22c55e;
+}
+
+/* =========================
+   EXERCISE CARDS
+========================= */
+.exercise-card {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.exercise-card h3 {
+  color: #22c55e;
+  margin-bottom: 0.3rem;
+}
+
+.exercise-card p {
+  margin-bottom: 0.5rem;
+}
+
+.exercise-card img {
+  max-width: 100%;
+  border-radius: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.exercise-card h4 {
+  margin: 0.5rem 0 0.2rem;
+  color: #22c55e;
+}
+
+.exercise-card ul {
+  list-style-type: disc;
+  margin-left: 1.5rem;
+}
+
+/* =========================
+   BUTTONS & LINKS
+========================= */
+.btn {
+  display: block;
+  margin: 0.5rem auto;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  background: #22c55e;
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  background: #16a34a;
+}
+
+/* =========================
+   FORM MESSAGE
+========================= */
+.form-message {
+  text-align: center;
+  font-size: 0.9rem;
+  min-height: 1.2rem;
+  font-weight: bold;
+  color: #ef4444;
+}
+
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+@media (max-width: 600px) {
+  .workout-card {
+    padding: 1.5rem;
+  }
+
+  .exercise-card {
+    padding: 0.8rem;
+  }
+
+  .workout-profile-pic {
+    width: 120px;
+    height: 120px;
+  }
+}

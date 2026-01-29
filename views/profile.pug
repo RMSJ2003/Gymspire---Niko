@@ -5,33 +5,30 @@ block styles
 
 block content 
   .profile-page
-    h1 #{title}
+    .profile-card
+      h1 #{title}
 
-    if user.pfpUrl
-      img.profile-pic(src=user.pfpUrl alt="Profile Picture")
-    else
-      img.profile-pic(src="/img/default-user.png" alt="Default Profile")
+      // Profile Picture
+      if user.pfpUrl
+        img.profile-pic(src=user.pfpUrl alt="Profile Picture")
+      else
+        img.profile-pic(src="/img/default-user.png" alt="Default Profile")
 
-    hr.profile-divider
+      hr.profile-divider
 
-    .profile-details
-      h2 #{user.username}
-      h2 #{user.email}
+      // User Details
+      .profile-details
+        h2 #{user.username}
+        h2 #{user.email}
 
-  form(id="deleteForm")
-    p.form-message#formMessage
-    p(style="color:red; font-weight:bold;")
-      | ⚠️ This action is permanent and cannot be undone.
+      // Buttons
+      .profile-actions
+        a(href='/editProfile') Edit Profile
+        form(id="deleteForm")
+          p.form-message#formMessage
+          p.warning-message
+            | ⚠️ This action is permanent and cannot be undone.
+          button(type="submit" id="deleteBtn") Delete Account
 
-    button(type="submit" id="deleteBtn" style="background:red; color:white;")
-      | Delete Account
-
-  if user.pfpUrl
-    img(src=user.pfpUrl alt="Profile Picture" width="150")
-  else
-    img(src="/img/default-user.png" alt="Default Profile" width="150")
-  |  |  
-  a(href='/editProfile') Edit Profile
-
-  block scripts 
-    script(src='/js/profile.js')
+block scripts 
+  script(src='/js/profile.js')

@@ -3,86 +3,175 @@
 ========================= */
 .profile-page {
   min-height: 100vh;
-
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   text-align: center;
-  padding: 2rem 1rem;
+  padding: 4rem 1rem;
+  background: linear-gradient(135deg, #1d2d4b, #1a1f2e);
+  color: white;
+}
+
+/* Card container */
+.profile-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  border-radius: 1rem;
+  padding: 2rem 1.5rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center all contents */
 }
 
 /* Page Title */
-.profile-page h1 {
-  margin-bottom: 1.5rem;
-  font-size: 2rem;
+.profile-card h1 {
+  margin-bottom: 2rem;
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
 /* =========================
    PROFILE PICTURE
 ========================= */
 .profile-pic {
-  width: 160px;
-  height: 160px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid #22c55e;
-  margin-bottom: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  margin-bottom: 1.5rem;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.profile-pic:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(34, 197, 94, 0.5);
 }
 
 /* =========================
    DIVIDER LINE
 ========================= */
 .profile-divider {
-  width: 60%;
-  max-width: 300px;
+  width: 50%; /* Adjust width */
+  max-width: 200px; /* Max width */
   border: none;
-  height: 2px;
+  height: 3px;
   background: #22c55e;
-  margin: 1rem 0 1.5rem 0;
-  border-radius: 5px;
+  margin: 1.5rem auto 2rem auto; /* Auto centers horizontally */
+  border-radius: 10px;
 }
 
 /* =========================
    DETAILS SECTION
 ========================= */
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 1.5rem;
+}
+
 .profile-details h2 {
-  margin: 0.3rem 0;
+  margin: 0;
   font-weight: 500;
+  font-size: 1.2rem;
+  color: #e5e7eb;
 }
 
 /* =========================
-   BUTTONS & LINKS
+   BUTTONS & ACTIONS
 ========================= */
-.profile-details button,
-.profile-details a {
-  display: block;
-  margin: 0.6rem auto;
-  padding: 0.5rem 1.2rem;
-  border-radius: 0.5rem;
-  text-decoration: none;
-  font-weight: 600;
-  width: 180px;
+.profile-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
-/* Delete button */
+/* Edit Profile link */
+.profile-actions a {
+  display: inline-block;
+  background: #22c55e;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  border-radius: 0.6rem;
+  min-width: 180px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.profile-actions a:hover {
+  background: #16a34a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(34, 197, 94, 0.5);
+}
+
+/* Delete Account Button */
 #deleteForm button {
   background: #ef4444;
   border: none;
   color: white;
   cursor: pointer;
+  padding: 0.6rem 1.4rem;
+  border-radius: 0.6rem;
+  min-width: 180px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 #deleteForm button:hover {
   background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(220, 38, 38, 0.5);
 }
 
-/* Links styled like buttons */
-.profile-details a {
-  background: #22c55e;
-  color: white;
+/* Warning message */
+.warning-message {
+  color: #f87171;
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-align: center;
 }
 
-.profile-details a:hover {
-  background: #16a34a;
+/* =========================
+   RESPONSIVE DESIGN
+========================= */
+@media (max-width: 900px) {
+  .profile-card {
+    padding: 2rem 1rem;
+  }
+
+  .profile-pic {
+    width: 140px;
+    height: 140px;
+  }
+
+  .profile-divider {
+    width: 70%;
+  }
+
+  .profile-details h2 {
+    font-size: 1rem;
+  }
+
+  .profile-actions a,
+  #deleteForm button {
+    min-width: 140px;
+    padding: 0.5rem 1.2rem;
+  }
 }
