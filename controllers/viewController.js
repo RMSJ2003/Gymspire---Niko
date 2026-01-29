@@ -58,6 +58,7 @@ exports.profile = catchAsync(async (req, res, next) => {
 
 exports.workoutPlan = catchAsync(async (req, res, next) => {
   let exercises = [];
+  console.log(req.workoutPlan);
 
   if (req.workoutPlan && req.workoutPlan.exerciseDetails) {
     exercises = req.workoutPlan.exerciseDetails;
@@ -80,7 +81,7 @@ exports.challenges = catchAsync(async (req, res, next) => {
 });
 
 exports.workoutLogs = catchAsync(async (req, res, next) => {
-  console.log(req.workoutLogs)
+  console.log(req.workoutLogs);
 
   res.status(200).render("workoutLogs", {
     title: "My Workout Logs",

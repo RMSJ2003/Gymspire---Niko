@@ -16,8 +16,8 @@ block content
     img.profile-pic(src=user.pfpUrl alt="Profile Picture")
   else
     img.profile-pic(src="/img/default-user.png" alt="Default Profile")
-
-  a.create-challenge(href='/createChallenge') Create Challenge
+  if user.userType==="coach"
+    a.create-challenge(href='/createChallenge') Create Challenge
 
   if challenges.length === 0
     p No challenges available.
@@ -72,5 +72,5 @@ block content
 
   p#joinMessage
 
-block scripts
-  script(src="/js/challenges.js")
+  block scripts
+    script(src="/js/challenges.js")

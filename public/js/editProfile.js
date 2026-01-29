@@ -3,7 +3,7 @@ const formMessage = document.querySelector("#formMessage");
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault(); // this already STOPS normal submit, no return needed
-
+  console.log("hello");
   const formData = new FormData(form);
 
   // Check if user changed anything
