@@ -8,10 +8,10 @@
 }
 
 body {
-  background: #0b1220;
   font-family: Arial, sans-serif;
   min-height: 100vh;
   padding-top: 12vh; /* navbar height */
+  background: linear-gradient(135deg, #0b1220, #1a1f2e);
   color: white;
 }
 
@@ -98,28 +98,49 @@ body {
 }
 
 /* =========================
-   WELCOME + STATUS
+   WELCOME SECTION
 ========================= */
-.welcome-section,
-.status-section {
-  width: 100%;
-  min-height: 20vh;
+.welcome-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.5vh;
+  gap: 1rem;
   text-align: center;
+  margin-top: 2rem;
 }
 
-.profile-pic {
-  width: 16vh;
-  height: 16vh;
-  max-width: 10rem;
-  max-height: 10rem;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 0.25rem solid #22c55e;
+.welcome-section .app-logo {
+  width: 200px; /* logo size */
+  max-width: 50%; /* responsive */
+  height: auto; /* maintain aspect ratio */
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.welcome-section h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+/* =========================
+   STATUS SECTION
+========================= */
+.status-section {
+  width: 100%;
+  min-height: 15vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.status-section h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
 }
 
 /* =========================
@@ -128,14 +149,17 @@ body {
 .dashboard {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
   gap: 2rem;
   padding: 2rem;
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 
 .card {
-  background: #111827;
+  /* Glass effect */
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(34, 197, 94, 0.4);
   border-radius: 1rem;
   display: flex;
   flex-direction: column;
@@ -143,19 +167,21 @@ body {
   align-items: center;
   position: relative;
   padding: 1rem;
-  height: 200px; /* fixed square height */
+  height: 200px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
 .card h3 {
-  margin-bottom: auto; /* pushes button to bottom */
+  margin-bottom: auto;
+  font-size: 1.2rem;
 }
 
 .card-actions {
   width: 100%;
   display: flex;
-  justify-content: center; /* center items horizontally */
+  justify-content: center;
   align-items: center;
-  gap: 0.5rem; /* small gap between button and info */
+  gap: 0.5rem;
   margin-top: 1rem;
 }
 
@@ -175,19 +201,19 @@ body {
 .info-btn {
   width: 2.5rem;
   height: 2.5rem;
-  background: #020617; /* dark background */
-  border: 2px solid #22c55e; /* green border */
-  color: #22c55e; /* text color */
+  background: #020617;
+  border: 2px solid #22c55e;
+  color: #22c55e;
   font-weight: bold;
   font-size: 1.2rem;
   cursor: pointer;
-  display: inline-flex; /* prevents stretching from parent flex */
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.4rem; /* small rounding like buttons */
+  border-radius: 0.4rem;
   line-height: 1;
-  box-sizing: border-box; /* ensures border doesn’t change size */
-  flex-shrink: 0; /* prevents shrinking in flex container */
+  box-sizing: border-box;
+  flex-shrink: 0;
   transition: 0.3s;
 }
 
@@ -197,15 +223,15 @@ body {
 }
 
 /* =========================
-   MOBILE MODAL
+   MODAL
 ========================= */
 .modal {
   position: fixed;
-  inset: 0; /* top:0; right:0; bottom:0; left:0 */
+  inset: 0;
   background: rgba(0, 0, 0, 0.8);
   display: flex;
-  align-items: center; /* vertically center */
-  justify-content: center; /* horizontally center */
+  align-items: center;
+  justify-content: center;
   z-index: 2000;
   padding: 1rem;
 }
@@ -225,15 +251,13 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem; /* space between video and text */
+  gap: 1rem;
 }
 
-/* Close button */
-/* Modal close button and info buttons - same style */
 #closeModal {
-  position: absolute; /* keeps it on top of modal */
-  top: 0.5rem; /* distance from top */
-  right: 0.5rem; /* distance from right */
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
   width: 2.5rem;
   height: 2.5rem;
   background: #020617;
@@ -243,12 +267,12 @@ body {
   font-size: 1.2rem;
   border-radius: 0.4rem;
   cursor: pointer;
-  display: flex; /* centers the × inside the button */
+  display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
-  z-index: 100; /* make sure it stays above video */
-  box-sizing: border-box; /* ensures border doesn’t push it out */
+  z-index: 100;
+  box-sizing: border-box;
 }
 
 #closeModal:hover {
@@ -256,15 +280,13 @@ body {
   color: #020617;
 }
 
-/* Video clip at top */
 #modalVideo {
   width: 100%;
   max-height: 250px;
   border-radius: 0.75rem;
-  object-fit: cover; /* keeps aspect ratio */
+  object-fit: cover;
 }
 
-/* Text below video */
 #modalText {
   color: white;
   font-size: 1rem;
@@ -272,11 +294,12 @@ body {
   text-align: center;
 }
 
-/* MOBILE STYLING */
+/* =========================
+   MOBILE STYLING
+========================= */
 @media (max-width: 900px) {
   .dashboard {
     grid-template-columns: 1fr;
-    grid-template-rows: auto;
     gap: 1.5rem;
   }
 
@@ -291,6 +314,10 @@ body {
   .modal-content {
     width: 95%;
     padding: 0.8rem;
+  }
+
+  .welcome-section .app-logo {
+    width: 50%;
   }
 
   #modalText {
