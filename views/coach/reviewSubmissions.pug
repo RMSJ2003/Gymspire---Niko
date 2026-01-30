@@ -1,21 +1,26 @@
 extends ../base
 
+block styles
+  link(rel="stylesheet", href="/css/reviewSubmissions.css")
+
 block content
-  include ../_navbar
+  // =========================
+  // TOP BAR
+  // =========================
+  .top-bar
+    a.dashboard-btn(href="/coach/dashboard") Dashboard
+    a.back-btn(href="javascript:history.back()") Back
 
   h1 #{title}
   h2 Coach: #{user.username}
 
-  if submissions.length === 0
+  if !submissions || submissions.length === 0
     p No submissions yet for this challenge.
   else
-    
     each log in submissions
-      .submission-card(style="border:1px solid #ccc; padding:20px; margin-bottom:25px; border-radius:8px")
+      .submission-card
         // Error message placeholder
-        p.error-message(
-          style="color:red; font-weight:bold; display:none; margin-top:10px;"
-        )
+        p.error-message(style="color:red; font-weight:bold; display:none; margin-top:10px;")
 
         // =====================
         // User & Meta Info
@@ -25,7 +30,7 @@ block content
         else
           h3 Submission by User
 
-        p Date: #{log.createdAt}
+        p Date: #{log.createdAt ? log.createdAt.toDateString() : 'Unknown'}
 
         // =====================
         // Status Badge
@@ -33,49 +38,51 @@ block content
         p
           | Status:
           if log.judgeStatus === "approved"
-            span(style="color:green; font-weight:bold; margin-left:8px") Approved
+            span.status.approved Approved
           else if log.judgeStatus === "rejected"
-            span(style="color:red; font-weight:bold; margin-left:8px") Rejected
+            span.status.rejected Rejected
           else
-            span(style="color:orange; font-weight:bold; margin-left:8px") Pending
+            span.status.pending Pending
 
         // =====================
         // Exercises & Sets (FULL DETAIL)
         // =====================
         h4 Exercises & Sets
+        if log.exercises && log.exercises.length
+          each ex in log.exercises
+            .exercise-block
+              h4 #{ex.name} (#{ex.target})
 
-        each ex in log.exercises
-          .exercise-block(style="margin-top:15px; padding:10px; border:1px solid #eee; border-radius:6px")
-
-            h4 #{ex.name} (#{ex.target})
-
-            table(border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse; width:100%; margin-top:8px")
-              thead
-                tr(style="background:#f2f2f2")
-                  th Set #
-                  th Type
-                  th Weight
-                  th Reps
-                  th Rest (sec)
-
-              tbody
-                each s in ex.set
-                  tr
-                    td #{s.setNumber}
-                    td #{s.type}
-                    td #{s.weight} #{s.unit}
-                    td #{s.reps}
-                    td #{s.restSeconds}
-
+              if ex.set && ex.set.length
+                table
+                  thead
+                    tr
+                      th Set #
+                      th Type
+                      th Weight
+                      th Reps
+                      th Rest (sec)
+                  tbody
+                    each s in ex.set
+                      tr
+                        td #{s.setNumber || '-'}
+                        td #{s.type || '-'}
+                        td #{s.weight || '-'} #{s.unit || ''}
+                        td #{s.reps || '-'}
+                        td #{s.restSeconds || '-'}
+              else
+                p No sets submitted.
+        else
+          p No exercises submitted.
 
         // =====================
         // Video Preview
         // =====================
         if log.videoUrl
-          video(controls width="320" style="margin-top:10px")
+          video(controls width="250" style="margin-top:10px; border-radius:6px;")
             source(src=log.videoUrl type="video/mp4")
         else
-          p(style="color:red") ⚠️ No video submitted.
+          p(style="color:red; margin-top:5px") ⚠️ No video submitted.
 
         // =====================
         // Verification Actions
@@ -85,42 +92,27 @@ block content
             data-log-id=log._id
             action=`/api/v1/workout-logs/${log._id}/verify`
             method="POST"
-            style="margin-top:15px;"
+            class="verify-form"
           )
-
-
             label(for="judgeNotes") Coach Notes
             textarea(
               name="judgeNotes"
               rows="3"
               placeholder="Enter feedback for the athlete..."
-              style="width:100%; margin-top:5px;"
             )
 
             br
             br
 
-            button(
-              type="submit"
-              name="decision"
-              value="approved"
-              style="padding:8px 15px; margin-right:10px; background:#4CAF50; color:white; border:none; border-radius:4px; cursor:pointer"
-            ) ✅ Approve
-
-            button(
-              type="submit"
-              name="decision"
-              value="rejected"
-              style="padding:8px 15px; background:#f44336; color:white; border:none; border-radius:4px; cursor:pointer"
-            ) ❌ Reject
-
+            button.approve(type="submit" name="decision" value="approved") ✅ Approve
+            button.reject(type="submit" name="decision" value="rejected") ❌ Reject
         else
-          p(style="margin-top:15px; font-style:italic") This submission has already been reviewed.
+          p.reviewed This submission has already been reviewed.
 
           if log.judgeNotes
             p
               strong Coach Notes:
               |  #{log.judgeNotes}
 
-  block scripts
-    script(src="/js/reviewSubmissions.js")
+block scripts
+  script(src="/js/reviewSubmissions.js")

@@ -8,7 +8,7 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Arial", sans-serif;
   color: white;
   background: linear-gradient(135deg, #1d2d4b, #1a1f2e);
   min-height: 100vh;
@@ -19,15 +19,15 @@ body {
    TOP BAR (Dashboard / Back)
 ========================= */
 .top-bar {
-  position: fixed; /* stays fixed on scroll */
-  top: 0; /* stick to top of viewport */
+  position: fixed;
+  top: 0;
   left: 0;
   right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.8rem 1rem;
-  background: rgba(17, 24, 39, 0.95); /* dark glass effect */
+  background: rgba(17, 24, 39, 0.95);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 999;
@@ -42,11 +42,12 @@ body {
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
-  transition: 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .top-bar a:hover {
   background: rgba(34, 197, 94, 0.1);
+  transform: translateY(-2px);
 }
 
 /* =========================
@@ -79,7 +80,7 @@ h3 {
 }
 
 /* =========================
-   PROFILE PIC
+   PROFILE PICTURE
 ========================= */
 .profile-pic {
   width: 150px;
@@ -98,17 +99,18 @@ h3 {
   display: block;
   width: fit-content;
   margin: 1rem auto;
-  padding: 0.6rem 1.2rem;
+  padding: 0.6rem 1.5rem;
   background-color: #22c55e;
   color: #020617;
   font-weight: bold;
   text-decoration: none;
   border-radius: 0.5rem;
-  transition: 0.3s;
+  transition: all 0.3s;
 }
 
 .create-challenge:hover {
   background-color: #16a34a;
+  transform: translateY(-2px);
 }
 
 /* =========================
@@ -121,6 +123,14 @@ h3 {
   border-radius: 1rem;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.challenge-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 
 .challenge-card h2 {
@@ -154,14 +164,17 @@ h3 {
 /* =========================
    BUTTONS
 ========================= */
-button {
+button,
+.review-link {
   cursor: pointer;
-  border-radius: 0.4rem;
+  border-radius: 0.5rem;
   padding: 0.5rem 1rem;
   font-weight: bold;
   margin: 0.2rem 0.2rem 0.2rem 0;
-  transition: 0.3s;
+  transition: all 0.3s;
   border: none;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .join-btn {
@@ -171,6 +184,7 @@ button {
 
 .join-btn:hover {
   background-color: #16a34a;
+  transform: translateY(-1px);
 }
 
 .start-btn {
@@ -180,6 +194,7 @@ button {
 
 .start-btn:hover {
   background-color: #1d4ed8;
+  transform: translateY(-1px);
 }
 
 .leaderboard-btn {
@@ -189,21 +204,29 @@ button {
 
 .leaderboard-btn:hover {
   background-color: #d97706;
+  transform: translateY(-1px);
 }
 
 /* =========================
-   REVIEW LINK
+   REVIEW SUBMISSIONS BUTTON
 ========================= */
 .review-link {
-  display: inline-block;
-  margin-top: 0.5rem;
-  color: #22c55e;
+  background-color: #22c55e;
+  color: #020617;
+  padding: 0.5rem 1.2rem;
+  border-radius: 0.5rem;
   font-weight: bold;
   text-decoration: none;
+  margin-top: 0.5rem;
+  display: inline-block;
+  transition: all 0.3s;
 }
 
 .review-link:hover {
-  text-decoration: underline;
+  background-color: #16a34a;
+  color: #020617;
+  transform: translateY(-1px);
+  text-decoration: none;
 }
 
 /* =========================
@@ -266,26 +289,27 @@ button {
    MOBILE RESPONSIVE
 ========================= */
 @media (max-width: 900px) {
-  .profile-card {
-    padding: 2rem 1rem;
-  }
-
   .profile-pic {
     width: 140px;
     height: 140px;
-  }
-
-  .profile-divider {
-    width: 70%;
   }
 
   .profile-details h2 {
     font-size: 1rem;
   }
 
-  .profile-actions a,
-  #deleteForm button {
-    min-width: 140px;
-    padding: 0.5rem 1.2rem;
+  .top-bar a {
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .exercise-card {
+    padding: 0.6rem 0.8rem;
+  }
+
+  button,
+  .review-link {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
   }
 }
