@@ -1,37 +1,44 @@
 extends base
 
+block styles
+  link(rel="stylesheet" href="/css/startSoloWorkout.css")
+
 block content
-	include _navbar
-	h1 #{title}
+  // 🔹 TOP BAR
+  .top-bar
+    a.dashboard-btn(href='/dashboard') Dashboard
+    a.back-btn(href='javascript:history.back()') Back
 
-	h2 #{user.username}
+  h1 #{title || "Solo Workout"}
 
-	if user.pfpUrl
-		img(src=user.pfpUrl alt="Profile Picture" width="150")
-	else
-		img(src="/img/default-user.png" alt="Default Profile" width="150")
+  h2 #{user.username}
 
-	h3 Select muscles to train today
+  if user.pfpUrl
+    img.profile-pic(src=user.pfpUrl alt="Profile Picture" width="150")
+  else
+    img.profile-pic(src="/img/default-user.png" alt="Default Profile" width="150")
 
-	if muscles.length === 0
-		p No muscles found in your workout plan.
-	else
-		form(id="startSoloWorkoutForm")
-			each m in muscles
-				.muscle-row
-					label
-						input(
-							type="checkbox"
-							name="targets"
-							value=m.name
-						)
-						strong #{m.name}
-						span(style="margin-left:10px; color:gray") (#{m.exerciseName})
+  h3 Select muscles to train today
 
-			br
-			button(type="submit") Start Workout
+  if muscles.length === 0
+    p No muscles found in your workout plan.
+  else
+    form(id="startSoloWorkoutForm")
+      each m in muscles
+        .muscle-row
+          label
+            input(
+              type="checkbox"
+              name="targets"
+              value=m.name
+            )
+            strong #{m.name}
+            span(style="margin-left:10px; color:gray") (#{m.exerciseName})
 
-	p#startMessage
+      br
+      button(type="submit" class="btn") Start Workout
 
-	block scripts
-		script(src="/js/startSoloWorkout.js")
+  p#startMessage
+
+block scripts
+  script(src="/js/startSoloWorkout.js")

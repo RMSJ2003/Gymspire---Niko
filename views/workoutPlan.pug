@@ -1,8 +1,13 @@
 extends base
 
-block content
-  include _navbar
+block styles
   link(rel="stylesheet" href="/css/workoutPlan.css")
+
+block content
+  // 🔹 TOP BAR
+  .top-bar
+    a.dashboard-btn(href='/dashboard') Dashboard
+    a.back-btn(href='javascript:history.back()') Back
 
   - const safeUser = user || { username: "Guest", pfpUrl: null }
   - const planExists = typeof hasPlan !== "undefined" ? hasPlan : false
@@ -15,9 +20,9 @@ block content
   h2 #{safeUser.username}
 
   if safeUser.pfpUrl
-    img(src=safeUser.pfpUrl alt="Profile Picture" width="150")
+    img.profile-pic(src=safeUser.pfpUrl alt="Profile Picture" width="150")
   else
-    img(src="/img/default-user.png" alt="Default Profile" width="150")
+    img.profile-pic(src="/img/default-user.png" alt="Default Profile" width="150")
 
   // 🔹 WORKOUT PLAN ACTIONS
   if planExists
