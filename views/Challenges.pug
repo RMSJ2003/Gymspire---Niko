@@ -25,7 +25,6 @@ block content
     each challenge in challenges
       .challenge-card
         h2= challenge.name
-        p Join Code: #{challenge.joinCode}
         p Starts: #{challenge.startTime.toDateString()}
         p Ends: #{challenge.endTime.toDateString()}
         p Participants: #{challenge.participants.length}

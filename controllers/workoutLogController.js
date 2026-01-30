@@ -379,10 +379,8 @@ exports.finishWorkoutLog = catchAsync(async (req, res, next) => {
   if (req.file) {
     workoutLog.videoUrl = req.file.path; // real playable URL
   }
-
   workoutLog.status = "done";
   await workoutLog.save();
-
   res.status(200).json({
     status: "success",
     data: workoutLog,
@@ -493,7 +491,9 @@ exports.acquireMyWorkoutLog = catchAsync(async (req, res, next) => {
   const log = await WorkoutLog.findOne({
     _id: req.params.id,
     userId: req.user._id,
-  });
+  }).populate("verifiedBy");
+
+  console.log(log);
 
   if (!log) {
     return next(new AppError("Workout log not found", 404));

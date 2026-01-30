@@ -18,7 +18,7 @@ block content
   p Status: #{log.status}
   if log.challengeId
 
-    p Strength Score: #{log.strengthScore || "Not calculated yet"}
+    p Strength Score: #{log.strengthScore >= 0 ? log.strengthScore : "Not calculated yet"}
     if log.judgeNotes
       p Judge Notes: #{log.judgeNotes}
     else

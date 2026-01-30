@@ -5,7 +5,6 @@ block styles
 
 block content
 
-
   // =========================
   // NAVBAR
   // =========================
@@ -13,7 +12,6 @@ block content
     .nav-logo
       a(href="/dashboard")
         img(src="/img/gymspirelogo.png" alt="GymSpire Logo")
-
     .nav-right
       button.hamburger ☰
       .panel
@@ -25,14 +23,8 @@ block content
   // WELCOME SECTION
   // =========================
   .welcome-section
-      img.app-logo(src="/img/gymspirelogo.png" alt="GymSpire Logo")
-      h2 Welcome, #{user.username}
-  //- .welcome-section
-  //-   if user.pfpUrl
-  //-     img.profile-pic(src=user.pfpUrl alt="Profile Picture")
-  //-   else
-  //-     img.profile-pic(src="/img/default-user.png" alt="Default Profile")
-  //-   h2 Welcome, #{user.username}
+    img.app-logo(src="/img/gymspirelogo.png" alt="GymSpire Logo")
+    h2 Welcome, #{user.username}
 
   // =========================
   // STATUS SECTION
@@ -61,12 +53,15 @@ block content
   // DASHBOARD GRID
   // =========================
   .dashboard
-    - const cards = ["Challenges", "Workout Plan", "Workout Logs", "Start Solo Workout"];
+    - const cards = ["Challenges", "Workout Plan", "Workout Logs", "Solo Workout"];
     each item, index in cards
       .card
         h3 #{item}
         .card-actions
-          a.card-link(href=`/${item.replace(" ", "").toLowerCase()}`) #{item}
+          - let url = '/' + item.toLowerCase().replaceAll(' ', '-'); // ✅ convert spaces to hyphens
+          - url = url === '/start-solo-workout' ? '/startSoloWorkout' : url;
+          - console.log(url)
+          a.card-link(href=url) #{item}
           button.info-btn(data-index=index title="More Info") i
 
   // =========================
@@ -82,13 +77,3 @@ block content
   // DASHBOARD JS
   // =========================
   script(src="/js/dashboard.js")
-
-
-
-
-
-
-  //- a(href="/challenges") Challenges
-  //-     a(href="/workoutPlan") Workout Plan
-  //-     a(href="/workoutLogs") Workout Logs
-  //-     a(href="/startSoloWorkout") Start Solo Workout

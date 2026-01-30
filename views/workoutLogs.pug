@@ -33,7 +33,7 @@ block content
 
             if log.challengeId
               p Type: Challenge
-              p Strength Score: #{log.strengthScore || "Not finished"}
+              p Strength Score:  #{log.strengthScore >= 0 ? log.strengthScore : "Not calculated yet"}
               p Judge Status: #{log.judgeStatus || "Pending"}
               p Judge Notes: #{log.judgeNotes || "No judge notes yet"}
               p Verified by: #{(log.verifiedBy && log.verifiedBy.username) || "Not verified yet"}
