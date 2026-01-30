@@ -102,15 +102,19 @@ h4 {
 }
 
 /* =========================
-   EXERCISE CONTAINER
+   EXERCISE CONTAINER (UPDATED)
 ========================= */
 .exercise-container {
-  max-height: 60vh;
+  max-width: 600px; /* limit horizontal width */
+  width: 90%; /* responsive */
   overflow-y: auto;
-  margin: 1rem auto;
+  margin: 1rem auto; /* center horizontally */
   padding: 0.5rem;
 }
 
+/* =========================
+   EXERCISE ROW (UPDATED)
+========================= */
 .exercise-row {
   display: flex;
   justify-content: space-between;
@@ -120,6 +124,7 @@ h4 {
   border-radius: 0.6rem;
   padding: 0.5rem 1rem;
   margin-bottom: 0.5rem;
+  gap: 0.5rem; /* keeps items closer */
 }
 
 .exercise-row input[type="checkbox"] {
@@ -130,13 +135,11 @@ h4 {
 }
 
 .exercise-name {
-  flex: 1;
+  flex: 1; /* take remaining space */
   margin-left: 0.5rem;
+  min-width: 0; /* prevent text from pushing button away */
 }
 
-/* =========================
-   INFO BUTTON
-========================= */
 .info-btn {
   padding: 0.2rem 0.5rem;
   background: #2563eb;
@@ -146,6 +149,7 @@ h4 {
   border: none;
   cursor: pointer;
   transition: 0.3s;
+  flex-shrink: 0; /* prevent button from shrinking */
 }
 
 .info-btn:hover {
