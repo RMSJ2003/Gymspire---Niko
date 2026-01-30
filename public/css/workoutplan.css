@@ -96,9 +96,13 @@ p[style] {
 /* =========================
    BUTTONS
 ========================= */
+/* =========================
+   BUTTONS
+========================= */
 .btn {
-  display: inline-block;
-  margin: 1rem auto;
+  display: block; /* make block-level so margin auto works */
+  width: max-content; /* keeps button width to its content */
+  margin: 1rem auto; /* centers horizontally */
   padding: 0.6rem 1.2rem;
   background: #22c55e;
   color: #020617;

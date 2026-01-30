@@ -53,6 +53,34 @@ body {
 }
 
 /* =========================
+   HEADINGS
+========================= */
+h1,
+h2,
+h3 {
+  text-align: center;
+  margin-bottom: 0.8rem;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #22c55e;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #cbd5f5;
+}
+
+h3 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #22c55e;
+}
+
+/* =========================
    FORM STYLING
 ========================= */
 form#prForm {
@@ -79,6 +107,9 @@ form#prForm input[type="text"]:focus {
 }
 
 form#prForm button {
+  display: block;
+  width: max-content; /* button width matches text */
+  margin: 1rem auto;
   padding: 0.6rem 1.2rem;
   border-radius: 0.5rem;
   background-color: #22c55e;
@@ -102,6 +133,17 @@ form#prForm button:hover {
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  text-align: center; /* optional: center any result text */
+}
+
+/* =========================
+   ALERT / MESSAGES
+========================= */
+#startMessage {
+  text-align: center;
+  font-weight: bold;
+  margin-top: 1rem;
+  color: #f87171;
 }
 
 /* =========================
@@ -120,5 +162,14 @@ form#prForm button:hover {
 
   form#prForm button {
     width: 100%;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2,
+  h3 {
+    font-size: 1.2rem;
   }
 }

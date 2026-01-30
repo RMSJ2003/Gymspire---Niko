@@ -9,8 +9,8 @@
 
 body {
   font-family: Arial, sans-serif;
-  color: white;
   background: #111827;
+  color: white;
   min-height: 100vh;
   padding: 5rem 1rem 2rem 1rem; /* space for fixed top bar */
 }
@@ -19,15 +19,15 @@ body {
    TOP BAR (Dashboard / Back)
 ========================= */
 .top-bar {
-  position: fixed; /* stays fixed on scroll */
-  top: 0; /* stick to top */
+  position: fixed;
+  top: 0;
   left: 0;
   right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.8rem 1rem;
-  background: rgba(17, 24, 39, 0.95); /* dark glass effect */
+  background: rgba(17, 24, 39, 0.95);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 999;
@@ -54,9 +54,10 @@ body {
 ========================= */
 h1,
 h2,
-h3 {
+h3,
+h4 {
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 h1 {
@@ -74,12 +75,18 @@ h2 {
 h3 {
   font-size: 1.2rem;
   font-weight: 500;
-  color: #cbd5f5;
-  margin-bottom: 1rem;
+  color: #22c55e;
+}
+
+h4 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #22c55e;
+  margin-bottom: 0.5rem;
 }
 
 /* =========================
-   PROFILE PIC
+   PROFILE PICTURE
 ========================= */
 .profile-pic {
   width: 150px;
@@ -88,80 +95,152 @@ h3 {
   object-fit: cover;
   border: 4px solid #22c55e;
   display: block;
-  margin: 0 auto 1rem auto;
+  margin: 1rem auto;
 }
 
 /* =========================
-   FORM / MUSCLE CHECKBOXES
+   STATUS / TYPE / INFO TEXT
 ========================= */
-.muscle-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+p {
+  text-align: center;
   margin: 0.5rem 0;
-  font-size: 1rem;
+  font-weight: 500;
+  color: #cbd5f5;
 }
 
-.muscle-row input[type="checkbox"] {
-  margin-right: 0.5rem;
-  width: 18px;
-  height: 18px;
-  accent-color: #22c55e;
+/* Optional: Highlight special info in green */
+p.important {
+  color: #22c55e;
+  font-weight: 600;
 }
 
 /* =========================
    BUTTONS
 ========================= */
+button,
 .btn {
-  display: block; /* make it block-level so margin auto works */
-  width: max-content; /* keeps button width fitting its text */
-  margin: 1rem auto; /* centers horizontally */
+  display: block;
+  width: max-content;
+  margin: 1rem auto;
   padding: 0.6rem 1.2rem;
   background: #22c55e;
   color: #020617;
   font-weight: bold;
   border-radius: 0.5rem;
-  text-decoration: none;
   text-align: center;
-  transition: 0.3s;
+  text-decoration: none;
   border: none;
   cursor: pointer;
+  transition: 0.3s;
 }
 
+button:hover,
 .btn:hover {
   background: #16a34a;
 }
 
 /* =========================
+   EXERCISE CARDS
+========================= */
+.exercise-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  border-radius: 1rem;
+  padding: 1rem;
+  margin: 1rem auto;
+  max-width: 600px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+.exercise-card h4 {
+  margin-bottom: 0.5rem;
+}
+
+.exercise-card p {
+  color: #cbd5f5;
+  margin-bottom: 0.5rem;
+}
+
+.exercise-card img {
+  display: block;
+  margin: 0.5rem auto;
+  max-width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid #22c55e;
+}
+
+/* =========================
+   TABLE STYLING
+========================= */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.5rem 0 1rem 0;
+  text-align: center;
+}
+
+th,
+td {
+  border: 1px solid #22c55e;
+  padding: 6px;
+}
+
+th {
+  background-color: rgba(34, 197, 94, 0.2);
+}
+
+/* =========================
+   VIDEO
+========================= */
+video {
+  display: block;
+  max-width: 100%;
+  margin: 0.5rem auto;
+  border-radius: 0.5rem;
+  border: 1px solid #22c55e;
+}
+
+/* =========================
    ALERT / MESSAGES
 ========================= */
-#startMessage {
+#setMessage {
   text-align: center;
   font-weight: bold;
-  margin-top: 1rem;
-  color: #f87171;
+  margin-top: 0.5rem;
 }
 
 /* =========================
    MOBILE RESPONSIVE
 ========================= */
 @media (max-width: 600px) {
+  .profile-pic {
+    width: 120px;
+    height: 120px;
+  }
+
   h1 {
     font-size: 1.5rem;
   }
 
   h2,
-  h3 {
+  h3,
+  h4 {
     font-size: 1.2rem;
   }
 
-  .muscle-row {
-    flex-direction: column;
-    gap: 0.3rem;
+  .exercise-card {
+    margin: 1rem 0.5rem;
+    padding: 0.8rem;
   }
 
+  button,
   .btn {
-    padding: 0.5rem 1rem;
     width: 100%;
+  }
+
+  table {
+    font-size: 0.9rem;
   }
 }

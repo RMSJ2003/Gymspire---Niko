@@ -1,24 +1,36 @@
 extends base
 
+block styles
+  link(rel="stylesheet" href="/css/workoutLog.css")
+
 block content
-  include _navbar
+  // 🔹 TOP BAR
+  .top-bar
+    if user.userType === "user"
+      a.dashboard-btn(href='/dashboard') Dashboard
+    if user.userType === "coach"
+      a.dashboard-btn(href='/coachDashboard') Dashboard
+    if user.userType === "admin"
+      a.dashboard-btn(href='/adminDashboard') Dashboard
+    a.back-btn(href='javascript:history.back()') ← Back
 
+  // 🔹 PAGE TITLE
   h1 #{title}
-
   h2 #{user.username}
 
+  // 🔹 PROFILE PICTURE
   if user.pfpUrl
-    img(src=user.pfpUrl alt="Profile Picture" width="150")
+    img.profile-pic(src=user.pfpUrl alt="Profile Picture")
   else
-    img(src="/img/default-user.png" alt="Default Profile" width="150")
+    img.profile-pic(src="/img/default-user.png" alt="Default Profile")
 
-  a(href="/workoutLogs") ← Back to Logs
-
+  // 🔹 WORKOUT LOG INFO
   h2 Date: #{log.date.toDateString()}
   p Status: #{log.status}
-  if log.challengeId
 
+  if log.challengeId
     p Strength Score: #{log.strengthScore >= 0 ? log.strengthScore : "Not calculated yet"}
+
     if log.judgeNotes
       p Judge Notes: #{log.judgeNotes}
     else
@@ -45,9 +57,9 @@ block content
   else
     p Type: Solo Workout
 
+  // 🔹 EXERCISES
   if log.exercises && log.exercises.length
     h3 Exercises Performed
-
     each ex in log.exercises
       .exercise-card
         h4= ex.name
@@ -65,14 +77,11 @@ block content
                 th Weight
                 th Reps
                 th Rest (sec)
-
             tbody
               each s in ex.set
                 tr
                   td= s.setNumber
                   td= s.type
-
-                  // 🔒 DONE → ALL READ ONLY
                   if log.status === "done"
                     td #{s.weight} #{s.unit}
                     td= s.reps
@@ -93,26 +102,24 @@ block content
                           class="set-input"
                         )
                         |  #{s.unit}
-
                       td
                         input(
                           type="number"
+                          value=s.reps
                           min='8'
                           max='12'
-                          value=s.reps
                           data-set-id=s._id
                           data-field="reps"
                           class="set-input"
                         )
-
                       td= s.restSeconds
 
-  // 🔥 SAVE BUTTON ONLY WHEN ONGOING
+  // 🔹 SAVE BUTTON ONLY WHEN ONGOING
   if log.status !== "done"
     button#saveSetsBtn Save Working Sets
     p#setMessage
 
-  // 🔥 FINISH BUTTON ONLY WHEN ONGOING
+  // 🔹 FINISH BUTTON ONLY WHEN ONGOING
   if log.status !== "done"
     input(
       type="file"
@@ -121,112 +128,111 @@ block content
       data-log-id=log._id
       style="display:none"
     )
-
     button#finish-btn(
       data-log-id=log._id
       data-is-challenge=log.challengeId ? "true" : "false"
     ) Finish Workout
 
-  block scripts
-    script.
-      const finishBtn = document.querySelector("#finish-btn");
-      const saveBtn = document.querySelector("#saveSetsBtn");
+block scripts
+  script.
+    const finishBtn = document.querySelector("#finish-btn");
+    const saveBtn = document.querySelector("#saveSetsBtn");
 
-      if (finishBtn) {
-        finishBtn.addEventListener("click", async () => {
-          const workoutLogId = finishBtn.dataset.logId;
-          const isChallenge = finishBtn.dataset.isChallenge === "true";
+    if (finishBtn) {
+      finishBtn.addEventListener("click", async () => {
+        const workoutLogId = finishBtn.dataset.logId;
+        const isChallenge = finishBtn.dataset.isChallenge === "true";
 
-          const formData = new FormData();
+        const formData = new FormData();
 
-          // 🔥 Challenge → require video upload
-          if (isChallenge) {
-            const videoInput = document.querySelector(
-              `.video-input[data-log-id="${workoutLogId}"]`
-            );
-
-            videoInput.click();
-
-            videoInput.onchange = async () => {
-              if (!videoInput.files.length) {
-                alert("Video is required for challenge workouts.");
-                return;
-              }
-
-              formData.append("video", videoInput.files[0]);
-              await submitFinish(workoutLogId, formData);
-            };
-
-            return;
-          }
-
-          // Solo workout → no video
-          await submitFinish(workoutLogId, formData);
-        });
-      }
-
-      async function submitFinish(workoutLogId, formData) {
-        try {
-          const res = await fetch(
-            `/api/v1/workout-logs/${workoutLogId}/finish`,
-            {
-              method: "PATCH",
-              credentials: "include",
-              body: formData
-            }
+        // 🔥 Challenge → require video upload
+        if (isChallenge) {
+          const videoInput = document.querySelector(
+            `.video-input[data-log-id="${workoutLogId}"]`
           );
 
-          const data = await res.json();
+          videoInput.click();
 
-          if (res.ok) {
-            alert("Workout finished!");
-            location.reload();
-          } else {
-            alert(data.message || "Failed to finish workout.");
-          }
-        } catch (err) {
-          console.error(err);
-          alert("Something went wrong while finishing workout.");
+          videoInput.onchange = async () => {
+            if (!videoInput.files.length) {
+              alert("Video is required for challenge workouts.");
+              return;
+            }
+
+            formData.append("video", videoInput.files[0]);
+            await submitFinish(workoutLogId, formData);
+          };
+
+          return;
         }
-      }
 
-      if (saveBtn) {
-        saveBtn.addEventListener("click", async () => {
-          const inputs = document.querySelectorAll(".set-input");
-          const updates = [];
+        // Solo workout → no video
+        await submitFinish(workoutLogId, formData);
+      });
+    }
 
-          inputs.forEach((input) => {
-            const setId = input.dataset.setId;
-            const field = input.dataset.field;
-            const value = input.value;
-
-            let existing = updates.find((u) => u.setId === setId);
-            if (!existing) {
-              existing = { setId };
-              updates.push(existing);
-            }
-
-            existing[field] = value;
-          });
-
-          const res = await fetch(
-            `/api/v1/workout-logs/${"#{log._id}"}/sets/bulk`,
-            {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ updates })
-            }
-          );
-
-          const data = await res.json();
-
-          const msg = document.querySelector("#setMessage");
-          if (res.ok) {
-            msg.textContent = "Working sets saved successfully!";
-            msg.style.color = "green";
-          } else {
-            msg.textContent = data.message || "Failed to save sets";
-            msg.style.color = "red";
+    async function submitFinish(workoutLogId, formData) {
+      try {
+        const res = await fetch(
+          `/api/v1/workout-logs/${workoutLogId}/finish`,
+          {
+            method: "PATCH",
+            credentials: "include",
+            body: formData
           }
-        });
+        );
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert("Workout finished!");
+          location.reload();
+        } else {
+          alert(data.message || "Failed to finish workout.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Something went wrong while finishing workout.");
       }
+    }
+
+    if (saveBtn) {
+      saveBtn.addEventListener("click", async () => {
+        const inputs = document.querySelectorAll(".set-input");
+        const updates = [];
+
+        inputs.forEach((input) => {
+          const setId = input.dataset.setId;
+          const field = input.dataset.field;
+          const value = input.value;
+
+          let existing = updates.find((u) => u.setId === setId);
+          if (!existing) {
+            existing = { setId };
+            updates.push(existing);
+          }
+
+          existing[field] = value;
+        });
+
+        const res = await fetch(
+          `/api/v1/workout-logs/${"#{log._id}"}/sets/bulk`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ updates })
+          }
+        );
+
+        const data = await res.json();
+
+        const msg = document.querySelector("#setMessage");
+        if (res.ok) {
+          msg.textContent = "Working sets saved successfully!";
+          msg.style.color = "green";
+        } else {
+          msg.textContent = data.message || "Failed to save sets";
+          msg.style.color = "red";
+        }
+      });
+    }
