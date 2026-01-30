@@ -102,7 +102,7 @@ h4 {
 }
 
 /* =========================
-   EXERCISE CONTAINER (UPDATED)
+   EXERCISE CONTAINER
 ========================= */
 .exercise-container {
   max-width: 600px; /* limit horizontal width */
@@ -113,7 +113,7 @@ h4 {
 }
 
 /* =========================
-   EXERCISE ROW (UPDATED)
+   EXERCISE ROW
 ========================= */
 .exercise-row {
   display: flex;
@@ -124,7 +124,7 @@ h4 {
   border-radius: 0.6rem;
   padding: 0.5rem 1rem;
   margin-bottom: 0.5rem;
-  gap: 0.5rem; /* keeps items closer */
+  gap: 0.5rem;
 }
 
 .exercise-row input[type="checkbox"] {
@@ -135,9 +135,9 @@ h4 {
 }
 
 .exercise-name {
-  flex: 1; /* take remaining space */
+  flex: 1;
   margin-left: 0.5rem;
-  min-width: 0; /* prevent text from pushing button away */
+  min-width: 0;
 }
 
 .info-btn {
@@ -149,7 +149,7 @@ h4 {
   border: none;
   cursor: pointer;
   transition: 0.3s;
-  flex-shrink: 0; /* prevent button from shrinking */
+  flex-shrink: 0;
 }
 
 .info-btn:hover {
@@ -162,7 +162,7 @@ h4 {
 .update-section {
   width: 100%;
   display: flex;
-  flex-direction: column; /* stack message and button */
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   margin: 2rem 0;
@@ -231,7 +231,7 @@ h4 {
 
   display: flex;
   flex-direction: column;
-  align-items: center; /* centers GIF and instructions horizontally */
+  align-items: center;
 }
 
 /* =========================
@@ -239,7 +239,7 @@ h4 {
 ========================= */
 .modal-content img {
   display: block;
-  margin: 0 auto 1rem auto; /* center horizontally + spacing below */
+  margin: 0 auto 1rem auto;
   max-width: 100%;
   border-radius: 0.5rem;
   border: 1px solid #22c55e;
@@ -252,6 +252,20 @@ h4 {
   text-align: left;
   color: #cbd5f5;
   width: 100%;
+}
+
+/* =========================
+   MODAL LIST FIX
+========================= */
+.modal-content ul,
+.modal-content ol {
+  margin: 0;
+  padding-left: 1.2rem;
+  list-style-position: inside;
+}
+
+.modal-content li {
+  margin-bottom: 0.3rem;
 }
 
 /* =========================

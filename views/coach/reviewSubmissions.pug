@@ -82,7 +82,7 @@ block content
           video(controls width="250" style="margin-top:10px; border-radius:6px;")
             source(src=log.videoUrl type="video/mp4")
         else
-          p(style="color:red; margin-top:5px") ⚠️ No video submitted.
+          p(style="color:red; margin-top:5px")  No video submitted.
 
         // =====================
         // Verification Actions
@@ -104,8 +104,8 @@ block content
             br
             br
 
-            button.approve(type="submit" name="decision" value="approved") ✅ Approve
-            button.reject(type="submit" name="decision" value="rejected") ❌ Reject
+            button.approve(type="submit" name="decision" value="approved")  Approve
+            button.reject(type="submit" name="decision" value="rejected")  Reject
         else
           p.reviewed This submission has already been reviewed.
 

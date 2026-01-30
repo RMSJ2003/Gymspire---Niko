@@ -271,6 +271,20 @@ button,
 }
 
 /* =========================
+   EXERCISE LIST FIX
+========================= */
+.exercise-card ul,
+.exercise-card ol {
+  margin: 0; /* remove extra spacing */
+  padding-left: 1.2rem; /* keep bullets inside container */
+  list-style-position: inside;
+}
+
+.exercise-card li {
+  margin-bottom: 0.3rem; /* spacing between items */
+}
+
+/* =========================
    JOIN STATUS
 ========================= */
 .join-status {
@@ -311,5 +325,11 @@ button,
   .review-link {
     padding: 0.4rem 0.8rem;
     font-size: 0.9rem;
+  }
+
+  /* Exercise list inside card fully responsive */
+  .exercise-card ul,
+  .exercise-card ol {
+    padding-left: 1rem;
   }
 }

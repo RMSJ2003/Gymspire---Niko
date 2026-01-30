@@ -24,7 +24,7 @@ body {
   left: 0;
   right: 0;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* buttons at left/right */
   align-items: center;
   padding: 0.8rem 1rem;
   background: rgba(17, 24, 39, 0.95);
@@ -43,7 +43,7 @@ body {
   border-radius: 0.5rem;
   text-decoration: none;
   transition: all 0.3s ease;
-  margin-left: 0.5rem;
+  margin: 0;
 }
 
 .top-bar a:hover {
@@ -61,15 +61,6 @@ body {
   background-color: #16a34a;
 }
 
-.logout-btn {
-  background-color: #f87171;
-  color: white;
-}
-
-.logout-btn:hover {
-  background-color: #ef4444;
-}
-
 .back-btn {
   background-color: #2563eb;
   color: white;
@@ -77,6 +68,15 @@ body {
 
 .back-btn:hover {
   background-color: #1d4ed8;
+}
+
+.logout-btn {
+  background-color: #f87171;
+  color: white;
+}
+
+.logout-btn:hover {
+  background-color: #ef4444;
 }
 
 /* =========================
@@ -257,6 +257,27 @@ h4 {
    MOBILE RESPONSIVE
 ========================= */
 @media (max-width: 900px) {
+  /* Keep dashboard left, back right */
+  .top-bar {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0.8rem 1rem;
+  }
+
+  .dashboard-btn {
+    order: 1; /* left */
+  }
+
+  .back-btn {
+    order: 2; /* right */
+  }
+
+  /* Resize buttons on small screens */
+  .top-bar a {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+  }
+
   .submission-card {
     padding: 1rem;
   }
@@ -269,16 +290,5 @@ h4 {
 
   .submission-card video {
     width: 100%;
-  }
-
-  .top-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .top-bar a {
-    width: 100%;
-    text-align: center;
   }
 }
