@@ -1,42 +1,56 @@
 extends base
 
-block content
-  include _navbar
+block styles
+  link(rel="stylesheet" href="/css/editWorkoutPlan.css")
 
+block content
+  // 🔹 TOP BAR
+  .top-bar
+    a.dashboard-btn(href='/dashboard') Dashboard
+    a.back-btn(href='javascript:history.back()') Back
+
+  // 🔹 PAGE TITLE
   h1 #{title}
   h2 #{user.username}
 
+  // 🔹 PROFILE PICTURE
   if user.pfpUrl
-    img(src=user.pfpUrl alt="Profile Picture" width="150")
+    img.profile-pic(src=user.pfpUrl alt="Profile Picture" width="150")
   else
-    img(src="/img/default-user.png" alt="Default Profile" width="150")
+    img.profile-pic(src="/img/default-user.png" alt="Default Profile" width="150")
 
-  form(id="editWorkoutPlanForm")
-    each exercise in exercises
-      .exercise-card
-        label
-          input(
-            type="checkbox"
-            name="exerciseIds"
-            value=exercise.exerciseId
-            checked=selectedIds.includes(exercise.exerciseId)
-          )
+  // 🔹 SCROLLABLE EXERCISE CONTAINER
+  .exercise-container
+    form#editWorkoutPlanForm
+      each exercise, index in exercises
+        .exercise-row
+          label
+            input(
+              type="checkbox"
+              name="exerciseIds"
+              value=exercise.exerciseId
+              checked=selectedIds.includes(exercise.exerciseId)
+            )
+            span.exercise-name #{exercise.name}
+          button.info-btn(type="button" data-index=index) i
 
-          h3= exercise.name
-          p Target: #{exercise.target}
-
-          if exercise.gifURL
-            img(src=exercise.gifURL alt=exercise.name width="200")
-
-          if exercise.instructions && exercise.instructions.length
-            h4 Instructions:
-            ul
-              each step in exercise.instructions
-                li= step
-
-    button(type="submit") Update Workout Plan
-
+  // 🔹 UPDATE BUTTON SECTION
+  .update-section
     p.form-message#formMessage
+    button(type="submit" form="editWorkoutPlanForm") Update Workout Plan
 
-  block scripts
-    script(src="/js/editWorkoutPlan.js")
+  // 🔹 MODAL
+  .modal.hidden#exerciseModal
+    .modal-content
+      button#closeModal ×
+      img#modalGif
+      div#modalInstructions
+
+  // 🔹 PASS EXERCISES DATA TO JS
+  script#exercisesData(type="application/json").
+    !{JSON.stringify(exercises)}
+  script.
+    window.exercises = JSON.parse(document.getElementById("exercisesData").textContent)
+
+block scripts
+  script(src="/js/editWorkoutPlan.js")

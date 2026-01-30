@@ -1,0 +1,289 @@
+/* =========================
+   GLOBAL RESET
+========================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  color: white;
+  background: #111827;
+  min-height: 100vh;
+  padding: 5rem 1rem 2rem 1rem; /* space for fixed top bar */
+}
+
+/* =========================
+   TOP BAR
+========================= */
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background: rgba(17, 24, 39, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 999;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.top-bar a {
+  padding: 0.5rem 1.2rem;
+  border: 2px solid #22c55e;
+  background: transparent;
+  color: #22c55e;
+  font-weight: bold;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.top-bar a:hover {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+/* =========================
+   HEADINGS
+========================= */
+h1,
+h2,
+h3,
+h4 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #22c55e;
+}
+h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #cbd5f5;
+}
+h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #22c55e;
+}
+h4 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #22c55e;
+}
+
+/* =========================
+   PROFILE PIC
+========================= */
+.profile-pic {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #22c55e;
+  display: block;
+  margin: 0 auto 1rem auto;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+}
+
+.profile-pic:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(34, 197, 94, 0.5);
+}
+
+/* =========================
+   EXERCISE CONTAINER
+========================= */
+.exercise-container {
+  max-height: 60vh;
+  overflow-y: auto;
+  margin: 1rem auto;
+  padding: 0.5rem;
+}
+
+.exercise-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  border-radius: 0.6rem;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.exercise-row input[type="checkbox"] {
+  margin-right: 0.5rem;
+  width: 20px;
+  height: 20px;
+  accent-color: #22c55e;
+}
+
+.exercise-name {
+  flex: 1;
+  margin-left: 0.5rem;
+}
+
+/* =========================
+   INFO BUTTON
+========================= */
+.info-btn {
+  padding: 0.2rem 0.5rem;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  border-radius: 0.4rem;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.info-btn:hover {
+  background: #1d4ed8;
+}
+
+/* =========================
+   UPDATE BUTTON SECTION
+========================= */
+.update-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column; /* stack message and button */
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+  padding: 0 1rem;
+  gap: 0.8rem;
+}
+
+.update-section button[type="submit"] {
+  width: 100%;
+  max-width: 420px;
+  padding: 0.9rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  background: #22c55e;
+  color: #020617;
+  border-radius: 0.6rem;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.update-section button[type="submit"]:hover {
+  background: #16a34a;
+  transform: translateY(-2px);
+}
+
+/* =========================
+   FORM MESSAGE
+========================= */
+.update-section .form-message {
+  text-align: center;
+  font-weight: bold;
+  color: #f87171;
+  max-width: 420px;
+}
+
+/* =========================
+   MODAL
+========================= */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #111827;
+  border: 1px solid #22c55e;
+  border-radius: 1rem;
+  padding: 1rem;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centers GIF and instructions horizontally */
+}
+
+/* =========================
+   MODAL IMAGE
+========================= */
+.modal-content img {
+  display: block;
+  margin: 0 auto 1rem auto; /* center horizontally + spacing below */
+  max-width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid #22c55e;
+}
+
+/* =========================
+   MODAL INSTRUCTIONS
+========================= */
+#modalInstructions {
+  text-align: left;
+  color: #cbd5f5;
+  width: 100%;
+}
+
+/* =========================
+   MODAL CLOSE BUTTON
+========================= */
+#closeModal {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.5rem;
+  background: #f87171;
+  border: none;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.3rem;
+  cursor: pointer;
+}
+
+#closeModal:hover {
+  background: #dc2626;
+}
+
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+@media (max-width: 600px) {
+  .exercise-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+  .info-btn {
+    align-self: flex-end;
+  }
+  .update-section button[type="submit"] {
+    width: 100%;
+  }
+}
