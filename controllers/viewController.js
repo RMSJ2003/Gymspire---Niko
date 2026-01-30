@@ -51,6 +51,8 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.profile = catchAsync(async (req, res, next) => {
+  console.log(req.user);
+
   res.status(200).render("profile", {
     title: "Profile",
   });
@@ -166,7 +168,7 @@ exports.personalRecord = catchAsync(async (req, res, next) => {
 });
 
 exports.reviewSubmissions = (req, res) => {
-  res.render("reviewSubmissions", {
+  res.render("coach/reviewSubmissions", {
     title: "Challenge Submissions",
     user: req.user,
     submissions: req.submissionLogs,
@@ -174,7 +176,7 @@ exports.reviewSubmissions = (req, res) => {
 };
 
 exports.createChallenge = catchAsync(async (req, res, next) => {
-  res.status(200).render("createChallenge", {
+  res.status(200).render("coach/createChallenge", {
     title: "Create Challenge",
     exercises: req.exercises,
     currentUser: req.user,

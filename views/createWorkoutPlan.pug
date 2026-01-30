@@ -6,7 +6,12 @@ block styles
 block content
   // Top Buttons
   .top-buttons
-    a.button-dashboard(href="/dashboard") Dashboard
+    if user.userType === "user"
+      a.dashboard-btn(href='/dashboard') Dashboard
+    if user.userType === "coach"
+      a.dashboard-btn(href='/coachDashboard') Dashboard
+    if user.userType === "admin"
+      a.dashboard-btn(href='/adminDashboard') Dashboard
     a.button-logout(href="/logout") Logout
 
   // Main Workout Page

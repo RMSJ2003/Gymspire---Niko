@@ -10,8 +10,15 @@ block content
   // =========================
   nav.navbar
     .nav-logo
-      a(href="/dashboard")
-        img(src="/img/gymspirelogo.png" alt="GymSpire Logo")
+      if user.userType === "user"
+        a.dashboard-btn(href='/dashboard')
+          img(src="/img/gymspirelogo.png" alt="GymSpire Logo")
+      if user.userType === "coach"
+        a.dashboard-btn(href='/coachDashboard') 
+          img(src="/img/gymspirelogo.png" alt="GymSpire Logo")
+      if user.userType === "admin"
+        a.dashboard-btn(href='/adminDashboard') 
+          img(src="/img/gymspirelogo.png" alt="GymSpire Logo")
     .nav-right
       button.hamburger ☰
       .panel
