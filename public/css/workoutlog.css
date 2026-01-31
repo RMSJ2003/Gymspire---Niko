@@ -117,9 +117,9 @@ p.important {
 }
 
 /* =========================
-   BUTTONS
+   BUTTONS (save working set/finish workout)
 ========================= */
-/* button,
+button,
 .btn {
   display: block;
   width: max-content;
@@ -134,12 +134,13 @@ p.important {
   border: none;
   cursor: pointer;
   transition: 0.3s;
-} */
+}
 
-/* button:hover,
+button:hover,
 .btn:hover {
-  background: #16a34a;
-} */
+  background-color: whitesmoke;
+  color: #020617;
+}
 
 /* =========================
    EXERCISE CARDS
