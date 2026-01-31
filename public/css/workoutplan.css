@@ -1,6 +1,3 @@
-/* =========================
-   GLOBAL RESET
-========================= */
 * {
   margin: 0;
   padding: 0;
@@ -27,18 +24,16 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 0.8rem 1rem;
-  background: rgba(17, 24, 39, 0.95); /* dark glass effect */
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   z-index: 999;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  background-color: #111827;
 }
 
 .top-bar a {
   padding: 0.5rem 1.2rem;
-  border: 2px solid #22c55e;
+  border: 2px solid #ebda1b;
   background: transparent;
-  color: #22c55e;
+  color: #ebda1b;
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -46,7 +41,9 @@ body {
 }
 
 .top-bar a:hover {
-  background: rgba(34, 197, 94, 0.1);
+  background-color: whitesmoke;
+  color: #020617;
+  border: 2px solid transparent;
 }
 
 /* =========================
@@ -61,13 +58,13 @@ h2 {
 h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #22c55e;
+  color: #ebda1b;
 }
 
 h2 {
   font-size: 1.5rem;
   font-weight: 500;
-  color: #cbd5f5;
+  color: whitesmoke;
 }
 
 /* =========================
@@ -78,7 +75,7 @@ h2 {
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #22c55e;
+  border: 4px solid #ebda1b;
   display: block;
   margin: 0 auto 1rem auto;
 }
@@ -96,15 +93,12 @@ p[style] {
 /* =========================
    BUTTONS
 ========================= */
-/* =========================
-   BUTTONS
-========================= */
 .btn {
   display: block; /* make block-level so margin auto works */
   width: max-content; /* keeps button width to its content */
   margin: 1rem auto; /* centers horizontally */
   padding: 0.6rem 1.2rem;
-  background: #22c55e;
+  background: #ebda1b;
   color: #020617;
   font-weight: bold;
   border-radius: 0.5rem;
@@ -116,47 +110,44 @@ p[style] {
 }
 
 .btn:hover {
-  background: #16a34a;
+  background-color: whitesmoke;
+  color: #020617;
 }
 
 /* =========================
    EXERCISE CARDS
 ========================= */
 .exercise-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(34, 197, 94, 0.4);
+  border: 1px solid #ebda1b;
   border-radius: 1rem;
   padding: 1rem;
   margin: 1rem auto;
   max-width: 600px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
 .exercise-card h3 {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #22c55e;
+  color: #ebda1b;
   margin-bottom: 0.5rem;
 }
 
 .exercise-card p {
   font-size: 1rem;
   margin-bottom: 0.5rem;
-  color: #cbd5f5;
+  color: whitesmoke;
 }
 
 .exercise-card h4 {
   font-size: 1.1rem;
   margin-top: 0.8rem;
-  color: #22c55e;
+  color: #ebda1b;
 }
 
 .exercise-card ul {
   list-style: disc inside;
   margin-top: 0.5rem;
-  color: #cbd5f5;
+  color: whitesmoke;
 }
 
 .exercise-card img {
@@ -164,7 +155,7 @@ p[style] {
   margin: 0.5rem auto;
   max-width: 100%;
   border-radius: 0.5rem;
-  border: 1px solid #22c55e;
+  border: 1px solid #ebda1b;
 }
 
 /* =========================

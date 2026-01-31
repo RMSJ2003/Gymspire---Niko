@@ -1,6 +1,18 @@
 /* =========================
-   TOP BAR BUTTONS FIXED
+body
 ========================= */
+.profile-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  padding: 4rem 1rem;
+  background-color: #111827;
+  color: white;
+}
+
 .top-bar {
   position: fixed; /* Stick at top */
   top: 1rem; /* 1rem from top */
@@ -15,8 +27,8 @@
 .top-bar a {
   padding: 0.5rem 1rem;
   background-color: transparent; /* No background */
-  border: 2px solid #22c55e; /* Green border */
-  color: #22c55e; /* Green text */
+  border: 2px solid #ebd31b; /* Green border */
+  color: #ebda1b; /* Green text */
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -24,23 +36,9 @@
 }
 
 .top-bar a:hover {
-  background-color: #22c55e; /* Slight green hover */
+  background-color: whitesmoke;
   color: #020617;
-}
-
-/* =========================
-   PROFILE PAGE LAYOUT
-========================= */
-.profile-page {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  text-align: center;
-  padding: 4rem 1rem;
-  background: linear-gradient(135deg, #1d2d4b, #1a1f2e);
-  color: white;
+  border: 2px solid transparent;
 }
 
 /* Card container */
@@ -48,7 +46,7 @@
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(34, 197, 94, 0.4);
+  border: 1px solid #ebd31b;
   border-radius: 1rem;
   padding: 2rem 1.5rem;
   max-width: 400px;
@@ -65,6 +63,7 @@
   font-size: 2.2rem;
   font-weight: 700;
   letter-spacing: 1px;
+  color: #ebd31b;
 }
 
 /* =========================
@@ -75,17 +74,9 @@
   height: 180px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #22c55e;
+  border: 4px solid #ebda1b;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
   margin-bottom: 1.5rem;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-}
-
-.profile-pic:hover {
-  transform: scale(1.05);
-  box-shadow: 0 12px 30px rgba(34, 197, 94, 0.5);
 }
 
 /* =========================
@@ -96,7 +87,7 @@
   max-width: 200px;
   border: none;
   height: 3px;
-  background: #22c55e;
+  background: #ebda1b;
   margin: 1.5rem auto 2rem auto;
   border-radius: 10px;
 }
@@ -116,7 +107,7 @@
   margin: 0;
   font-weight: 500;
   font-size: 1.2rem;
-  color: #e5e7eb;
+  color: whitesmoke;
 }
 
 /* =========================
@@ -133,8 +124,8 @@
 /* Edit Profile link */
 .profile-actions a {
   display: inline-block;
-  background: #22c55e;
-  color: white;
+  background: #ebda1b;
+  color: #020617;
   text-decoration: none;
   font-weight: 600;
   padding: 0.6rem 1.4rem;
@@ -145,9 +136,8 @@
 }
 
 .profile-actions a:hover {
-  background: #16a34a;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(34, 197, 94, 0.5);
+  background-color: whitesmoke;
+  color: #020617;
 }
 
 /* Delete Account Button */
@@ -166,13 +156,11 @@
 
 #deleteForm button:hover {
   background: #dc2626;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(220, 38, 38, 0.5);
 }
 
 /* Warning message */
 .warning-message {
-  color: #f87171;
+  color: #dc2626;
   font-weight: bold;
   font-size: 0.9rem;
   text-align: center;

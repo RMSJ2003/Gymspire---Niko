@@ -3,7 +3,7 @@
 ========================= */
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #1d2d4b, #1a1f2e);
+  background-color: #111827;
   color: white;
   padding: 2rem 1rem;
   min-height: 100vh;
@@ -14,20 +14,21 @@ body {
 ========================= */
 .top-bar {
   position: fixed;
-  top: 1rem;
+  top: 0;
   left: 0;
   right: 0;
   display: flex;
   justify-content: space-between;
-  padding: 0 1rem;
-  z-index: 999;
+  align-items: center;
+  padding: 0.8 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .top-bar a {
   padding: 0.5rem 1rem;
-  border: 2px solid #22c55e;
+  border: 2px solid #ebda1b;
   background-color: transparent;
-  color: #22c55e;
+  color: #ebda1b;
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -35,8 +36,9 @@ body {
 }
 
 .top-bar a:hover {
-  background-color: rgba(34, 197, 94, 0.1);
-  color: #16a34a;
+  background-color: whitesmoke;
+  color: #020617;
+  border: 2px solid transparent;
 }
 
 /* =========================
@@ -47,7 +49,7 @@ body {
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #22c55e;
+  border: 4px solid #ebda1b;
   display: block;
   margin: 3rem auto 1rem auto; /* space below top-bar */
 }
@@ -60,24 +62,25 @@ h2,
 h3 {
   text-align: center;
   margin-bottom: 0.8rem;
+  padding-top: 1rem;
 }
 
 h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #22c55e;
+  color: #ebda1b;
 }
 
 h2 {
   font-size: 1.5rem;
   font-weight: 500;
-  color: #cbd5f5;
+  color: whitesmoke;
 }
 
 h3 {
   font-size: 1.2rem;
   font-weight: 500;
-  color: #22c55e;
+  color: #ebda1b;
 }
 
 /* =========================
@@ -92,17 +95,17 @@ form#prForm {
 }
 
 form#prForm input[type="text"] {
+  background-color: whitesmoke;
+  color: #0d265c;
   width: 100%;
   max-width: 350px;
-  padding: 0.6rem 0.8rem;
-  border-radius: 0.5rem;
+  padding: 12px;
+  border-radius: 6px;
   border: none;
-  background: #1f2937;
-  color: white;
 }
 
 form#prForm input[type="text"]:focus {
-  outline: 2px solid #22c55e;
+  outline: 2px solid #020617;
   outline-offset: 2px;
 }
 
@@ -112,7 +115,7 @@ form#prForm button {
   margin: 1rem auto;
   padding: 0.6rem 1.2rem;
   border-radius: 0.5rem;
-  background-color: #22c55e;
+  background-color: #ebd31b;
   color: #020617;
   font-weight: bold;
   border: none;
@@ -121,8 +124,8 @@ form#prForm button {
 }
 
 form#prForm button:hover {
-  background-color: #16a34a;
-  transform: translateY(-1px);
+  background-color: whitesmoke;
+  color: #020617;
 }
 
 /* =========================

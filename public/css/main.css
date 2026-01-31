@@ -2,11 +2,8 @@
    GLOBAL STYLES
 ========================= */
 body {
-  background: linear-gradient(135deg, #1d2d4b, #1a1f2e);
   font-family: Arial, sans-serif;
   min-height: 100vh;
-  padding-top: 12vh; /* navbar height */
-  color: white;
   margin: 0;
 }
 
@@ -18,21 +15,10 @@ button {
   padding: 0.75rem 1.5rem;
 }
 
-button:disabled {
+/* button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-
-.hidden {
-  display: none;
-}
-
-.form-error {
-  color: #d32f2f;
-  font-size: 0.85rem;
-  margin-top: 4px;
-  display: block;
-}
+} */
 
 /* =========================
    WORKOUT PLAN

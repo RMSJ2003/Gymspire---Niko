@@ -4,11 +4,12 @@
 }
 
 body {
+  background-color: whitesmoke;
+  color: #0d265c;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #0d265c;
   font-family: Arial, sans-serif;
   padding: 16px;
 }
@@ -63,12 +64,12 @@ h2 {
   text-align: right;
   margin: 12px 0 20px;
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: whitesmoke;
   text-decoration: none;
 }
 
 #loginForm a[href="/forgotPassword"]:hover {
-  color: whitesmoke;
+  color: #ebd31b;
 }
 
 /* Buttons */
@@ -91,24 +92,24 @@ h2 {
 /* Login button */
 #loginBtn {
   border: none;
-  background: whitesmoke;
+  background-color: #ebd31b;
   color: #020617;
 }
 
 #loginBtn:hover {
-  background: #102e6f;
-  color: whitesmoke;
+  background: whitesmoke;
+  color: #020617;
 }
 
 /* Signup button (secondary) */
 #signupBtn {
   background: transparent;
-  border: 1px solid #94a3b8;
+  border: 1px solid #ebda1b;
   color: whitesmoke;
 }
 
 #signupBtn:hover {
-  background: #0d265c;
+  color: #ebda1b;
 }
 
 /* Spinner */

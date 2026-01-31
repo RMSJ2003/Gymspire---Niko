@@ -27,18 +27,16 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 0.8rem 1rem;
-  background: rgba(17, 24, 39, 0.95); /* dark glass effect */
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+
   z-index: 999;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .top-bar a {
   padding: 0.5rem 1.2rem;
-  border: 2px solid #22c55e;
+  border: 2px solid #ebd31b;
   background: transparent;
-  color: #22c55e;
+  color: #ebd31b;
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -46,7 +44,9 @@ body {
 }
 
 .top-bar a:hover {
-  background: rgba(34, 197, 94, 0.1);
+  background-color: whitesmoke;
+  color: #020617;
+  border: 2px solid transparent;
 }
 
 /* =========================
@@ -62,19 +62,19 @@ h3 {
 h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #22c55e;
+  color: #ebd31b;
 }
 
 h2 {
   font-size: 1.5rem;
   font-weight: 500;
-  color: #cbd5f5;
+  color: whitesmoke;
 }
 
 h3 {
   font-size: 1.2rem;
   font-weight: 500;
-  color: #cbd5f5;
+  color: #ebda1b;
   margin-bottom: 1rem;
 }
 
@@ -86,7 +86,7 @@ h3 {
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #22c55e;
+  border: 4px solid #ebd31b;
   display: block;
   margin: 0 auto 1rem auto;
 }
@@ -117,7 +117,7 @@ h3 {
   width: max-content; /* keeps button width fitting its text */
   margin: 1rem auto; /* centers horizontally */
   padding: 0.6rem 1.2rem;
-  background: #22c55e;
+  background: #ebda1b;
   color: #020617;
   font-weight: bold;
   border-radius: 0.5rem;
@@ -129,7 +129,8 @@ h3 {
 }
 
 .btn:hover {
-  background: #16a34a;
+  background-color: whitesmoke;
+  color: #020617;
 }
 
 /* =========================
