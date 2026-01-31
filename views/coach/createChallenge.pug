@@ -1,11 +1,10 @@
-extends base
+extends ../base
 
-// 🔹 LINK THE CHALLENGES CSS
 block styles
   link(rel="stylesheet" href="/css/challenges.css")
 
 block content
-  include _navbar
+  include ../_navbar
 
   h1 #{title}
   h2 #{user.username}
