@@ -36,25 +36,90 @@ block content
   // =========================
   // STATUS SECTION
   // =========================
-  .status-section
-    h3 GymSpire Time Status
-    p
-      if recommended
-        strong Recommended to workout now
-      else
-        strong Not recommended to workout now
-    p #{message}
-    p
-      | Current time:
-      - const period = currentHour >= 12 ? "PM" : "AM";
-      - const displayHour = currentHour % 12 || 12;
-      span #{displayHour}:00 #{period}
-    p
-      | Current gym load:
-      span #{currentLoad}
-    p
-      | Crowd level:
-      span #{crowdLevel}
+  //- .status-section
+  //-   h3 GymSpire Time Status
+  //-   p
+  //-     if recommended
+  //-       strong Recommended to workout now
+  //-     else
+  //-       strong Not recommended to workout now
+  //-   p #{message}
+  //-   p
+  //-     | Current time:
+  //-     - const period = currentHour >= 12 ? "PM" : "AM";
+  //-     - const displayHour = currentHour % 12 || 12;
+  //-     span #{displayHour}:00 #{period}
+  //-   p
+  //-     | Current gym load:
+  //-     span #{currentLoad}
+  //-   p
+  //-     | Crowd level:
+  //-     span #{crowdLevel}
+
+      // Main recommendation result
+  p
+    if recommended
+      strong Recommended to workout now
+    else
+      strong Not recommended to workout now
+
+  // Explanation message
+  p #{message}
+
+  p
+    | Current time: 
+    strong #{currentTime}
+
+  p
+    | Current gym load: 
+    data(value=currentLoad) #{currentLoad}
+
+  h3 Currently Working Out
+
+  if onlineUsers.length === 0
+    p No users are currently working out.
+  else
+    .online-users
+      each u in onlineUsers
+        .online-user
+          if u.pfpUrl
+            img(
+              src=u.pfpUrl
+              alt=u.username
+              width="40"
+              height="40"
+              style="border-radius:50%;"
+            )
+          else
+            img(
+              src="/img/default-user.png"
+              alt=u.username
+              width="40"
+              height="40"
+              style="border-radius:50%;"
+            )
+
+          span= u.username
+
+  // =========================
+  // Muscle Group Workout Couunt this Week
+  // =========================
+  
+  if frequencies.length === 0
+    p No workout data available for this week.
+  else
+    ul.frequency-list
+      each item in frequencies
+        li.frequency-item(class=item.trained >= item.target ? "complete" : "incomplete")
+          span.muscle-name #{item.muscle}
+          span.muscle-count #{item.trained} / #{item.target}
+
+  p
+    | Workouts this week: 
+    if workoutCount === 0
+      strong No workout yet
+    else
+      strong #{workoutCount}
 
   // =========================
   // DASHBOARD GRID

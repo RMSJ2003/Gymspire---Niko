@@ -64,8 +64,6 @@ exports.signup = catchAsync(async (req, res, next) => {
     .select("+active");
 
   if (existingUser) {
-    console.log("era"); // ✅ NOW THIS LOGS
-
     if (existingUser.active === false) {
       return next(
         new AppError(
@@ -108,8 +106,26 @@ exports.signup = catchAsync(async (req, res, next) => {
     await newUser.save({ validateBeforeSave: false });
   }
 
-  // 4️⃣ Send token + login  🔥 FIXED
-  createSendToken(newUser, 201, res);
+  // 4️⃣ CREATE EMAIL VERIFICATION TOKEN
+  const verificationToken = newUser.createEmailVerificationToken();
+  await newUser.save({ validateBeforeSave: false });
+
+  // 5️⃣ SEND VERIFICATION EMAIL
+  const verifyURL = `${req.protocol}://${req.get(
+    "host",
+  )}/api/v1/auth/verify-email/${verificationToken}`;
+
+  await sendEmail({
+    email: newUser.email,
+    subject: "Verify your iACADEMY email",
+    message: `Click this link to verify your email:\n${verifyURL}\n\nThis link expires in 10 minutes.`,
+  });
+
+  // 6️⃣ DO NOT LOG THEM IN YET
+  res.status(201).json({
+    status: "success",
+    message: "Account created. Please verify your email before logging in.",
+  });
 });
 
 exports.createCoach = catchAsync(async (req, res, next) => {
@@ -240,26 +256,26 @@ exports.createAdmin = catchAsync(async (req, res, next) => {
   });
 });
 
-
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
-  // 1) Checks if email and password exists
-  if (!email || !password)
+  // 1) Check if email and password exist
+  if (!email || !password) {
     return next(new AppError("Please provide email and password", 400));
-
-  // 2) Check if the user exists && password is correct
-  // If we want a field (password) that has select property set to false (in schema)
-  // we add .select(+<name of field>)
-  const user = await User.findOne({
-    email,
-  }).select("+password");
-
-  // user is an object .correctPassword is in the userModel.js (check for details)
-  if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError("Incorrect email or password", 401)); // 401 means unauthorized
   }
 
+  // 2) Find user + get password
+  const user = await User.findOne({ email }).select("+password +emailVerified");
+
+  // 3) Check if user exists & password is correct
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(new AppError("Incorrect email or password", 401));
+  }
+
+  if (!user.emailVerified)
+    return next(new AppError("Please verify your email to get access.", 401));
+
+  // 5) Login allowed
   createSendToken(user, 200, res);
 });
 
@@ -443,6 +459,83 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 // CHANGING PASSWORD FUNCTIONALITIES - END
+
+exports.verifyIacademyEmail = catchAsync(async (req, res, next) => {
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  const user = await User.findOne({
+    emailVerificationToken: hashedToken,
+    emailVerificationExpires: { $gt: Date.now() },
+  });
+
+  // 2} If token has not expired, and there is a user, set the new password.
+  if (!user) next(new AppError("Token is invalid or has expired", 400));
+
+  user.emailVerified = true;
+  user.emailVerificationToken = undefined;
+  user.emailVerificationExpires = undefined;
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    status: "success",
+    message: "Email verified successfully",
+  });
+});
+
+exports.requestEmailVerification = catchAsync(async (req, res, next) => {
+  const { email } = req.body;
+
+  // 1) Check if user exists
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return next(new AppError("No user found with that email", 404));
+  }
+
+  // 2) Check if email is already verified
+  if (user.emailVerified) {
+    return next(new AppError("Email is already verified", 400));
+  }
+
+  // 3) Check if a valid (non-expired) verification link already exists
+  if (
+    user.emailVerificationToken &&
+    user.emailVerificationExpires &&
+    user.emailVerificationExpires > Date.now()
+  ) {
+    return next(
+      new AppError(
+        "Verification email already sent. Please check your inbox.",
+        429,
+      ),
+    );
+  }
+
+  // 4) Create new verification token (old one is expired or missing)
+  const verificationToken = user.createEmailVerificationToken();
+
+  await user.save({ validateBeforeSave: false });
+
+  // 5) Send verification email
+  const verificationURL = `${req.protocol}://${req.get(
+    "host",
+  )}/api/v1/auth/verify-email/${verificationToken}`;
+
+  await sendEmail({
+    to: user.email,
+    subject: "Verify your email",
+    message: `Click to verify your email: ${verificationURL}`,
+  });
+
+  // 6) Response
+  res.status(200).json({
+    status: "success",
+    message: "Verification email sent",
+  });
+});
 
 // With this, pug files can now do something like this:
 // if user

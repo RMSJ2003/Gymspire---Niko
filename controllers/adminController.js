@@ -49,83 +49,93 @@ exports.getGymUsageByHour = catchAsync(async (req, res, next) => {
 
 exports.getGymspireNowStatus = catchAsync(async (req, res, next) => {
   // ================================
-  // STEP 1: Get current  time
+  // STEP 1: Get current time
   // ================================
   const now = new Date();
-  const currentHour = now.getHours();
+
+  const currentHour = now.getHours(); // 👈 needed for logic
+  const currentTime = now.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 
   // ================================
   // STEP 2: Enforce gym operating hours
   // ================================
-  const openHour = parseInt(process.env.GYM_OPENING_HOUR); // ex: 5
-  const closeHour = parseInt(process.env.GYM_CLOSING_HOUR); // ex: 23
+  const openHour = parseInt(process.env.GYM_OPENING_HOUR, 10); // ex: 5
+  const closeHour = parseInt(process.env.GYM_CLOSING_HOUR, 10); // ex: 23
 
+  // 🚫 GYM CLOSED → HARD STOP
   if (currentHour < openHour || currentHour >= closeHour) {
-    res.locals.currentHour = currentHour;
+    res.locals.currentTime = currentTime;
     res.locals.currentLoad = 0;
-    // res.locals.crowdLevel = 'none';
     res.locals.recommended = false;
     res.locals.message =
       "Not recommended to workout now. Gym is currently closed.";
+    res.locals.onlineUsers = [];
 
     return next();
   }
 
   // ================================
-  // STEP 3: Recent activity window (last 2 hours) ⭐
+  // STEP 3: Recent activity window (last 2 hours)
   // ================================
   const endTime = new Date(now);
   const startTime = new Date(now.getTime() - 2 * 60 * 60 * 1000);
 
-  // console.log("WINDOW START:", startTime.toISOString());
-  // console.log("WINDOW END:", endTime.toISOString());
-
   // ================================
-  // STEP 4: Count recent workouts
+  // STEP 4: Find currently online users
   // ================================
-  const workoutCount = await WorkoutLog.countDocuments({
+  const onlineWorkoutLogs = await WorkoutLog.find({
+    status: "ongoing",
     date: {
       $gte: startTime,
       $lt: endTime,
     },
-    status: { $in: ["ongoing", "done"] },
+  }).populate("userId", "username pfpUrl");
+
+  // Deduplicate users
+  const onlineUsersMap = new Map();
+
+  onlineWorkoutLogs.forEach((log) => {
+    if (log.userId) {
+      onlineUsersMap.set(log.userId._id.toString(), log.userId);
+    }
   });
 
-  // console.log("WORKOUT COUNT:", workoutCount);
+  const onlineUsers = Array.from(onlineUsersMap.values());
 
   // ================================
-  // STEP 5: Crowd thresholds
+  // STEP 5: Recommendation logic (OPEN HOURS ONLY)
   // ================================
-  let crowdLevel;
+  const workoutCount = onlineUsers.length;
+
   let recommended;
   let message;
 
   if (workoutCount <= 5) {
-    crowdLevel = "low";
     recommended = true;
-    message = "Recommended to workout now. Low gym activity detected.";
+    message = "Recommended to workout now. Few people currently online.";
   } else if (workoutCount <= 15) {
-    crowdLevel = "medium";
     recommended = true;
-    message = "Workout is acceptable now. Moderate gym activity detected.";
+    message = "Workout is acceptable now. Moderate gym activity.";
   } else {
-    crowdLevel = "high";
     recommended = false;
-    message = "Not recommended to workout now due to high gym activity.";
+    message = "Not recommended to workout now. Many users are active.";
   }
 
-  res.locals.currentHour = currentHour;
+  // ================================
+  // STEP 6: Attach to locals
+  // ================================
+  res.locals.currentTime = currentTime;
   res.locals.currentLoad = workoutCount;
-  res.locals.crowdLevel = crowdLevel;
   res.locals.recommended = recommended;
   res.locals.message = message;
+  res.locals.onlineUsers = onlineUsers;
 
-  console.log(currentHour);
-
-  // 6) Proceed to next middleware
   next();
 });
-
 /* Old
 exports.getRecommendedGymTime = catchAsync(async (req, res, next) => {
   // STEP 1: Aggregate gym usage by hour (Manila time)

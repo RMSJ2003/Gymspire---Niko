@@ -1,3 +1,8 @@
+const dayjs = require("dayjs");
+const isoWeek = require("dayjs/plugin/isoWeek");
+
+dayjs.extend(isoWeek);
+
 const WorkoutLog = require("../models/workoutLogModel");
 const WorkoutPlan = require("../models/workoutPlanModel");
 const Challenge = require("../models/challengeModel");
@@ -524,3 +529,84 @@ exports.acquireSubmissions = catchAsync(async (req, res, next) => {
 
   next(); // 🔥 ONLY ONE NEXT
 });
+
+exports.acquireMyTargetWeeklyFrequency = catchAsync(async (req, res, next) => {
+  // 1) Start & end of week
+  const startOfWeek = dayjs().startOf("week").toDate();
+  const endOfWeek = dayjs().endOf("week").toDate();
+
+  // 2) Get muscles from workout plan
+  const targets = req.workoutPlan.exerciseDetails.map((ex) => ex.target);
+
+  // 3) Aggregate workout logs
+  const frequency = await WorkoutLog.aggregate([
+    // a) Match user + this week
+    {
+      $match: {
+        userId: req.user._id,
+        status: "done",
+        date: { $gte: startOfWeek, $lte: endOfWeek },
+      },
+    },
+
+    // b) Deduplicate targets per workout session
+    {
+      $project: {
+        uniqueTargets: {
+          $setUnion: ["$exercises.target", []],
+        },
+      },
+    },
+
+    // c) One document per muscle per session
+    { $unwind: "$uniqueTargets" },
+
+    // d) Keep only muscles from workout plan
+    {
+      $match: {
+        uniqueTargets: { $in: targets },
+      },
+    },
+
+    // e) Count frequency
+    {
+      $group: {
+        _id: "$uniqueTargets",
+        trained: { $sum: 1 },
+      },
+    },
+  ]);
+
+  // 4) Normalize (show 0 / 2 for missing muscles)
+  const TARGET_PER_WEEK = 2;
+
+  const result = targets.map((muscle) => {
+    const found = frequency.find((f) => f._id === muscle);
+
+    return {
+      muscle,
+      trained: found ? found.trained : 0,
+      target: TARGET_PER_WEEK,
+    };
+  });
+
+  req.myTargetWeeklyFrequency = result;
+
+  next();
+});
+
+exports.acquireMyWeeklyWorkoutCount = async (req, res, next) => {
+  const startOfWeek = dayjs().startOf("isoWeek").toDate();
+  const endOfWeek = dayjs().endOf("isoWeek").toDate();
+
+  const workoutCount = await WorkoutLog.countDocuments({
+    userId: req.user._id,
+    date: { $gte: startOfWeek, $lte: endOfWeek },
+    status: "finished", // IMPORTANT: only completed workouts
+  });
+
+  // attach to request for views
+  req.weeklyWorkoutCount = workoutCount;
+
+  next();
+};

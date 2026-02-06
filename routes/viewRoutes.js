@@ -9,6 +9,7 @@ const userController = require("../controllers/userController");
 const workoutLogController = require("../controllers/workoutLogController");
 const requireWorkoutPlan = require("../middlewares/requireWorkoutPlan");
 const requireWorkoutplanView = require("../middlewares/requireWorkoutplanView");
+const requireWorkoutplanStarter = require("../middlewares/requireWorkoutPlanStarter");
 
 const router = express.Router();
 
@@ -31,6 +32,10 @@ router.get(
 
 router.get("/forgotPassword", viewController.forgotPassword);
 router.get("/reset-password/:token", viewController.resetPassword);
+router.get(
+  "/requestEmailVerification",
+  viewController.requestEmailVerification,
+);
 
 // router.use(authController.protect); // Do not put this here cuz it will
 // also protect the unknwon routes e.g. /sdafasdf then it will say
@@ -41,6 +46,9 @@ router.get(
   authController.protect,
   authController.restrictTo("user"),
   adminController.getGymspireNowStatus,
+  requireWorkoutplanStarter,
+  workoutLogController.acquireMyTargetWeeklyFrequency,
+  workoutLogController.acquireMyWeeklyWorkoutCount,
   viewController.dashboard,
 );
 

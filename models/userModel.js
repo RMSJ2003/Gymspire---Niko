@@ -68,6 +68,12 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date, // The value of this field will change when someone change the password.
   passwordResetToken: String,
   passwordResetExpires: Date, // timer do reset the password
+  emailVerified: {
+    type: Boolean,
+    default: false,
+  },
+  emailVerificationToken: String,
+  emailVerificationExpires: Date,
   active: {
     type: Boolean,
     default: true, //ofc when user is created, active is set to true
@@ -160,6 +166,19 @@ userSchema.methods.createPasswordResetToken = function () {
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
   return resetToken;
+};
+
+userSchema.methods.createEmailVerificationToken = function () {
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+
+  this.emailVerificationToken = crypto
+    .createHash("sha256")
+    .update(verificationToken)
+    .digest("hex");
+
+  this.emailVerificationExpires = Date.now() + 10 * 60 * 1000; // 10 mins
+
+  return verificationToken;
 };
 
 const User = mongoose.model("User", userSchema);

@@ -17,6 +17,8 @@ exports.login = catchAsync(async (req, res, next) => {
 exports.dashboard = catchAsync(async (req, res, next) => {
   res.status(200).render("dashboard", {
     title: "Dashboard",
+    frequencies: req.myTargetWeeklyFrequency,
+    workoutCount: req.weeklyWorkoutCount,
     hideNavbar: false,
   });
 });
@@ -24,6 +26,8 @@ exports.dashboard = catchAsync(async (req, res, next) => {
 exports.adminDashboard = catchAsync(async (req, res, next) => {
   res.status(200).render("admin/adminDashboard", {
     title: "Admin Dashboard",
+    frequencies: req.myTargetWeeklyFrequency,
+    workoutCount: req.weeklyWorkoutCount,
     hideNavbar: false,
   });
 });
@@ -31,10 +35,11 @@ exports.adminDashboard = catchAsync(async (req, res, next) => {
 exports.coachDashboard = catchAsync(async (req, res, next) => {
   res.status(200).render("coach/coachDashboard", {
     title: "Coach Dashboard",
+    frequencies: req.myTargetWeeklyFrequency,
+    workoutCount: req.weeklyWorkoutCount,
     hideNavbar: false,
   });
 });
-
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   res.status(200).render("auth/forgotPassword", {
     title: "Forgot Password",
@@ -47,6 +52,12 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     title: "Reset Password",
     hideNavbar: true,
     token: req.params.token,
+  });
+});
+
+exports.requestEmailVerification = catchAsync(async (req, res, next) => {
+  res.status(200).render("auth/requestEmailVerification", {
+    title: "Email Verification",
   });
 });
 
