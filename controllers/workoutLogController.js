@@ -602,7 +602,7 @@ exports.acquireMyWeeklyWorkoutCount = async (req, res, next) => {
   const workoutCount = await WorkoutLog.countDocuments({
     userId: req.user._id,
     date: { $gte: startOfWeek, $lte: endOfWeek },
-    status: "finished", // IMPORTANT: only completed workouts
+    status: "done", // IMPORTANT: only completed workouts
   });
 
   // attach to request for views

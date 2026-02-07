@@ -116,7 +116,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   )}/api/v1/auth/verify-email/${verificationToken}`;
 
   await sendEmail({
-    email: newUser.email,
+    to: newUser.email,
     subject: "Verify your iACADEMY email",
     message: `Click this link to verify your email:\n${verifyURL}\n\nThis link expires in 10 minutes.`,
   });
@@ -259,26 +259,35 @@ exports.createAdmin = catchAsync(async (req, res, next) => {
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
-  // 1) Check if email and password exist
   if (!email || !password) {
     return next(new AppError("Please provide email and password", 400));
   }
 
-  // 2) Find user + get password
-  const user = await User.findOne({ email }).select("+password +emailVerified");
+  const user = await User.findOne({ email })
+    .setOptions({ includeInactive: true })
+    .select("+password +emailVerified +active");
 
-  // 3) Check if user exists & password is correct
+  // ❗ Check user + password FIRST
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError("Incorrect email or password", 401));
   }
 
-  if (!user.emailVerified)
+  if (!user.emailVerified) {
     return next(new AppError("Please verify your email to get access.", 401));
+  }
 
-  // 5) Login allowed
+  // 🚨 Deactivated → send special response (NOT error)
+  if (user.active === false) {
+    return res.status(200).json({
+      status: "deactivated",
+      message: "Account is deactivated",
+      email: user.email,
+    });
+  }
+
+  // ✅ Normal login
   createSendToken(user, 200, res);
 });
-
 exports.logout = catchAsync(async (req, res, next) => {
   // res.cookie("jwt", "loggedout", {
   //   expires: new Date(Date.now() + 10 * 1000), // Overwrites the JWT cookie that it expires
@@ -393,7 +402,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   try {
     await sendEmail({
-      email: user.email,
+      to: user.email,
       subject: "Your password reset token (valid for 10 min)",
       message,
     });
@@ -459,6 +468,21 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 // CHANGING PASSWORD FUNCTIONALITIES - END
+
+exports.reactivateAccount = catchAsync(async (req, res, next) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email })
+    .setOptions({ includeInactive: true })
+    .select("+active");
+
+  if (!user) return next(new AppError("User not found", 404));
+
+  user.active = true;
+  await user.save({ validateBeforeSave: false });
+
+  createSendToken(user, 200, res); // auto login after reactivation
+});
 
 exports.verifyIacademyEmail = catchAsync(async (req, res, next) => {
   const hashedToken = crypto

@@ -72,7 +72,7 @@ exports.getGymspireNowStatus = catchAsync(async (req, res, next) => {
     res.locals.currentLoad = 0;
     res.locals.recommended = false;
     res.locals.message =
-      "Not recommended to workout now. Gym is currently closed.";
+      "Not recommended to workout now. iACADEMY - Gym is currently closed.";
     res.locals.onlineUsers = [];
 
     return next();

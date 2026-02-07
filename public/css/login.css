@@ -4,7 +4,7 @@
 }
 
 body {
-  background-color: #111827;
+  background-color: #dddddd;
   color: #0d265c;
   display: flex;
   justify-content: center;
@@ -17,7 +17,7 @@ body {
 /* Title */
 h2 {
   text-align: center;
-  color: #ececec;
+  color: #020617;
   margin-bottom: 24px;
 }
 
@@ -25,7 +25,7 @@ h2 {
 #loginForm {
   width: 100%;
   max-width: 420px;
-  background: #020617;
+  background: white;
   padding: 32px;
   border-radius: 12px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
