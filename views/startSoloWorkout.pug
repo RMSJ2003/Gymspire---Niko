@@ -4,7 +4,6 @@ block styles
   link(rel="stylesheet" href="/css/startSoloWorkout.css")
 
 block content
-  // 🔹 TOP BAR
   .top-bar
     if user.userType === "user"
       a.dashboard-btn(href='/dashboard') Dashboard
@@ -15,13 +14,12 @@ block content
     a.back-btn(href='javascript:history.back()') Back
 
   h1 #{title || "Solo Workout"}
-
   h2 #{user.username}
 
   if user.pfpUrl
-    img.profile-pic(src=user.pfpUrl alt="Profile Picture" width="150")
+    img.profile-pic(src=user.pfpUrl alt="Profile Picture")
   else
-    img.profile-pic(src="/img/default-user.png" alt="Default Profile" width="150")
+    img.profile-pic(src="/img/default-user.png" alt="Default Profile")
 
   h3 Select muscles to train today
 
@@ -29,16 +27,15 @@ block content
     p No muscles found in your workout plan.
   else
     form(id="startSoloWorkoutForm")
-      each m in muscles
-        .muscle-row
-          label
-            input(
-              type="checkbox"
-              name="targets"
-              value=m.name
-            )
-            strong #{m.name}
-            span(style="margin-left:10px; color:gray") (#{m.exerciseName})
+
+      // 🔥 SCROLLABLE LIST CONTAINER
+      .muscle-list
+        each m in muscles
+          .muscle-row
+            label
+              input(type="checkbox" name="targets" value=m.name)
+              strong #{m.name}
+              span.exercise-name (#{m.exerciseName})
 
       br
       button(type="submit" class="btn") Start Workout

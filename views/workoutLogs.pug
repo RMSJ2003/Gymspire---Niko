@@ -5,7 +5,6 @@ block styles
 
 block content
 
-  // 🔹 TOP BAR
   .top-bar
     if user.userType === "user"
       a.dashboard-btn(href='/dashboard') Dashboard
@@ -15,7 +14,6 @@ block content
       a.dashboard-btn(href='/adminDashboard') Dashboard
     a.back-btn(href='javascript:history.back()') Back
 
-  // 🔹 CENTERED CONTENT
   .center-content
     h1 #{title}
     h2 #{user.username}
@@ -34,40 +32,25 @@ block content
         .workout-log-card
           a(href=`/workoutLogs/${log._id}`)
             h3 Workout on #{log.date.toDateString()}
-            p Status: #{log.status}
+            p.log-status(class=log.status === "done" ? "done" : "pending") Status: #{log.status}
 
             if log.challengeId
-              p Type: Challenge
-              p Strength Score:  #{log.strengthScore >= 0 ? log.strengthScore : "Not calculated yet"}
+              p.log-type.challenge Type: Challenge
+              p Strength Score: #{log.strengthScore >= 0 ? log.strengthScore : "Not calculated yet"}
               p Judge Status: #{log.judgeStatus || "Pending"}
               p Judge Notes: #{log.judgeNotes || "No judge notes yet"}
               p Verified by: #{(log.verifiedBy && log.verifiedBy.username) || "Not verified yet"}
               if log.videoUrl
                 p Video:
-                video(
-                  src=log.videoUrl
-                  controls
-                  preload="metadata"
-                  style="max-width:100%; margin-top:8px;"
-                )
+                video(src=log.videoUrl controls preload="metadata" style="max-width:100%; margin-top:8px;")
               else
                 p Video: No video submitted
             else
-              p Type: Solo
+              p.log-type.solo Type: Solo
 
-          // 🔥 FINISH BUTTON (ONLY IF NOT DONE)
           if log.status !== "done"
-            input(
-              type="file"
-              accept="video/*"
-              class="video-input"
-              data-log-id=log._id
-              style="display:none"
-            )
-            button.finish-btn(
-              data-log-id=log._id
-              data-is-challenge=log.challengeId ? "true" : "false"
-            ) Finish Workout
+            input(type="file" accept="video/*" class="video-input" data-log-id=log._id style="display:none")
+            button.finish-btn(data-log-id=log._id data-is-challenge=log.challengeId ? "true" : "false") Finish Workout
 
   p#finishMessage
 

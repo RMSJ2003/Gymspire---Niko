@@ -49,12 +49,6 @@ block content
       button#closeTargetModal ×
       h3#targetTitle
       .exercise-list#targetExerciseList
-        each exercise in exercises
-          .exercise-row
-            .checkbox-container
-              input(type="checkbox", checked=exercise.selected)
-              span.exercise-name #{exercise.name}
-            button.info-btn i
 
   // =========================
   // INSTRUCTION MODAL

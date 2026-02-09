@@ -3,8 +3,7 @@
 ========================= */
 body {
   font-family: Arial, sans-serif;
-  background-color: #111827;
-  color: white;
+  background-color: white;
   padding: 2rem 1rem;
   min-height: 100vh;
 }
@@ -26,9 +25,9 @@ body {
 
 .top-bar a {
   padding: 0.5rem 1rem;
-  border: 2px solid #ebda1b;
-  background-color: transparent;
-  color: #ebda1b;
+  border: 2px solid #d25353;
+  background-color: #d25353;
+  color: whitesmoke;
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -36,8 +35,7 @@ body {
 }
 
 .top-bar a:hover {
-  background-color: whitesmoke;
-  color: #020617;
+  color: #f4c430;
   border: 2px solid transparent;
 }
 
@@ -68,19 +66,19 @@ h3 {
 h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #ebda1b;
+  color: black;
 }
 
 h2 {
   font-size: 1.5rem;
   font-weight: 500;
-  color: whitesmoke;
+  color: black;
 }
 
 h3 {
   font-size: 1.2rem;
   font-weight: 500;
-  color: #ebda1b;
+  color: black;
 }
 
 /* =========================
@@ -96,7 +94,7 @@ form#prForm {
 
 form#prForm input[type="text"] {
   background-color: whitesmoke;
-  color: #0d265c;
+  color: black;
   width: 100%;
   max-width: 350px;
   padding: 12px;
@@ -105,7 +103,7 @@ form#prForm input[type="text"] {
 }
 
 form#prForm input[type="text"]:focus {
-  outline: 2px solid #020617;
+  outline: 2px solid black;
   outline-offset: 2px;
 }
 
@@ -115,17 +113,16 @@ form#prForm button {
   margin: 1rem auto;
   padding: 0.6rem 1.2rem;
   border-radius: 0.5rem;
-  background-color: #ebd31b;
-  color: #020617;
+  background-color: #d25353;
+  color: whitesmoke;
   font-weight: bold;
   border: none;
   cursor: pointer;
-  transition: 0.3s;
+  transition: 0.3s ease;
 }
 
 form#prForm button:hover {
-  background-color: whitesmoke;
-  color: #020617;
+  color: #f4c430;
 }
 
 /* =========================

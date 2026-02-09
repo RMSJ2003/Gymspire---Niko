@@ -1,6 +1,3 @@
-/* =========================
-   GLOBAL RESET
-========================= */
 * {
   margin: 0;
   padding: 0;
@@ -10,33 +7,30 @@
 body {
   font-family: Arial, sans-serif;
   color: white;
-  background: #111827;
+  background: white;
   min-height: 100vh;
-  padding: 5rem 1rem 2rem 1rem; /* space for fixed top bar */
+  padding: 5rem 1rem 2rem 1rem;
 }
 
-/* =========================
-   TOP BAR (Dashboard / Back)
-========================= */
+/* TOP BAR */
 .top-bar {
-  position: fixed; /* stays fixed on scroll */
-  top: 0; /* stick to top */
+  position: fixed;
+  top: 0;
   left: 0;
   right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.8rem 1rem;
-
   z-index: 999;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .top-bar a {
   padding: 0.5rem 1.2rem;
-  border: 2px solid #ebd31b;
-  background: transparent;
-  color: #ebd31b;
+  border: 2px solid #d25353;
+  background: #d25353;
+  color: whitesmoke;
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -44,14 +38,11 @@ body {
 }
 
 .top-bar a:hover {
-  background-color: whitesmoke;
-  color: #020617;
-  border: 2px solid transparent;
+  color: #f4c430;
+  border: 2px solid #f4c430;
 }
 
-/* =========================
-   HEADINGS
-========================= */
+/* HEADINGS */
 h1,
 h2,
 h3 {
@@ -62,25 +53,20 @@ h3 {
 h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #ebd31b;
+  color: black;
 }
-
 h2 {
   font-size: 1.5rem;
   font-weight: 500;
-  color: whitesmoke;
+  color: black;
 }
-
 h3 {
   font-size: 1.2rem;
   font-weight: 500;
-  color: #ebda1b;
-  margin-bottom: 1rem;
+  color: black;
 }
 
-/* =========================
-   PROFILE PIC
-========================= */
+/* PROFILE PIC */
 .profile-pic {
   width: 150px;
   height: 150px;
@@ -91,9 +77,29 @@ h3 {
   margin: 0 auto 1rem auto;
 }
 
-/* =========================
-   FORM / MUSCLE CHECKBOXES
-========================= */
+/* 🔥 SCROLLABLE MUSCLE LIST */
+.muscle-list {
+  max-height: 260px;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 0.5rem;
+  border-radius: 0.8rem;
+  border: 2px solid #d25353;
+  background: rgba(210, 83, 83, 0.08);
+}
+
+/* scrollbar */
+.muscle-list::-webkit-scrollbar {
+  width: 8px;
+}
+.muscle-list::-webkit-scrollbar-thumb {
+  background: #d25353;
+  border-radius: 10px;
+}
+
+/* MUSCLE ROW */
 .muscle-row {
   display: flex;
   justify-content: center;
@@ -106,36 +112,34 @@ h3 {
   margin-right: 0.5rem;
   width: 18px;
   height: 18px;
-  accent-color: #22c55e;
+  accent-color: #f4c430;
 }
 
-/* =========================
-   BUTTONS
-========================= */
+.exercise-name {
+  margin-left: 10px;
+  color: gray;
+}
+
+/* BUTTON */
 .btn {
-  display: block; /* make it block-level so margin auto works */
-  width: max-content; /* keeps button width fitting its text */
-  margin: 1rem auto; /* centers horizontally */
+  display: block;
+  width: max-content;
+  margin: 1rem auto;
   padding: 0.6rem 1.2rem;
-  background: #ebda1b;
-  color: #020617;
+  background: #d25353;
+  color: whitesmoke;
   font-weight: bold;
   border-radius: 0.5rem;
-  text-decoration: none;
-  text-align: center;
-  transition: 0.3s;
-  border: none;
+  border: 1px solid #d25353;
   cursor: pointer;
+  transition: 0.3s ease;
 }
 
 .btn:hover {
-  background-color: whitesmoke;
-  color: #020617;
+  color: #f4c430;
 }
 
-/* =========================
-   ALERT / MESSAGES
-========================= */
+/* MESSAGE */
 #startMessage {
   text-align: center;
   font-weight: bold;
@@ -143,14 +147,11 @@ h3 {
   color: #f87171;
 }
 
-/* =========================
-   MOBILE RESPONSIVE
-========================= */
+/* MOBILE */
 @media (max-width: 600px) {
   h1 {
     font-size: 1.5rem;
   }
-
   h2,
   h3 {
     font-size: 1.2rem;
@@ -162,7 +163,6 @@ h3 {
   }
 
   .btn {
-    padding: 0.5rem 1rem;
     width: 100%;
   }
 }

@@ -1,6 +1,3 @@
-/* =========================
-   GLOBAL RESET
-========================= */
 * {
   margin: 0;
   padding: 0;
@@ -9,17 +6,14 @@
 
 body {
   font-family: Arial, sans-serif;
-  color: white;
-  background-color: #111827;
+  background-color: white;
   min-height: 100vh;
-  padding-top: 5rem; /* space for fixed top bar */
+  padding-top: 5rem;
 }
 
-/* =========================
-   TOP BAR (Dashboard / Back)
-========================= */
+/* TOP BAR */
 .top-bar {
-  position: fixed; /* stays fixed on scroll */
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -27,15 +21,14 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 0.8rem 1rem;
-
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .top-bar a {
   padding: 0.5rem 1.2rem;
-  border: 2px solid #ebda1b;
-  background: transparent;
-  color: #ebda1b;
+  border: 2px solid #d25353;
+  background: #d25353;
+  color: whitesmoke;
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -43,56 +36,37 @@ body {
 }
 
 .top-bar a:hover {
-  background-color: whitesmoke;
-  color: #020617;
-  border: 2px solid transparent;
+  color: #f4c430;
 }
 
-/* =========================
-   CENTERED CONTENT
-========================= */
+/* CENTER CONTENT */
 .center-content {
   display: flex;
   flex-direction: column;
-  align-items: center; /* horizontal center */
-  justify-content: flex-start;
+  align-items: center;
   text-align: center;
-  margin-top: 6rem; /* space below top bar */
-  gap: 1rem; /* spacing between elements */
+  margin-top: 6rem;
+  gap: 1rem;
 }
 
-/* =========================
-   HEADINGS
-========================= */
-h1,
-h2,
-h3 {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
+/* HEADINGS */
 h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #ebda1b;
+  color: black;
 }
-
 h2 {
   font-size: 1.5rem;
   font-weight: 500;
-  color: whitesmoke;
+  color: black;
 }
-
 h3 {
   font-size: 1.2rem;
   font-weight: 500;
-  color: whitesmoke;
-  margin-bottom: 1rem;
+  color: black;
 }
 
-/* =========================
-   PROFILE PICTURE
-========================= */
+/* PROFILE PIC */
 .profile-pic {
   width: 150px;
   height: 150px;
@@ -102,11 +76,8 @@ h3 {
   margin: 1rem 0;
 }
 
-/* =========================
-   CREATE PERSONAL RECORD BUTTON
-========================= */
+/* BUTTON */
 a.create-challenge {
-  display: inline-block;
   padding: 0.6rem 1.2rem;
   background-color: #ebda1b;
   color: #020617;
@@ -114,21 +85,16 @@ a.create-challenge {
   text-decoration: none;
   border-radius: 0.5rem;
   transition: 0.3s;
-  text-align: center;
 }
 
 a.create-challenge:hover {
   background-color: whitesmoke;
-  color: #020617;
 }
 
-/* =========================
-   WORKOUT LOG CARD
-========================= */
+/* WORKOUT CARD */
 .workout-log-card {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(34, 197, 94, 0.3);
   border-radius: 1rem;
   padding: 1.2rem;
@@ -137,77 +103,72 @@ a.create-challenge:hover {
   max-width: 450px;
 }
 
-.workout-log-card h3 {
-  color: #ebda1b;
-  margin-bottom: 0.5rem;
+/* Remove underline from workout card links */
+.workout-log-card a {
+  text-decoration: none;
+  color: inherit; /* keeps your text colors */
 }
 
-/* =========================
-   FINISH BUTTON
-========================= */
+/* 🔥 STATUS COLORS */
+.log-status {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.log-status.done {
+  color: #22c55e; /* green */
+}
+
+.log-status.pending {
+  color: #f59e0b; /* orange */
+}
+
+/* 🔥 TYPE COLORS */
+.log-type {
+  font-weight: bold;
+}
+
+.log-type.challenge {
+  color: black; /* blue */
+}
+
+.log-type.solo {
+  color: black; /* purple */
+}
+
+/* FINISH BUTTON */
 button.finish-btn {
-  background-color: #ebda1b;
-  color: #020617;
+  background-color: #d25353;
+  color: whitesmoke;
   font-weight: bold;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   border: none;
   cursor: pointer;
   margin-top: 0.5rem;
-  transition: 0.3s;
+  transition: 0.3s ease;
 }
 
 button.finish-btn:hover {
-  background-color: whitesmoke;
-  color: #020617;
+  color: #f4c430;
 }
 
-/* =========================
-   NO LOGS MESSAGE
-========================= */
+/* NO LOGS */
 .no-logs-message {
-  text-align: center;
   margin-top: 2rem;
   font-weight: bold;
   color: #f87171;
 }
 
-/* =========================
-   MOBILE RESPONSIVE
-========================= */
+/* MOBILE */
 @media (max-width: 600px) {
-  /* Top bar buttons */
-  .top-bar a {
-    width: auto !important;
-    display: inline-block !important;
-    padding: 0.5rem 1rem;
-    font-size: inherit;
-  }
-
-  /* Center content spacing for small screens */
-  .center-content {
-    margin-top: 5rem;
-    gap: 1rem;
-  }
-
-  /* Profile pic */
   .profile-pic {
     width: 120px;
     height: 120px;
   }
-
-  /* Create button */
-  a.create-challenge {
-    width: auto;
-    text-align: center;
-  }
-
-  /* Workout log card */
   .workout-log-card {
     padding: 1rem;
   }
-
-  /* Finish button */
   button.finish-btn {
     width: 100%;
   }

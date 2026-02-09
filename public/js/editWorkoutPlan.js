@@ -2,14 +2,23 @@
 const exercises = window.exercises || [];
 const selectedIds = window.selectedIds || [];
 
+// DOM elements
 const targetGrid = document.getElementById("targetGrid");
 const targetModal = document.getElementById("targetModal");
 const closeTargetModal = document.getElementById("closeTargetModal");
 const targetTitle = document.getElementById("targetTitle");
 const targetExerciseList = document.getElementById("targetExerciseList");
-
 const form = document.querySelector("#editWorkoutPlanForm");
 const formMessage = document.querySelector("#formMessage");
+
+// MODAL FOR EXERCISE INSTRUCTIONS
+const modal = document.getElementById("exerciseModal");
+const closeModal = document.getElementById("closeModal");
+const modalGif = document.getElementById("modalGif");
+const modalInstructions = document.getElementById("modalInstructions");
+
+// ===== MEMORY STORAGE FOR SELECTED EXERCISES =====
+let exerciseIds = [...selectedIds];
 
 // ===== GROUP EXERCISES BY TARGET =====
 const grouped = {};
@@ -36,42 +45,55 @@ function openTargetModal(target) {
     const row = document.createElement("div");
     row.className = "exercise-row";
 
+    const isChecked = exerciseIds.includes(exercise.exerciseId)
+      ? "checked"
+      : "";
+
     row.innerHTML = `
       <label>
-        <input type="checkbox" name="exerciseIds" value="${exercise.exerciseId}" 
-          ${selectedIds.includes(exercise.exerciseId) ? "checked" : ""}>
+        <input type="checkbox" name="exerciseIds" value="${exercise.exerciseId}" ${isChecked}>
         <span class="exercise-name">${exercise.name}</span>
       </label>
       <button class="info-btn" data-index="${exercise.index}">i</button>
     `;
 
     targetExerciseList.appendChild(row);
+
+    // ===== UPDATE SELECTED IDS ON CHANGE =====
+    const checkbox = row.querySelector('input[type="checkbox"]');
+    checkbox.addEventListener("change", (e) => {
+      const id = exercise.exerciseId;
+      if (e.target.checked) {
+        if (!exerciseIds.includes(id)) exerciseIds.push(id);
+      } else {
+        const index = exerciseIds.indexOf(id);
+        if (index > -1) exerciseIds.splice(index, 1);
+      }
+    });
   });
 
   attachInfoButtons();
   targetModal.classList.remove("hidden");
 }
 
-closeTargetModal.addEventListener("click", () =>
-  targetModal.classList.add("hidden"),
-);
+// ===== CLOSE TARGET MODAL =====
+closeTargetModal.addEventListener("click", () => {
+  targetModal.classList.add("hidden");
+});
 
-// ===== FORM SUBMIT (UNCHANGED LOGIC) =====
+// ===== FORM SUBMIT =====
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const checked = document.querySelectorAll(
-    'input[name="exerciseIds"]:checked',
-  );
 
-  if (checked.length === 0) {
+  if (exerciseIds.length === 0) {
     formMessage.textContent = "Please select at least one exercise.";
     formMessage.style.color = "red";
     return;
   }
 
-  const exerciseIds = Array.from(checked).map((i) => i.value);
-
   try {
+    console.log("Selected exercise IDs:", exerciseIds);
+
     const res = await fetch("/api/v1/workout-plans", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -90,12 +112,7 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-// ===== INSTRUCTION MODAL (YOUR ORIGINAL) =====
-const modal = document.getElementById("exerciseModal");
-const closeModal = document.getElementById("closeModal");
-const modalGif = document.getElementById("modalGif");
-const modalInstructions = document.getElementById("modalInstructions");
-
+// ===== INSTRUCTION MODAL =====
 function attachInfoButtons() {
   document.querySelectorAll(".info-btn").forEach((btn) => {
     btn.onclick = () => {
