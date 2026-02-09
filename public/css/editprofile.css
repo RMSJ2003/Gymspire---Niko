@@ -8,7 +8,7 @@
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #111827;
+  background-color: #dddddd;
   padding-top: 4rem; /* space for fixed top bar */
   color: whitesmoke; /* default text color */
 }
@@ -44,9 +44,9 @@ body {
 
 .top-bar a {
   padding: 0.5rem 1rem;
-  border: 2px solid #ebd31b;
-  background-color: transparent;
-  color: #ebd31b;
+  border: 2px solid #d25353;
+  background-color: #d25353;
+  color: whitesmoke;
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -54,8 +54,7 @@ body {
 }
 
 .top-bar a:hover {
-  background-color: whitesmoke;
-  color: #020617;
+  color: #f4c430;
   border: 2px solid transparent;
 }
 
@@ -63,10 +62,10 @@ body {
    CARD CONTAINER
 ========================= */
 .edit-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: white;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid #ebd31b;
+  border: 1px solid #d25353;
   border-radius: 1rem;
   padding: 2rem;
   width: 100%;
@@ -84,7 +83,7 @@ body {
   margin-bottom: 1rem;
   font-size: 2rem;
   font-weight: 700;
-  color: #ebd31b;
+  color: black;
 }
 
 /* =========================
@@ -116,7 +115,7 @@ label {
   font-size: 0.95rem;
   margin-bottom: 0.3rem;
   display: block;
-  color: #ebd31b; /* label color */
+  color: #d25353; /* label color */
 }
 
 /* Inputs */
@@ -127,7 +126,7 @@ input[type="file"] {
   border-radius: 0.5rem;
   border: none;
   background-color: whitesmoke;
-  color: #020617; /* input text color */
+  color: black; /* input text color */
   display: block;
 }
 
@@ -135,12 +134,6 @@ input[type="file"] {
 input::placeholder {
   color: #9ca3af; /* light gray placeholder */
   opacity: 1;
-}
-
-/* Input focus outline */
-input:focus {
-  outline: 2px solid #ebd31b;
-  outline-offset: 2px;
 }
 
 /* =========================
@@ -151,8 +144,8 @@ button {
   padding: 0.7rem;
   border-radius: 0.6rem;
   border: none;
-  background: #ebd31b;
-  color: #020617;
+  background: #d25353;
+  color: whitesmoke;
   font-weight: 600;
   cursor: pointer;
   width: 100%; /* full width */
@@ -161,8 +154,7 @@ button {
 }
 
 button:hover {
-  background-color: whitesmoke;
-  color: #020617;
+  color: #f4c430;
 }
 
 /* =========================

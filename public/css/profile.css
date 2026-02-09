@@ -9,8 +9,7 @@ body
   justify-content: flex-start;
   text-align: center;
   padding: 4rem 1rem;
-  background-color: #111827;
-  color: white;
+  background-color: #dddd;
 }
 
 .top-bar {
@@ -26,9 +25,9 @@ body
 
 .top-bar a {
   padding: 0.5rem 1rem;
-  background-color: transparent; /* No background */
-  border: 2px solid #ebd31b; /* Green border */
-  color: #ebda1b; /* Green text */
+  background-color: #d25353; /* No background */
+  border: 2px solid #d25353; /* Green border */
+  color: whitesmoke; /* Green text */
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -36,17 +35,16 @@ body
 }
 
 .top-bar a:hover {
-  background-color: whitesmoke;
-  color: #020617;
+  color: #ebd31b;
   border: 2px solid transparent;
 }
 
 /* Card container */
 .profile-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: white;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid #ebd31b;
+  border: 1px solid #d25353;
   border-radius: 1rem;
   padding: 2rem 1.5rem;
   max-width: 400px;
@@ -63,7 +61,7 @@ body
   font-size: 2.2rem;
   font-weight: 700;
   letter-spacing: 1px;
-  color: #ebd31b;
+  color: black;
 }
 
 /* =========================
@@ -87,7 +85,7 @@ body
   max-width: 200px;
   border: none;
   height: 3px;
-  background: #ebda1b;
+  background: #d25353;
   margin: 1.5rem auto 2rem auto;
   border-radius: 10px;
 }
@@ -107,7 +105,7 @@ body
   margin: 0;
   font-weight: 500;
   font-size: 1.2rem;
-  color: whitesmoke;
+  color: black;
 }
 
 /* =========================

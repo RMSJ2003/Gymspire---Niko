@@ -6,8 +6,8 @@
 
 body {
   font-family: "Arial", sans-serif;
-  color: white;
-  background-color: #111827;
+  color: black;
+  background-color: white;
   min-height: 100vh;
   padding-top: 5rem; /* space for fixed top bar */
 }
@@ -15,7 +15,7 @@ body {
 /* TOP BAR (Dashboard / Back) */
 
 .top-bar {
-  background-color: #111827;
+  background-color: white;
   position: fixed;
   top: 0;
   left: 0;
@@ -30,9 +30,9 @@ body {
 
 .top-bar a {
   padding: 0.5rem 1.2rem;
-  border: 2px solid #ebda1b;
-  background: transparent;
-  color: #ebda1b;
+  border: 2px solid #d25353;
+  background: #d25353;
+  color: whitesmoke;
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -40,9 +40,9 @@ body {
 }
 
 .top-bar a:hover {
-  background-color: whitesmoke;
-  color: #020617;
+  color: #f4c430;
   border: 2px solid transparent;
+  transition: 0.3s ease;
 }
 
 /* HEADINGS */
@@ -57,19 +57,19 @@ h3 {
 h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #ebda1b;
+  color: black;
 }
 
 h2 {
   font-size: 1.5rem;
   font-weight: bold;
-  color: whitesmoke;
+  color: black;
 }
 
 h3 {
   font-size: 1.2rem;
   font-weight: 500;
-  color: whitesmoke;
+  color: black;
   margin-bottom: 1rem;
   padding-top: 1rem;
 }
@@ -111,7 +111,7 @@ h3 {
 .challenge-card {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
-  border: 1px solid #ebda1b;
+  border: 1px solid #d25353;
   border-radius: 1rem;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -122,7 +122,7 @@ h3 {
 }
 
 .challenge-card h2 {
-  color: #ebda1b;
+  color: black;
   margin-bottom: 0.5rem;
 }
 
@@ -164,13 +164,12 @@ button,
 }
 
 .join-btn {
-  background-color: #ebda1b;
-  color: #020617;
+  background-color: #d25353;
+  color: whitesmoke;
 }
 
 .join-btn:hover {
-  background-color: whitesmoke;
-  color: #020617;
+  color: #f4c430;
 }
 
 .start-btn {
@@ -184,7 +183,7 @@ button,
 }
 
 .leaderboard-btn {
-  background-color: whitesmoke;
+  background-color: #f4c430;
   color: #020617;
 }
 
@@ -234,15 +233,16 @@ button,
 /* EXERCISE CARDS */
 
 .exercise-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid #ebda1b;
+  background: white;
+  border: 1px solid #d25353;
   border-radius: 0.6rem;
   padding: 0.8rem 1rem;
   margin: 0.5rem 0;
+  color: black;
 }
 
 .exercise-card h4 {
-  color: #ebda1b;
+  color: black;
 }
 
 .exercise-gif {

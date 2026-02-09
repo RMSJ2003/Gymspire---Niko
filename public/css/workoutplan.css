@@ -7,7 +7,7 @@
 body {
   font-family: Arial, sans-serif;
   color: white;
-  background: #111827;
+  background: white;
   min-height: 100vh;
   padding-top: 5rem; /* space for fixed top bar */
 }
@@ -26,14 +26,14 @@ body {
   padding: 0.8rem 1rem;
   z-index: 999;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  background-color: #111827;
+  background-color: white;
 }
 
 .top-bar a {
   padding: 0.5rem 1.2rem;
-  border: 2px solid #ebda1b;
-  background: transparent;
-  color: #ebda1b;
+  border: 2px solid #d25353;
+  background: #d25353;
+  color: whitesmoke;
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -41,8 +41,7 @@ body {
 }
 
 .top-bar a:hover {
-  background-color: whitesmoke;
-  color: #020617;
+  color: #f4c430;
   border: 2px solid transparent;
 }
 
@@ -58,7 +57,7 @@ h2 {
 h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #ebda1b;
+  color: black;
 }
 
 h2 {
@@ -98,8 +97,8 @@ p[style] {
   width: max-content; /* keeps button width to its content */
   margin: 1rem auto; /* centers horizontally */
   padding: 0.6rem 1.2rem;
-  background: #ebda1b;
-  color: #020617;
+  background: #d25353;
+  color: black;
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -107,18 +106,18 @@ p[style] {
   transition: 0.3s;
   border: none;
   cursor: pointer;
+  transition: 0.3s ease;
 }
 
 .btn:hover {
-  background-color: whitesmoke;
-  color: #020617;
+  color: #f4c430;
 }
 
 /* =========================
    EXERCISE CARDS
 ========================= */
 .exercise-card {
-  border: 1px solid #ebda1b;
+  border: 1px solid #d25353;
   border-radius: 1rem;
   padding: 1rem;
   margin: 1rem auto;
@@ -128,26 +127,26 @@ p[style] {
 .exercise-card h3 {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #ebda1b;
+  color: black;
   margin-bottom: 0.5rem;
 }
 
 .exercise-card p {
   font-size: 1rem;
   margin-bottom: 0.5rem;
-  color: whitesmoke;
+  color: black;
 }
 
 .exercise-card h4 {
   font-size: 1.1rem;
   margin-top: 0.8rem;
-  color: #ebda1b;
+  color: black;
 }
 
 .exercise-card ul {
   list-style: disc inside;
   margin-top: 0.5rem;
-  color: whitesmoke;
+  color: black;
 }
 
 .exercise-card img {

@@ -5,8 +5,8 @@
 }
 
 body {
-  background-color: #111827;
-  color: white;
+  background-color: white;
+  color: black;
   font-family: Arial, sans-serif;
   min-height: 100vh;
   padding-top: 12vh; /* navbar height */
@@ -17,23 +17,43 @@ body {
 ========================= */
 .navbar {
   width: 100%;
-  background: #111827;
+  background: #d25353;
   padding: 1rem 2vw;
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
 }
 
-.nav-logo img {
-  height: 5vh;
-  max-height: 3rem;
+.nav-logo a {
+  color: whitesmoke;
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-decoration: none;
 }
 
+/* Center the current time in navbar */
+.nav-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.nav-time {
+  color: whitesmoke;
+  font-weight: bold;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+/* Hamburger & panel */
 .nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   position: relative;
 }
 
@@ -45,53 +65,55 @@ body {
   justify-content: center;
   font-size: 1.6rem;
   line-height: 1;
-  background: #020617;
-  border: 2px solid #ebd31b;
-  border-radius: 0.5rem;
-  color: #ebd31b;
+  background: transparent;
+  color: white;
   cursor: pointer;
+  border: none;
 }
 
 .hamburger:hover {
-  color: #020617;
-  background-color: #ebda1b;
+  color: #f4c430;
 }
 
 /* SLIDE PANEL */
 .panel {
-  position: fixed;
-  top: 0;
+  position: absolute;
+  top: 100%;
   right: 0;
   width: 12vw;
   min-width: 10rem;
-  height: 100vh;
-  background: #020617;
+  background: #9e3b3b;
   padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  transform: translateX(100%);
-  transition: transform 0.4s ease;
+  transform: translateY(-10px);
+  opacity: 0;
+  transition: all 0.3s ease;
   z-index: 999;
+  pointer-events: none;
 }
 
 .nav-right:hover .panel {
-  transform: translateX(0);
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .panel a,
 .panel button {
   background: none;
   border: none;
-  color: #cbd5f5;
+  color: whitesmoke;
   font-weight: 600;
   cursor: pointer;
   text-align: left;
+  text-decoration: none;
 }
 
 .panel a:hover,
 .panel button:hover {
-  color: #ebd31b;
+  color: #f4c430;
 }
 
 /* =========================
@@ -108,8 +130,8 @@ body {
 }
 
 .welcome-section .app-logo {
-  width: 200px; /* logo size */
-  max-width: 50%; /* responsive */
+  width: 200px;
+  max-width: 50%;
   height: auto;
   display: block;
   margin-bottom: 1rem;
@@ -121,26 +143,6 @@ body {
 }
 
 /* =========================
-   STATUS SECTION
-========================= */
-.status-section {
-  width: 100%;
-  min-height: 15vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-.status-section h3 {
-  font-size: 1.4rem;
-  margin-bottom: 0.5rem;
-}
-
-/* =========================
    DASHBOARD GRID
 ========================= */
 .dashboard {
@@ -148,8 +150,6 @@ body {
   grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
   padding: 2rem;
-
-  /* Center and limit width */
   max-width: 1200px;
   margin: 2rem auto 0 auto;
 }
@@ -158,7 +158,7 @@ body {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid whitesmoke;
+  border: 1px solid #9e3b3b;
   border-radius: 1rem;
   display: flex;
   flex-direction: column;
@@ -167,8 +167,6 @@ body {
   position: relative;
   padding: 1rem;
   height: 200px;
-
-  /* Limit card width */
   width: 100%;
   max-width: 500px;
   margin: 0 auto;
@@ -190,23 +188,23 @@ body {
 
 .card-link {
   padding: 0.5rem 1rem;
-  background-color: #ebd31b;
-  color: #020617;
+  background-color: #d25353;
+  color: whitesmoke;
   text-decoration: none;
   border-radius: 0.5rem;
   font-weight: 600;
 }
 
 .card-link:hover {
-  background: whitesmoke;
+  color: #f4c430;
 }
 
 .info-btn {
   width: 2.5rem;
   height: 2.5rem;
   background-color: transparent;
-  border: 2px solid #ebd31b;
-  color: #ebd31b;
+  border: 2px solid #ea7b7b;
+  color: #ea7b7b;
   font-weight: bold;
   font-size: 1.2rem;
   cursor: pointer;
@@ -221,8 +219,8 @@ body {
 }
 
 .info-btn:hover {
-  color: #020617;
-  background-color: whitesmoke;
+  color: #9e3b3b;
+  background-color: none;
   border: 2px solid transparent;
 }
 

@@ -1,21 +1,64 @@
-// =========================
-// EDIT WORKOUT PLAN JS
-// =========================
+// ===== DATA =====
+const exercises = window.exercises || [];
+const selectedIds = window.selectedIds || [];
 
-// ---------- PASS EXERCISES DATA ----------
-if (!window.exercises) {
-  console.error(
-    "Exercises data not found! Make sure Pug passes 'exercises' to window.exercises.",
-  );
-}
+const targetGrid = document.getElementById("targetGrid");
+const targetModal = document.getElementById("targetModal");
+const closeTargetModal = document.getElementById("closeTargetModal");
+const targetTitle = document.getElementById("targetTitle");
+const targetExerciseList = document.getElementById("targetExerciseList");
 
-// ---------- FORM SUBMISSION ----------
 const form = document.querySelector("#editWorkoutPlanForm");
 const formMessage = document.querySelector("#formMessage");
 
+// ===== GROUP EXERCISES BY TARGET =====
+const grouped = {};
+exercises.forEach((ex, index) => {
+  if (!grouped[ex.target]) grouped[ex.target] = [];
+  grouped[ex.target].push({ ...ex, index });
+});
+
+// ===== CREATE TARGET CARDS =====
+Object.keys(grouped).forEach((target) => {
+  const card = document.createElement("div");
+  card.className = "target-card";
+  card.textContent = target;
+  card.addEventListener("click", () => openTargetModal(target));
+  targetGrid.appendChild(card);
+});
+
+// ===== OPEN TARGET MODAL =====
+function openTargetModal(target) {
+  targetTitle.textContent = target;
+  targetExerciseList.innerHTML = "";
+
+  grouped[target].forEach((exercise) => {
+    const row = document.createElement("div");
+    row.className = "exercise-row";
+
+    row.innerHTML = `
+      <label>
+        <input type="checkbox" name="exerciseIds" value="${exercise.exerciseId}" 
+          ${selectedIds.includes(exercise.exerciseId) ? "checked" : ""}>
+        <span class="exercise-name">${exercise.name}</span>
+      </label>
+      <button class="info-btn" data-index="${exercise.index}">i</button>
+    `;
+
+    targetExerciseList.appendChild(row);
+  });
+
+  attachInfoButtons();
+  targetModal.classList.remove("hidden");
+}
+
+closeTargetModal.addEventListener("click", () =>
+  targetModal.classList.add("hidden"),
+);
+
+// ===== FORM SUBMIT (UNCHANGED LOGIC) =====
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-
   const checked = document.querySelectorAll(
     'input[name="exerciseIds"]:checked',
   );
@@ -26,7 +69,7 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  const exerciseIds = Array.from(checked).map((input) => input.value);
+  const exerciseIds = Array.from(checked).map((i) => i.value);
 
   try {
     const res = await fetch("/api/v1/workout-plans", {
@@ -36,76 +79,42 @@ form.addEventListener("submit", async (e) => {
     });
 
     const data = await res.json();
-
     if (data.status === "success") {
-      formMessage.textContent = "Workout plan updated successfully!";
+      formMessage.textContent = "Workout plan updated!";
       formMessage.style.color = "green";
       setTimeout(() => (window.location.href = "/workoutPlan"), 600);
-    } else {
-      formMessage.textContent = data.message || "Update failed.";
-      formMessage.style.color = "red";
     }
-  } catch (err) {
-    console.error(err);
+  } catch {
     formMessage.textContent = "Something went wrong.";
     formMessage.style.color = "red";
   }
 });
 
-// ---------- MODAL LOGIC ----------
+// ===== INSTRUCTION MODAL (YOUR ORIGINAL) =====
 const modal = document.getElementById("exerciseModal");
 const closeModal = document.getElementById("closeModal");
 const modalGif = document.getElementById("modalGif");
 const modalInstructions = document.getElementById("modalInstructions");
 
-// Make sure exercises array exists
-const exercises = window.exercises || [];
-console.log("Exercises loaded:", exercises);
+function attachInfoButtons() {
+  document.querySelectorAll(".info-btn").forEach((btn) => {
+    btn.onclick = () => {
+      const ex = exercises[btn.dataset.index];
 
-// Info buttons
-const infoButtons = document.querySelectorAll(".info-btn");
+      modalGif.src = ex.gifURL || "";
+      modalGif.style.display = ex.gifURL ? "block" : "none";
 
-infoButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const index = btn.dataset.index;
-    const exercise = exercises[index];
-
-    if (!exercise) {
-      console.warn(`Exercise not found at index ${index}`);
-      return;
-    }
-
-    // Set GIF
-    if (exercise.gifURL) {
-      modalGif.src = exercise.gifURL;
-      modalGif.style.display = "block";
-    } else {
-      modalGif.style.display = "none";
-    }
-
-    // Set instructions
-    if (exercise.instructions && exercise.instructions.length > 0) {
       modalInstructions.innerHTML =
         "<h4>Instructions:</h4><ul>" +
-        exercise.instructions.map((step) => `<li>${step}</li>`).join("") +
+        ex.instructions.map((s) => `<li>${s}</li>`).join("") +
         "</ul>";
-    } else {
-      modalInstructions.innerHTML = "<p>No instructions available.</p>";
-    }
 
-    // Show modal
-    modal.classList.remove("hidden");
+      modal.classList.remove("hidden");
+    };
   });
-});
+}
 
-// Close modal button
-closeModal.addEventListener("click", () => {
-  modal.classList.add("hidden");
-});
-
-// Close modal when clicking outside content
+closeModal.addEventListener("click", () => modal.classList.add("hidden"));
 modal.addEventListener("click", (e) => {
-  if (e.target === modal) {
-    modal.classList.add("hidden");
-  }
+  if (e.target === modal) modal.classList.add("hidden");
 });

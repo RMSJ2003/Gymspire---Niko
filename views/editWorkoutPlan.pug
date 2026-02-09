@@ -4,7 +4,9 @@ block styles
   link(rel="stylesheet" href="/css/editWorkoutPlan.css")
 
 block content
-  // 🔹 TOP BAR
+  // =========================
+  // TOP BAR
+  // =========================
   .top-bar
     if user.userType === "user"
       a.dashboard-btn(href='/dashboard') Dashboard
@@ -14,49 +16,63 @@ block content
       a.dashboard-btn(href='/adminDashboard') Dashboard
     a.back-btn(href='javascript:history.back()') Back
 
-  // 🔹 PAGE TITLE
   h1 #{title}
   h2 #{user.username}
 
-  // 🔹 PROFILE PICTURE
   if user.pfpUrl
-    img.profile-pic(src=user.pfpUrl alt="Profile Picture" width="150")
+    img.profile-pic(src=user.pfpUrl alt="Profile Picture")
   else
-    img.profile-pic(src="/img/default-user.png" alt="Default Profile" width="150")
+    img.profile-pic(src="/img/default-user.png" alt="Default Profile")
 
-  // 🔹 SCROLLABLE EXERCISE CONTAINER
-  .exercise-container
-    form#editWorkoutPlanForm
-      each exercise, index in exercises
-        .exercise-row
-          label
-            input(
-              type="checkbox"
-              name="exerciseIds"
-              value=exercise.exerciseId
-              checked=selectedIds.includes(exercise.exerciseId)
-            )
-            span.exercise-name #{exercise.name}
-            span.exercise-target #{exercise.target}
-          button.info-btn(type="button" data-index=index) i
+  // =========================
+  // TARGET GRID
+  // =========================
+  .target-grid#targetGrid
 
-  // 🔹 UPDATE BUTTON SECTION
+  // =========================
+  // HIDDEN FORM
+  // =========================
+  form#editWorkoutPlanForm.hidden
+
+  // =========================
+  // UPDATE BUTTON
+  // =========================
   .update-section
     p.form-message#formMessage
     button(type="submit" form="editWorkoutPlanForm") Update Workout Plan
 
-  // 🔹 MODAL
+  // =========================
+  // TARGET MODAL
+  // =========================
+  .modal.hidden#targetModal
+    .modal-content.large
+      button#closeTargetModal ×
+      h3#targetTitle
+      .exercise-list#targetExerciseList
+        each exercise in exercises
+          .exercise-row
+            .checkbox-container
+              input(type="checkbox", checked=exercise.selected)
+              span.exercise-name #{exercise.name}
+            button.info-btn i
+
+  // =========================
+  // INSTRUCTION MODAL
+  // =========================
   .modal.hidden#exerciseModal
     .modal-content
       button#closeModal ×
       img#modalGif
       div#modalInstructions
 
-  // 🔹 PASS EXERCISES DATA TO JS
-  script#exercisesData(type="application/json").
+  // =========================
+  // SCRIPT DATA
+  // =========================
+  script#exercisesData(type="application/json"). 
     !{JSON.stringify(exercises)}
   script.
     window.exercises = JSON.parse(document.getElementById("exercisesData").textContent)
+    window.selectedIds = !{JSON.stringify(selectedIds)}
 
 block scripts
   script(src="/js/editWorkoutPlan.js")

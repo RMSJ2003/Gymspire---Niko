@@ -11,14 +11,18 @@ block content
   nav.navbar
     .nav-logo
       if user.userType === "user"
-        a.dashboard-btn(href='/dashboard')
-          img(src="/img/gymspirelogo.png" alt="GymSpire Logo")
+        a.dashboard-btn(href='/dashboard') GymSpire
       if user.userType === "coach"
-        a.dashboard-btn(href='/coachDashboard') 
-          img(src="/img/gymspirelogo.png" alt="GymSpire Logo")
+        a.dashboard-btn(href='/coachDashboard') GymSpire
       if user.userType === "admin"
-        a.dashboard-btn(href='/adminDashboard') 
-          img(src="/img/gymspirelogo.png" alt="GymSpire Logo")
+        a.dashboard-btn(href='/adminDashboard') GymSpire
+
+    // Centered time
+    .nav-center
+      span.nav-time
+        | Current time: 
+        strong #{currentTime || '12:00 PM'}
+
     .nav-right
       button.hamburger ☰
       .panel
@@ -36,39 +40,13 @@ block content
   // =========================
   // STATUS SECTION
   // =========================
-  //- .status-section
-  //-   h3 GymSpire Time Status
-  //-   p
-  //-     if recommended
-  //-       strong Recommended to workout now
-  //-     else
-  //-       strong Not recommended to workout now
-  //-   p #{message}
-  //-   p
-  //-     | Current time:
-  //-     - const period = currentHour >= 12 ? "PM" : "AM";
-  //-     - const displayHour = currentHour % 12 || 12;
-  //-     span #{displayHour}:00 #{period}
-  //-   p
-  //-     | Current gym load:
-  //-     span #{currentLoad}
-  //-   p
-  //-     | Crowd level:
-  //-     span #{crowdLevel}
-
-      // Main recommendation result
   p
     if recommended
       strong Recommended to workout now
     else
       strong Not recommended to workout now
 
-  // Explanation message
   p #{message}
-
-  p
-    | Current time: 
-    strong #{currentTime}
 
   p
     | Current gym load: 
@@ -98,13 +76,11 @@ block content
               height="40"
               style="border-radius:50%;"
             )
-
           span= u.username
 
   // =========================
-  // Muscle Group Workout Couunt this Week
+  // Muscle Group Workout Count this Week
   // =========================
-  
   if frequencies.length === 0
     p No workout data available for this week.
   else
@@ -130,9 +106,8 @@ block content
       .card
         h3 #{item}
         .card-actions
-          - let url = '/' + item.toLowerCase().replaceAll(' ', '-'); // ✅ convert spaces to hyphens
+          - let url = '/' + item.toLowerCase().replaceAll(' ', '-');
           - url = url === '/start-solo-workout' ? '/startSoloWorkout' : url;
-          - console.log(url)
           a.card-link(href=url) #{item}
           button.info-btn(data-index=index title="More Info") i
 
