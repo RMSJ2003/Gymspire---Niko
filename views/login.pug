@@ -1,8 +1,9 @@
-extends base 
+extends base
 //- base.pug
 
 block styles
   link(rel="stylesheet" href="/css/login.css")
+
 block content
   form(id='loginForm' novalidate) 
     h2 Login
@@ -17,17 +18,15 @@ block content
     input(type='password' name='password' id='password' required)
     small.form-error#passwordError 
 
-    a(href='/forgotPassword') Forgot password?
-    a.login__verify-email(href='/requestEmailVerification') Verify email
+    // 🔹 Links row (flexbox)
+    .links-row
+      a.login__verify-email(href='/requestEmailVerification') Verify email
+      a(href='/forgotPassword') Forgot password?
 
     button(type='submit' id='loginBtn')
       span.btn-text Log In
       span.spinner.hidden Loading...
     button(type='button' id='signupBtn') Sign Up
 
-
-  block scripts
-    script(src='/js/login.js')
-      //- login.js
-
-
+block scripts
+  script(src='/js/login.js')

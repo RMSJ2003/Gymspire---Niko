@@ -1,0 +1,148 @@
+/* Reset & base */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #dddddd;
+  color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  padding: 16px;
+}
+
+/* Container / Card */
+.section-email-verification {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background-color: white;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+  color: #020617;
+}
+
+/* NAV LINKS ROW */
+.links-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.email-verification__link {
+  font-size: 0.85rem;
+  text-decoration: none;
+  color: blue;
+}
+
+.email-verification__link:hover {
+  color: aquamarine;
+}
+
+.email-verification__divider {
+  font-size: 0.85rem;
+  color: black;
+}
+
+/* FORM */
+.email-verification__form {
+  display: flex;
+  flex-direction: column;
+}
+
+.email-verification__label {
+  font-size: 0.9rem;
+  color: black;
+  margin-bottom: 6px;
+}
+
+.email-verification__input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background-color: whitesmoke;
+  color: #020617;
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+
+.email-verification__input:focus {
+  border-color: #b11226;
+  box-shadow: 0 0 0 2px rgba(177, 18, 38, 0.15);
+}
+
+/* BUTTON */
+.email-verification__button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  background-color: #d25353;
+  color: whitesmoke;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease;
+  gap: 8px;
+  border: none;
+}
+
+.email-verification__button:hover {
+  background-color: #ea7b7b;
+  color: black;
+}
+
+/* FORM MESSAGE */
+.email-verification__message {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 0.9rem;
+}
+
+/* ERROR AND SUCCESS COLORS */
+.email-verification__message--active {
+  color: #f87171; /* red for errors */
+}
+
+/* Optional: if your JS wants success color */
+.email-verification__message.success {
+  color: #22c55e; /* green for success */
+}
+
+/* ========================= */
+/* 📱 MOBILE (Phones) */
+@media (max-width: 480px) {
+  .card {
+    width: 100%;
+    max-width: 360px;
+    padding: 22px 18px;
+  }
+
+  .links-row {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+/* ========================= */
+/* 📱 TABLET */
+@media (max-width: 768px) {
+  .card {
+    max-width: 360px;
+  }
+}

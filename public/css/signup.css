@@ -5,8 +5,8 @@
 
 /* Center page content */
 body {
-  background-color: whitesmoke;
-  color: #0d265c;
+  background-color: #dddddd;
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -18,7 +18,7 @@ body {
 /* Title */
 h2 {
   text-align: center;
-  color: #ececec;
+  color: black;
   margin-bottom: 24px;
 }
 
@@ -26,7 +26,7 @@ h2 {
 #signupForm {
   width: 100%;
   max-width: 420px;
-  background: #020617;
+  background: white;
   padding: 32px;
   border-radius: 12px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
@@ -37,7 +37,7 @@ h2 {
   display: block;
   margin-top: 12px;
   font-size: 0.9rem;
-  color: #cbd5f5;
+  color: black;
 }
 
 /* Inputs */
@@ -48,7 +48,7 @@ h2 {
   border-radius: 6px;
   border: 1px solid #334155;
   background-color: whitesmoke;
-  color: #020617;
+  color: black;
   font-size: 1rem;
 }
 
@@ -67,10 +67,10 @@ h2 {
   margin-top: 20px;
   border: none;
   border-radius: 8px;
-  background-color: #ebd31b;
+  background-color: #d25353;
+  color: whitesmoke;
   font-weight: bold;
   font-size: 1rem;
-  color: #020617;
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -80,9 +80,8 @@ h2 {
 }
 
 #submitBtn:hover {
-  color: #ebda1b;
-  background-color: transparent;
-  border: 1px solid #ebda1b;
+  color: black;
+  background-color: #ea7b7b;
 }
 
 /* Spinner */

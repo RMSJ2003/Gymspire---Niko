@@ -5,7 +5,7 @@
 
 body {
   background-color: #dddddd;
-  color: #0d265c;
+  color: black;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -17,7 +17,7 @@ body {
 /* Title */
 h2 {
   text-align: center;
-  color: #020617;
+  color: black;
   margin-bottom: 24px;
 }
 
@@ -36,7 +36,7 @@ h2 {
   display: block;
   margin-top: 12px;
   font-size: 0.9rem;
-  color: #cbd5f5;
+  color: black;
 }
 
 /* Inputs */
@@ -51,25 +51,35 @@ h2 {
   font-size: 1rem;
 }
 
-/* Error text */
+#loginForm input:focus {
+  border-color: #b11226;
+  box-shadow: 0 0 0 2px rgba(177, 18, 38, 0.15);
+}
+
+/* Error text below inputs */
 .form-error {
   font-size: 0.8rem;
   color: #f87171;
   min-height: 16px;
 }
 
-/* Forgot password */
-#loginForm a[href="/forgotPassword"] {
-  display: block;
-  text-align: right;
+/* ========================= */
+/* Links row (flexbox) */
+.links-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin: 12px 0 20px;
-  font-size: 0.85rem;
-  color: whitesmoke;
-  text-decoration: none;
 }
 
-#loginForm a[href="/forgotPassword"]:hover {
-  color: #ebd31b;
+.links-row a {
+  font-size: 0.85rem;
+  text-decoration: none;
+  color: blue;
+}
+
+.links-row a:hover {
+  color: aquamarine;
 }
 
 /* Buttons */
@@ -92,24 +102,25 @@ h2 {
 /* Login button */
 #loginBtn {
   border: none;
-  background-color: #ebd31b;
-  color: #020617;
+  background-color: #d25353;
+  color: whitesmoke;
 }
 
 #loginBtn:hover {
-  background: whitesmoke;
-  color: #020617;
+  background: #ea7b7b;
+  color: black;
 }
 
 /* Signup button (secondary) */
 #signupBtn {
-  background: transparent;
-  border: 1px solid #ebda1b;
+  border: none;
+  background-color: #f4c430;
   color: whitesmoke;
 }
 
 #signupBtn:hover {
-  color: #ebda1b;
+  background-color: #f4e47e;
+  color: black;
 }
 
 /* Spinner */
@@ -128,21 +139,22 @@ h2 {
   font-size: 0.9rem;
 }
 
+/* 🔴 Error color */
 .form-message.error {
   color: #f87171;
 }
 
+/* 🟢 Success color */
 .form-message.success {
   color: #22c55e;
 }
 
 /* ========================= */
 /* 📱 MOBILE (Phones) */
-/* ========================= */
 @media (max-width: 480px) {
   body {
     justify-content: center;
-    align-items: center; /* ✅ keep centered */
+    align-items: center;
   }
 
   #loginForm {
@@ -154,11 +166,21 @@ h2 {
   h2 {
     font-size: 1.4rem;
   }
+
+  /* Stack links on mobile */
+  .links-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .links-row a {
+    width: 100%;
+    text-align: center;
+  }
 }
 
 /* ========================= */
 /* 📱 TABLET */
-/* ========================= */
 @media (max-width: 768px) {
   #loginForm {
     max-width: 360px;

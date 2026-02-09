@@ -1,4 +1,3 @@
-// JAVASCRIPT FOR CLIENT-SIDE VALIDATION
 const form = document.querySelector("#loginForm");
 const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#password");
@@ -7,12 +6,13 @@ const formMessage = document.querySelector("#formMessage");
 const loginBtn = document.querySelector("#loginBtn");
 const btnText = loginBtn.querySelector(".btn-text");
 
+// Submit login form
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // reset errors
+  // reset messages
   formMessage.textContent = "";
-  formMessage.classList.remove("login__message--active");
+  formMessage.classList.remove("error", "success");
 
   loginBtn.disabled = true;
   btnText.textContent = "Logging in...";
@@ -29,7 +29,7 @@ form.addEventListener("submit", async (e) => {
 
     const data = await res.json();
 
-    // 🚨 ACCOUNT DEACTIVATED → SHOW REACTIVATION PROMPT
+    // Account deactivated
     if (data.status === "deactivated") {
       loginBtn.disabled = false;
       btnText.textContent = "Log In";
@@ -44,28 +44,30 @@ form.addEventListener("submit", async (e) => {
       return;
     }
 
-    // ❌ Other errors
+    // Other errors
     if (!res.ok) {
       throw new Error(data.message || "Invalid email or password");
     }
 
-    // ✅ SUCCESS
-    formMessage.classList.add("login__message--active");
+    // SUCCESS
     formMessage.textContent = "Login successful! Redirecting...";
+    formMessage.classList.add("success"); // ✅ add success class
+    formMessage.classList.remove("error");
 
     setTimeout(() => {
       window.location.href = data.redirectTo || "/dashboard";
     }, 500);
   } catch (err) {
-    formMessage.classList.add("login__message--active");
     formMessage.textContent = err.message || "Login failed";
+    formMessage.classList.add("error"); // ✅ add error class
+    formMessage.classList.remove("success");
   } finally {
     loginBtn.disabled = false;
     btnText.textContent = "Log In";
   }
 });
 
-// 🔥 Reactivate Account Function
+// Reactivate account
 async function reactivateAccount(email) {
   try {
     const res = await fetch("/api/v1/auth/reactivateAccount", {
@@ -78,14 +80,22 @@ async function reactivateAccount(email) {
 
     if (!res.ok) throw new Error(data.message || "Reactivation failed");
 
-    formMessage.classList.add("login__message--active");
     formMessage.textContent = "Account reactivated! Redirecting...";
+    formMessage.classList.add("success");
+    formMessage.classList.remove("error");
 
     setTimeout(() => {
       window.location.href = data.redirectTo || "/dashboard";
     }, 500);
   } catch (err) {
-    formMessage.classList.add("login__message--active");
     formMessage.textContent = err.message || "Reactivation failed";
+    formMessage.classList.add("error");
+    formMessage.classList.remove("success");
   }
 }
+
+// Redirect Sign Up button
+const signupBtn = document.querySelector("#signupBtn");
+signupBtn.addEventListener("click", () => {
+  window.location.href = "/signup";
+});
