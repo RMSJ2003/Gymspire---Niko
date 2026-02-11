@@ -9,8 +9,8 @@
 
 body {
   font-family: Arial, sans-serif;
-  background: #111827;
-  color: white;
+  background: white;
+  color: black;
   min-height: 100vh;
   padding: 5rem 1rem 2rem 1rem; /* space for fixed top bar */
 }
@@ -27,7 +27,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 0.8rem 1rem;
-  background: rgba(17, 24, 39, 0.95);
+  background: white;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 999;
@@ -36,9 +36,9 @@ body {
 
 .top-bar a {
   padding: 0.5rem 1.2rem;
-  border: 2px solid #ebd31b;
-  background: transparent;
-  color: #ebd31b;
+  border: 2px solid #d25353;
+  background: #d25353;
+  color: whitesmoke;
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -46,9 +46,8 @@ body {
 }
 
 .top-bar a:hover {
-  background-color: whitesmoke;
-  color: #020617;
-  border: 2px solid transparent;
+  color: #f4c430;
+  border: 2px solid #d25353;
 }
 
 /* =========================
@@ -65,25 +64,25 @@ h4 {
 h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #ebd31b;
+  color: black;
 }
 
 h2 {
   font-size: 1.5rem;
   font-weight: 500;
-  color: #cbd5f5;
+  color: black;
 }
 
 h3 {
   font-size: 1.2rem;
   font-weight: 500;
-  color: #ebd31b;
+  color: black;
 }
 
 h4 {
   font-size: 1.1rem;
   font-weight: 500;
-  color: #ebd31b;
+  color: black;
   margin-bottom: 0.5rem;
 }
 
@@ -107,7 +106,7 @@ p {
   text-align: center;
   margin: 0.5rem 0;
   font-weight: 500;
-  color: #cbd5f5;
+  color: black;
 }
 
 /* Optional: Highlight special info in green */
@@ -125,8 +124,8 @@ button,
   width: max-content;
   margin: 1rem auto;
   padding: 0.6rem 1.2rem;
-  background: #ebd31b;
-  color: #020617;
+  background: #d25353;
+  color: whitesmoke;
   font-weight: bold;
   border-radius: 0.5rem;
   text-align: center;
@@ -138,18 +137,17 @@ button,
 
 button:hover,
 .btn:hover {
-  background-color: whitesmoke;
-  color: #020617;
+  color: #f4c430;
 }
 
 /* =========================
    EXERCISE CARDS
 ========================= */
 .exercise-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: #d25353;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid #ebd31b;
+  border: 1px solid #d25353;
   border-radius: 1rem;
   padding: 1rem;
   margin: 1rem auto;
@@ -162,7 +160,7 @@ button:hover,
 }
 
 .exercise-card p {
-  color: #cbd5f5;
+  color: black;
   margin-bottom: 0.5rem;
 }
 
@@ -185,12 +183,13 @@ table {
 
 th,
 td {
-  border: 1px solid #a5951a;
+  border: 1px solid black;
   padding: 6px;
 }
 
 th {
-  background-color: rgba(197, 197, 34, 0.2);
+  background-color: white;
+  color: black;
 }
 
 /* =========================
