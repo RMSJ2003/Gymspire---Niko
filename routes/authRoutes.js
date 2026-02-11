@@ -11,6 +11,8 @@ router.route("/login").post(authController.login);
 
 router.get("/verify-email/:token", authController.verifyIacademyEmail);
 
+router.get("/reactivate-account/:token", authController.verifyIacademyEmail);
+
 router.post(
   "/requestEmailVerification",
   authController.requestEmailVerification,

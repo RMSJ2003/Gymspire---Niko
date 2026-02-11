@@ -65,12 +65,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   if (existingUser) {
     if (existingUser.active === false) {
-      return next(
-        new AppError(
-          "This email belongs to a deactivated account. Please contact support.",
-          400,
-        ),
-      );
+      return next(new AppError("Email already taken.", 400));
     }
 
     return next(new AppError("Email already in use", 400));
@@ -270,6 +265,15 @@ exports.login = catchAsync(async (req, res, next) => {
   // ❗ Check user + password FIRST
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError("Incorrect email or password", 401));
+  }
+
+  if (!user.emailVerified && !user.active) {
+    return next(
+      new AppError(
+        "Account is deactivated. To reactivate, please verify the email.",
+        401,
+      ),
+    );
   }
 
   if (!user.emailVerified) {
@@ -513,7 +517,9 @@ exports.requestEmailVerification = catchAsync(async (req, res, next) => {
   const { email } = req.body;
 
   // 1) Check if user exists
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email })
+    .setOptions({ includeInactive: true })
+    .select("+active");
 
   if (!user) {
     return next(new AppError("No user found with that email", 404));
@@ -546,12 +552,12 @@ exports.requestEmailVerification = catchAsync(async (req, res, next) => {
   // 5) Send verification email
   const verificationURL = `${req.protocol}://${req.get(
     "host",
-  )}/api/v1/auth/verify-email/${verificationToken}`;
+  )}/api/v1/auth/${user.active ? "verify-email" : "reactivate-account"}/${verificationToken}`;
 
   await sendEmail({
     to: user.email,
-    subject: "Verify your email",
-    message: `Click to verify your email: ${verificationURL}`,
+    subject: user.active ? "Verify your Email" : "Account Reactivation",
+    message: `Did you request for ${user.active ? "Email Verification" : "Accont Reactivation"}? \nClick to verify your email: ${verificationURL}`,
   });
 
   // 6) Response
@@ -560,6 +566,90 @@ exports.requestEmailVerification = catchAsync(async (req, res, next) => {
     message: "Verification email sent",
   });
 });
+
+exports.verifyIacademyEmail = catchAsync(async (req, res, next) => {
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  const user = await User.findOne({
+    emailVerificationToken: hashedToken,
+    emailVerificationExpires: { $gt: Date.now() },
+  })
+    .setOptions({ includeInactive: true })
+    .select("+active");
+  // 2} If token has not expired, and there is a user, set the new password.
+  if (!user) next(new AppError("Token is invalid or has expired", 400));
+
+  user.emailVerified = true;
+  user.active = true;
+  user.emailVerificationToken = undefined;
+  user.emailVerificationExpires = undefined;
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    status: "success",
+    message: "Email verified successfully",
+  });
+});
+/*
+exports.requestEmailVerificationReactivation = catchAsync(
+  async (req, res, next) => {
+    const { email } = req.body;
+
+    // 1) Check if user exists
+    const user = await User.findOne({ email })
+      .setOptions({ includeInactive: true })
+      .select("+active");
+
+    if (!user) {
+      return next(new AppError("No user found with that email", 404));
+    }
+
+    // 2) Check if email is already verified
+    if (user.emailVerified) {
+      return next(new AppError("Email is already verified", 400));
+    }
+
+    // 3) Check if a valid (non-expired) verification link already exists
+    if (
+      user.emailVerificationReactivationToken &&
+      user.emailVerificationReactivationExpires &&
+      user.emailVerificationReactivationExpires > Date.now()
+    ) {
+      return next(
+        new AppError(
+          "Verification email already sent. Please check your inbox.",
+          429,
+        ),
+      );
+    }
+
+    // 4) Create new verification token (old one is expired or missing)
+    const verificationToken = user.createEmailVerificationReactivationToken();
+
+    await user.save({ validateBeforeSave: false });
+
+    // 5) Send verification email
+    const verificationURL = `${req.protocol}://${req.get(
+      "host",
+    )}/api/v1/auth/verify-email/${verificationToken}`;
+
+    await sendEmail({
+      to: user.email,
+      subject: "Reactivate your account",
+      message: `Click to reactivate your account: ${verificationURL}`,
+    });
+
+    // 6) Response
+    res.status(200).json({
+      status: "success",
+      message: "Verification email sent",
+    });
+  },
+);
+*/
 
 // With this, pug files can now do something like this:
 // if user

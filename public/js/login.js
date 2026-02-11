@@ -40,7 +40,7 @@ form.addEventListener("submit", async (e) => {
 
       if (!confirmReactivate) return;
 
-      await reactivateAccount(data.email);
+      await requestReactivation(data.email);
       return;
     }
 
@@ -68,6 +68,44 @@ form.addEventListener("submit", async (e) => {
 });
 
 // Reactivate account
+async function requestReactivation(email) {
+  try {
+    const res = await fetch("/api/v1/auth/requestEmailVerification", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Reactivation failed");
+    }
+
+    // 🔥 SHOW VERIFICATION MESSAGE
+    formMessage.classList.add("login__message--active");
+    formMessage.textContent =
+      "A verification email has been sent to your iACADEMY email. Please verify before logging in.";
+    submitBtn.textContent = "Verification sent";
+    submitBtn.disabled = true;
+  } catch (err) {
+    formMessage.classList.add("login__message--active");
+    const message = err.message || "Login failed";
+
+    // 🔥 FIELD ERRORS FIRST
+
+    // 🔥 GLOBAL FORM ERROR
+    formMessage.textContent = message;
+  } finally {
+    // 🔥 ONLY RESET IF FAILED
+    if (!success) {
+      submitBtn.disabled = false;
+      btnText.textContent = "Login";
+    }
+  }
+}
+/*
+
 async function reactivateAccount(email) {
   try {
     const res = await fetch("/api/v1/auth/reactivateAccount", {
@@ -93,7 +131,7 @@ async function reactivateAccount(email) {
     formMessage.classList.remove("success");
   }
 }
-
+*/
 // Redirect Sign Up button
 const signupBtn = document.querySelector("#signupBtn");
 signupBtn.addEventListener("click", () => {

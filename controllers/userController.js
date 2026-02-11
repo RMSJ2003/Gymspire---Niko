@@ -106,6 +106,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 exports.deleteMe = catchAsync(async (req, res) => {
   await User.findByIdAndUpdate(req.user.id, {
     active: false,
+    emailVerified: false,
   });
 
   res.status(204).json({
@@ -180,11 +181,10 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
   }
 
   if (user.userType === "admin") {
-    return next(
-      new AppError("Admin accounts cannot be deleted", 403)
-    );
+    return next(new AppError("Admin accounts cannot be deleted", 403));
   }
 
+  user.emailVerified = false;
   user.active = false;
   await user.save({ validateBeforeSave: false });
 

@@ -1,64 +1,95 @@
 extends ../base
 
 block styles
-  link(rel="stylesheet" href="/css/dashboard.css?v=1.1")
+  link(rel="stylesheet" href="/css/dashboard.css")
 
 block content
 
   // =========================
-  // NAVBAR + PANEL
+  // NAVBAR
   // =========================
   nav.navbar
     .nav-logo
-      a.dashboard-btn(href='/coachDashboard')
-        img(src="/img/gymspirelogo.png" alt="GymSpire Logo")
+      if user.userType === "user"
+        a.dashboard-btn(href='/dashboard') GymSpire
+      if user.userType === "coach"
+        a.dashboard-btn(href='/coachDashboard') GymSpire
+      if user.userType === "admin"
+        a.dashboard-btn(href='/adminDashboard') GymSpire
+
+    // Centered time
+    .nav-center
+      span.nav-time
+        | Current time: 
+        strong #{currentTime || '12:00 PM'}
+
     .nav-right
       button.hamburger ☰
       .panel
-        a(href='/profile') Profile
+        a(href="/profile") Profile
         form(action="/api/v1/auth/logout" method="GET")
           button(type="submit") Logout
 
   // =========================
-  // WELCOME / HEADER
+  // WELCOME SECTION
   // =========================
   .welcome-section
-    h1 Dashboard
+    img.app-logo(src="/img/gymspirelogo.png" alt="GymSpire Logo")
     h2 Welcome, #{user.username}
 
   // =========================
-  // STATUS SECTION
+  // STATUS + EXERCISE LOG CONTAINERS
   // =========================
-  .status-section
-    h3 GymSpire Time Status
-    p
-      if recommended
-        strong.status-good Recommended to workout now
-      else
-        strong.status-bad Not recommended to workout now
-    p #{message}
-    p
-      | Current time:
-      - const period = currentHour >= 12 ? "PM" : "AM";
-      - const displayHour = currentHour % 12 || 12;
-      span #{displayHour}:00 #{period}
-    p
-      | Current gym load:
-      span.highlight #{currentLoad}
-    p
-      | Crowd level:
-      span.highlight #{crowdLevel}
+  .status-exercise-grid
+    // Recommended to workout now
+    .status-card
+      p
+        if recommended
+          strong Recommended to workout now
+        else
+          strong Not recommended to workout now
+      p #{message}
+      p
+        | Current gym load: 
+        data(value=currentLoad) #{currentLoad}
 
-  // =========================
-  // DASHBOARD GRID
-  // =========================
+    // Currently Working Out
+    .status-card
+      h3 Currently Working Out
+      if onlineUsers.length === 0
+        p No users are currently working out.
+      else
+        .online-users
+          each u in onlineUsers
+            .online-user
+              if u.pfpUrl
+                img(
+                  src=u.pfpUrl
+                  alt=u.username
+                  width="40"
+                  height="40"
+                  style="border-radius:50%;"
+                )
+              else
+                img(
+                  src="/img/default-user.png"
+                  alt=u.username
+                  width="40"
+                  height="40"
+                  style="border-radius:50%;"
+                )
+              span= u.username
+
+  
   .dashboard
-    - const cards = ["Workout Plan", "Challenges", "Workout Logs", "Start Solo Workout"];
+    - const cards = ["Challenges"];
     each item, index in cards
       .card
         h3 #{item}
         .card-actions
-          a.card-link(href="#") #{item}
+          - let url = '/' + item.toLowerCase().replaceAll(' ', '-');
+          - url = url === '/start-solo-workout' ? '/startSoloWorkout' : url;
+          a.card-link(href=url) #{item}
           button.info-btn(data-index=index title="More Info") i
 
   // =========================
@@ -70,73 +101,7 @@ block content
       video#modalVideo(autoplay muted loop playsinline)
       p#modalText
 
-block scripts
-  script.
-    // =========================
-    // HAMBURGER PANEL TOGGLE
-    // =========================
-    document.addEventListener("DOMContentLoaded", () => {
-      const hamburger = document.querySelector(".hamburger");
-      const panel = document.querySelector(".panel");
-
-      hamburger.addEventListener("click", () => {
-        panel.classList.toggle("open");
-      });
-
-      // =========================
-      // MODAL FUNCTIONALITY
-      // =========================
-      const modal = document.getElementById("modal");
-      const modalText = document.getElementById("modalText");
-      const modalVideo = document.getElementById("modalVideo");
-      const closeModal = document.getElementById("closeModal");
-
-      const infoData = [
-        { text: "Plan your workouts effectively with GymSpire.", video: "/clip/workout_plan.mp4" },
-        { text: "Check out daily challenges to improve your workouts.", video: "/clip/challenges.mp4" },
-        { text: "Track your workout logs over time.", video: "/clip/workout_logs.mp4" },
-        { text: "Start a solo workout anytime.", video: "/clip/solo.mp4" },
-      ];
-
-      document.querySelectorAll(".info-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const index = btn.dataset.index;
-          modalText.textContent = infoData[index].text;
-          modalVideo.src = infoData[index].video;
-          modal.classList.remove("hidden");
-          modalVideo.play();
-        });
-      });
-
-      closeModal.addEventListener("click", () => {
-        modal.classList.add("hidden");
-        modalVideo.pause();
-        modalVideo.currentTime = 0;
-      });
-
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) {
-          modal.classList.add("hidden");
-          modalVideo.pause();
-          modalVideo.currentTime = 0;
-        }
-      });
-
-      // =========================
-      // CARD LINKS
-      // =========================
-      const routes = {
-        "Workout Plan": "/workoutPlan",
-        Challenges: "/challenges",
-        "Workout Logs": "/workoutLogs",
-        "Start Solo Workout": "/startSoloWorkout",
-      };
-
-      document.querySelectorAll(".card").forEach((card) => {
-        const link = card.querySelector(".card-link");
-        if (!link) return;
-
-        const text = link.textContent.trim();
-        link.href = routes[text] || "#";
-      });
-    });
+  // =========================
+  // DASHBOARD JS
+  // =========================
+  script(src="/js/dashboard.js")

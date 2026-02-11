@@ -122,6 +122,8 @@ document.addEventListener("DOMContentLoaded", () => {
     "Workout Plan": "/workoutPlan",
     "Workout Logs": "/workoutLogs",
     "Solo Workout": "/startSoloWorkout",
+    Users: "/users",
+    "Exercises Management": "/exercisesManagement",
   };
 
   document.querySelectorAll(".card").forEach((card) => {
