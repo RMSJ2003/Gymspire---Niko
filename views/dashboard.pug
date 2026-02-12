@@ -106,7 +106,7 @@ block content
   // =========================
   // DASHBOARD GRID
   // =========================
-  .dashboard
+  .dashboard(data-type="user")
     - const cards = ["Challenges", "Workout Plan", "Workout Logs", "Solo Workout"];
     each item, index in cards
       .card
@@ -118,12 +118,11 @@ block content
           button.info-btn(data-index=index title="More Info") i
 
   // =========================
-  // MODAL
+  // MODAL (TEXT ONLY)
   // =========================
   .modal.hidden#modal
     .modal-content
       button#closeModal ×
-      video#modalVideo(autoplay muted loop playsinline)
       p#modalText
 
   // =========================

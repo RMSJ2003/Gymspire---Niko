@@ -5,9 +5,14 @@ block styles
 
 block content
 
-  // Back Button
-  a.back-btn(href='/adminDashboard') ← Back
+  // =========================
+  // BACK BUTTON
+  // =========================
+  a.back-btn(href='/adminDashboard') Back
 
+  // =========================
+  // USER INFO
+  // =========================
   h1.page-title #{title}
   h2 #{user.username}
 
@@ -16,7 +21,9 @@ block content
   else
     img.profile-big(src="/img/default-user.png" alt="Default Profile")
 
-  // 🔥 IMPORT EXERCISES
+  // =========================
+  // IMPORT EXERCISES
+  // =========================
   .import-zone
     h3 📥 Import Exercises (ExerciseDB)
     p
@@ -26,7 +33,9 @@ block content
     button#importExercisesBtn Import Exercises
     p#importMessage
 
-  // 🔥 DANGER ZONE
+  // =========================
+  // DANGER ZONE
+  // =========================
   .danger-zone
     h3 ⚠️ Danger Zone
     p This will permanently delete ALL exercises. This action cannot be undone.
@@ -35,25 +44,31 @@ block content
 
   hr
 
+  // =========================
+  // SCROLLABLE EXERCISE LIST
+  // =========================
   if exercises.length === 0
     p No exercises available.
   else
-    each exercise in exercises
-      .exercise-card
-        h3 #{exercise.name}
-        h3 exerciseId: #{exercise.exerciseId}
-        p
-          strong Target:
-          |  #{exercise.target}
+    .exercise-list-container
+      each exercise in exercises
+        .exercise-card
+          label
+            input(type="checkbox" name="exerciseIds" value=exercise._id)
+            .exercise-content
+              h3 #{exercise.name}
+              p
+                strong Target:
+                |  #{exercise.target}
 
-        if exercise.gifURL
-          img(src=exercise.gifURL alt=exercise.name class="exercise-gif")
+              if exercise.gifURL
+                img.exercise-gif(src=exercise.gifURL alt=exercise.name)
 
-        if exercise.instructions && exercise.instructions.length
-          h4 Instructions
-          ul
-            each step in exercise.instructions
-              li #{step}
+              if exercise.instructions && exercise.instructions.length
+                h4 Instructions
+                ul
+                  each step in exercise.instructions
+                    li #{step}
 
 block scripts
   script(src="/js/exercisesManagement.js")

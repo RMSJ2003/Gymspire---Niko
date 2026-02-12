@@ -34,7 +34,7 @@ body {
 }
 
 .back-btn:hover {
-  background-color: #9e3b3b;
+  color: #f4c430;
 }
 
 /* =========================
@@ -57,6 +57,9 @@ h2 {
   border-radius: 8px;
   margin-bottom: 2rem;
   max-width: 200px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* =========================
@@ -184,6 +187,46 @@ h2 {
 }
 
 /* =========================
+   SCROLLABLE EXERCISE LIST
+========================= */
+.exercise-list-container {
+  max-height: 400px; /* height of scrollable list */
+  overflow-y: auto;
+  padding-right: 10px; /* avoid content hiding under scrollbar */
+  margin-bottom: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  padding: 1rem;
+}
+
+/* =========================
+   CHECKBOXES
+========================= */
+.exercise-card label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.exercise-card input[type="checkbox"] {
+  margin-top: 5px; /* aligns with text */
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* =========================
+   EXERCISE INSTRUCTIONS
+========================= */
+.exercise-card h4,
+.exercise-card ul,
+.exercise-card ul li {
+  color: #000; /* black text */
+}
+
+/* =========================
    RESPONSIVE
 ========================= */
 @media (max-width: 768px) {
@@ -193,7 +236,8 @@ h2 {
 
   .import-zone,
   .danger-zone,
-  .exercise-card {
+  .exercise-card,
+  .exercise-list-container {
     padding: 1rem;
   }
 

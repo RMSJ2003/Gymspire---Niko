@@ -1,42 +1,53 @@
 extends ../base
 
+block styles
+  link(rel="stylesheet" href="/css/createCoach.css")
+
 block content
-	include ../_navbar
+  // =========================
+  // BACK BUTTON
+  // =========================
+  .back-btn-container
+    a.back-btn(href="javascript:history.back()") Back
 
-	h1 #{title}
+  // =========================
+  // PAGE TITLE & USER INFO
+  // =========================
+  h1 #{title}
+  h2 #{user.username}
 
-	h2 #{user.username}
+  if user.pfpUrl
+    img.profile-pic(src=user.pfpUrl alt="Profile Picture")
+  else
+    img.profile-pic(src="/img/default-user.png" alt="Default Profile")
 
-	if user.pfpUrl
-		img(src=user.pfpUrl alt="Profile Picture" width="150")
-	else
-		img(src="/img/default-user.png" alt="Default Profile" width="150")
+  // =========================
+  // CREATE COACH FORM
+  // =========================
+  form(id='createCoachForm' novalidate) 
+    // 🔥 Global message area
+    p.form-message#formMessage
 
-	form(id='createCoachForm' novalidate) 
-		// 🔥 Global message area
-		p.form-message#formMessage
+    label(for='email') Email
+    input(type='email' name='email' id='email' required)
+    small.form-error#emailError
 
-		label(for='email') Email
-		input(type='email' name='email' id='email' required)
-		small.form-error#emailError
+    label(for='username') Username
+    input(type='text' name='username' id='username' required)
 
-		label(for='username') Username
-		input(type='text' name='username' id='username' required)
+    label(for='pfp') Profile Picture URL
+    input(type="file" name="pfp" id="pfp" accept="image/*")
 
-		label(for='pfp') Profile Picture URL
-		input(type="file" name="pfp" id="pfp" accept="image/*")
+    label(for='password') Password
+    input(type='password' name='password' id='password' required)
+    small.form-error#passwordError
 
-		label(for='password') Password
-		input(type='password' name='password' id='password' required)
-		small.form-error#passwordError
+    label(for='passwordConfirm') Confirm Password
+    input(type='password' name='passwordConfirm' id='passwordConfirm' required)
+    small.form-error#passwordConfirmError
 
-		label(for='passwordConfirm') Confirm Password
-		input(type='password' name='passwordConfirm' id='passwordConfirm' required)
-		small.form-error#passwordConfirmError
+    button(type='submit' id='submitBtn')
+      span.btn-text Create Coach
 
-		button(type='submit' id='submitBtn')
-			span.btn-text Create Coach
-
-	block scripts
-		script(src='/js/createCoach.js')
-
+block scripts
+  script(src='/js/createCoach.js')

@@ -1,10 +1,14 @@
 extends ../base
 
 block styles
-  link(rel="stylesheet" href="/css/challenges.css")
+  link(rel="stylesheet" href="/css/createChallenge.css")
 
 block content
-  include ../_navbar
+  // =========================
+  // BACK BUTTON
+  // =========================
+  .back-btn-container
+    a.back-btn(href="javascript:history.back()")  Back
 
   h1 #{title}
   h2 #{user.username}

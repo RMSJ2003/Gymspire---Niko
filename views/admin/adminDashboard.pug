@@ -10,10 +10,6 @@ block content
   // =========================
   nav.navbar
     .nav-logo
-      if user.userType === "user"
-        a.dashboard-btn(href='/dashboard') GymSpire
-      if user.userType === "coach"
-        a.dashboard-btn(href='/coachDashboard') GymSpire
       if user.userType === "admin"
         a.dashboard-btn(href='/adminDashboard') GymSpire
 
@@ -80,9 +76,11 @@ block content
                 )
               span= u.username
 
-  
-  .dashboard
-    - const cards = ['Users','Exercises Management' ];
+  // =========================
+  // DASHBOARD CARDS
+  // =========================
+  .dashboard(data-type="admin")
+    - const cards = ['Users','Exercises Management'];
     each item, index in cards
       .card
         h3 #{item}
@@ -92,16 +90,14 @@ block content
           button.info-btn(data-index=index title="More Info") i
 
   // =========================
-  // MODAL
+  // MODAL (TEXT-ONLY)
   // =========================
   .modal.hidden#modal
     .modal-content
       button#closeModal ×
-      video#modalVideo(autoplay muted loop playsinline)
       p#modalText
 
   // =========================
   // DASHBOARD JS
   // =========================
   script(src="/js/dashboard.js")
-
