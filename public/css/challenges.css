@@ -93,8 +93,8 @@ h3 {
   width: fit-content;
   margin: 1rem auto;
   padding: 0.6rem 1.5rem;
-  background-color: #ebda1b;
-  color: #020617;
+  background-color: #d25353;
+  color: whitesmoke;
   font-weight: bold;
   text-decoration: none;
   border-radius: 0.5rem;
@@ -102,8 +102,7 @@ h3 {
 }
 
 .create-challenge:hover {
-  background-color: whitesmoke;
-  color: #020617;
+  color: #f4c430;
 }
 
 /* CHALLENGE CARDS */
@@ -221,13 +220,14 @@ button,
 
 .leaderboard-container th,
 .leaderboard-container td {
-  border: 1px solid #22c55e;
+  border: 1px solid #d25353;
   padding: 0.5rem;
   text-align: left;
 }
 
 .leaderboard-container th {
-  background-color: rgba(34, 197, 94, 0.2);
+  background-color: #d25353;
+  color: whitesmoke;
 }
 
 /* EXERCISE CARDS */

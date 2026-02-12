@@ -9,8 +9,8 @@
 
 body {
   font-family: Arial, sans-serif;
-  color: white;
-  background-color: #111827;
+  color: black;
+  background-color: #dddddd;
   min-height: 100vh;
   padding-top: 5rem; /* space for fixed navbar */
 }
@@ -27,7 +27,7 @@ body {
   justify-content: space-between; /* buttons at left/right */
   align-items: center;
   padding: 0.8rem 1rem;
-  background: rgba(17, 24, 39, 0.95);
+  background: white;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 999;
@@ -36,9 +36,9 @@ body {
 
 .top-bar a {
   padding: 0.5rem 1.2rem;
-  border: 2px solid #ebd31b;
-  background: transparent;
-  color: #ebd31b;
+  border: 2px solid #d25353;
+  background: #d25353;
+  color: whitesmoke;
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -47,29 +47,7 @@ body {
 }
 
 .top-bar a:hover {
-  background-color: whitesmoke;
-  color: #020617;
-  border: 2px solid transparent;
-}
-
-/* Specific Buttons */
-.dashboard-btn {
-  background-color: #ebd31b;
-  color: #020617;
-}
-
-.dashboard-btn:hover {
-  background-color: whitesmoke;
-  color: #020617;
-}
-
-.back-btn {
-  background-color: #2563eb;
-  color: white;
-}
-
-.back-btn:hover {
-  background-color: #1d4ed8;
+  color: #f4c430;
 }
 
 .logout-btn {
@@ -95,26 +73,26 @@ h4 {
 h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #ebd31b;
+  color: black;
 }
 
 h2 {
   font-size: 1.5rem;
   font-weight: 500;
-  color: #cbd5f5;
+  color: black;
 }
 
 h3 {
   font-size: 1.3rem;
   font-weight: 500;
-  color: #cbd5f5;
+  color: black;
   margin-bottom: 0.5rem;
 }
 
 h4 {
   font-size: 1.1rem;
   font-weight: 500;
-  color: #ebd31b;
+  color: black;
   margin-bottom: 0.3rem;
 }
 
@@ -122,12 +100,12 @@ h4 {
    SUBMISSION CARD
 ========================= */
 .submission-card {
-  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
-  border: 1px solid #ebd31b;
+  border: 1px solid #d25353;
   border-radius: 1rem;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  background-color: white;
 }
 
 /* =========================
@@ -166,7 +144,7 @@ h4 {
 .exercise-block {
   margin-top: 15px;
   padding: 10px;
-  border: 1px solid #ebd31b;
+  border: 1px solid #d25353;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.03);
 }
@@ -179,14 +157,14 @@ h4 {
 
 .exercise-block th,
 .exercise-block td {
-  border: 1px solid rgba(173, 197, 34, 0.2);
+  border: 1px solid black;
   padding: 6px;
   text-align: center;
 }
 
 .exercise-block th {
-  background-color: #ebd31b;
-  color: #020617;
+  background-color: #d25353;
+  color: whitesmoke;
 }
 
 /* =========================
@@ -218,7 +196,7 @@ h4 {
   padding: 5px;
   border: 1px solid #ebd31b;
   background: rgba(0, 0, 0, 0.1);
-  color: white;
+  color: black;
   resize: vertical;
 }
 
@@ -230,7 +208,7 @@ h4 {
   margin-right: 10px;
   transition: 0.3s;
   border: none;
-  color: white;
+  color: black;
 }
 
 .verify-form button[value="approved"] {
