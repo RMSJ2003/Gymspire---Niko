@@ -4,8 +4,6 @@ block styles
   link(rel="stylesheet" href="/css/signup.css")
 
 block content
-  //- "novalidate" disables browser auto-submit
-  //- We use AJAX for submit
   form(id='signupForm' novalidate)
     h2 Create Account
 
@@ -33,5 +31,9 @@ block content
     button(type='submit' id='submitBtn')
       span.btn-text Create Account
 
-  block scripts
-    script(src='/js/signup.js')
+    p.signup-login-link
+      | Already have an account? 
+      a(href='/login') Log in
+
+block scripts
+  script(src='/js/signup.js')
