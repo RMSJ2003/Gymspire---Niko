@@ -7,7 +7,7 @@
 body {
   font-family: "Arial", sans-serif;
   color: black;
-  background-color: white;
+  background-color: #dddddd;
   min-height: 100vh;
   padding-top: 5rem; /* space for fixed top bar */
 }
@@ -109,7 +109,7 @@ h3 {
 /* CHALLENGE CARDS */
 
 .challenge-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: white;
   backdrop-filter: blur(12px);
   border: 1px solid #d25353;
   border-radius: 1rem;

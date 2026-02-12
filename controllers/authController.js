@@ -65,7 +65,12 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   if (existingUser) {
     if (existingUser.active === false) {
-      return next(new AppError("Email already taken.", 400));
+      return next(
+        new AppError(
+          "Account is deactivated. To reactivate, please verify the email.",
+          400,
+        ),
+      );
     }
 
     return next(new AppError("Email already in use", 400));

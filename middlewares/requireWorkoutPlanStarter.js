@@ -9,11 +9,7 @@ module.exports = catchAsync(async (req, res, next) => {
 
   // 🔥 IF NO WORKOUT PLAN → REDIRECT TO WORKOUT PLAN PAGE
   if (!workoutPlan) {
-    return res.status(200).render("noWorkoutPlan", {
-      title: "No Workout Plan",
-      user: req.user,
-      starter: true,
-    });
+    return res.redirect("/createWorkoutPlan");
   }
 
   // It attaches data to the request object so the next middleware / controller can

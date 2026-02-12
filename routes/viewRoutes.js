@@ -45,6 +45,8 @@ router.get(
   "/dashboard",
   authController.protect,
   authController.restrictTo("user"),
+  adminController.getGymspireNowStatus,
+  requireWorkoutplanStarter,
   workoutLogController.acquireMyTargetWeeklyFrequency,
   workoutLogController.acquireMyWeeklyWorkoutCount,
   viewController.dashboard,

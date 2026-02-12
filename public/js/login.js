@@ -29,6 +29,7 @@ form.addEventListener("submit", async (e) => {
 
     const data = await res.json();
 
+    // Dina ata kelangan to -- START
     // Account deactivated
     if (data.status === "deactivated") {
       loginBtn.disabled = false;
@@ -43,6 +44,7 @@ form.addEventListener("submit", async (e) => {
       await requestReactivation(data.email);
       return;
     }
+    // Dina ata kelangan to -- end
 
     // Other errors
     if (!res.ok) {

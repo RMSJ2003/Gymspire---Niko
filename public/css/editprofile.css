@@ -38,8 +38,9 @@ body {
   justify-content: space-between;
   padding: 0.8rem 1rem;
   z-index: 999;
-  background-color: rgba(17, 24, 39, 0.95); /* visible navbar */
+  background-color: white; /* visible navbar */
   backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .top-bar a {
