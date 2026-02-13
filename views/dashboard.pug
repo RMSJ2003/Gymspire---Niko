@@ -110,10 +110,9 @@ block content
     - const cards = ["Challenges", "Workout Plan", "Workout Logs", "Solo Workout"];
     each item, index in cards
       .card
-        h3 #{item}
+        h3 #{item === 'Solo Workout' ? 'Start Workout' : item}
         .card-actions
           - let url = '/' + item.toLowerCase().replaceAll(' ', '-');
-          - url = url === '/start-solo-workout' ? '/startSoloWorkout' : url;
           a.card-link(href=url) #{item}
           button.info-btn(data-index=index title="More Info") i
 

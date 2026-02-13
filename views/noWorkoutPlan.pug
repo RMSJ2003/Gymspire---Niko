@@ -1,21 +1,20 @@
 extends base
 
+block styles
+  link(rel="stylesheet" href="/css/noWorkoutPlan.css")
+
 block content
+  .no-plan-container
+    h2 Hello, #{user.username} 
+    p You need to create a workout plan before starting a solo workout.
 
-  h2 Hello, #{user.username}
+    a.btn-primary(href="/createWorkoutPlan") Create My Workout Plan
 
-  p You need to create a workout plan before starting a solo workout.
-
-  a(href="/createWorkoutPlan")
-    button Create My Workout Plan
-
-  br
-  br
-
-  if user.userType === "user"
-    a.dashboard-btn(href='/dashboard') Dashboard
-  if user.userType === "coach"
-    a.dashboard-btn(href='/coachDashboard') Dashboard
-  if user.userType === "admin"
-    a.dashboard-btn(href='/adminDashboard') Dashboard
-
+    if user.userType
+      .dashboard-links
+        if user.userType === "user"
+          a.dashboard-btn(href='/dashboard') Dashboard
+        if user.userType === "coach"
+          a.dashboard-btn(href='/coachDashboard') Dashboard
+        if user.userType === "admin"
+          a.dashboard-btn(href='/adminDashboard') Dashboard

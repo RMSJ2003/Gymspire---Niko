@@ -4,52 +4,68 @@ block styles
   link(rel="stylesheet" href="/css/createWorkoutPlan.css")
 
 block content
-  // Top Buttons
-  .top-buttons
+  // =========================
+  // TOP BAR
+  // =========================
+  .top-bar
     if user.userType === "user"
       a.dashboard-btn(href='/dashboard') Dashboard
     if user.userType === "coach"
       a.dashboard-btn(href='/coachDashboard') Dashboard
     if user.userType === "admin"
       a.dashboard-btn(href='/adminDashboard') Dashboard
-    a.button-logout(href="/logout") Logout
+    a.back-btn(href='javascript:history.back()') Back
 
-  // Main Workout Page
-  .workout-page
-    .workout-card
-      h1 #{title}
-      h2 #{user.username}
+  h1 #{title}
+  h2 #{user.username}
 
-      if user.pfpUrl
-        img.workout-profile-pic(src=user.pfpUrl alt="Profile Picture")
-      else
-        img.workout-profile-pic(src="/img/default-user.png" alt="Default Profile")
+  if user.pfpUrl
+    img.profile-pic(src=user.pfpUrl alt="Profile Picture")
+  else
+    img.profile-pic(src="/img/default-user.png" alt="Default Profile")
 
-      // Exercises
-      if exercises.length === 0
-        p.form-message(style="color:red; font-weight:bold") No exercises available. Please create a workout plan first.
-        a(href='/createWorkoutPlan') Create Workout Plan
-      else
-        form#createWorkoutPlanForm
-          each exercise in exercises
-            .exercise-row
-              input(type="checkbox" name="exerciseIds" value=exercise.exerciseId)
-              span.exercise-title= exercise.name
-              button.type-info-btn(type="button" data-id=exercise.exerciseId) i
+  // =========================
+  // TARGET GRID
+  // =========================
+  .target-grid#targetGrid
 
-          button(type="submit") Create Workout Plan
-          p.form-message#formMessage
+  // =========================
+  // HIDDEN FORM
+  // =========================
+  form#createWorkoutPlanForm.hidden
 
-  // Modal
-  .modal.hidden
+  // =========================
+  // CREATE BUTTON
+  // =========================
+  .update-section
+    p.form-message#formMessage
+    button(type="submit" form="createWorkoutPlanForm") Create Workout Plan
+
+  // =========================
+  // TARGET MODAL
+  // =========================
+  .modal.hidden#targetModal
+    .modal-content.large
+      button#closeTargetModal ×
+      h3#targetTitle
+      .exercise-list#targetExerciseList
+
+  // =========================
+  // EXERCISE INSTRUCTIONS MODAL
+  // =========================
+  .modal.hidden#exerciseModal
     .modal-content
-      button#closeModal &times;
+      button#closeModal ×
       img#modalGif
-      p#modalText
+      div#modalInstructions
 
-  // Pass exercises data safely to JS
+  // =========================
+  // PASS DATA TO JS
+  // =========================
+  script#exercisesData(type="application/json").
+    !{JSON.stringify(exercises)}
   script.
-    window.exercisesData = !{JSON.stringify(exercises)};
-  
-  block scripts
-   script(src='/js/createWorkoutPlan.js')
+    window.exercises = JSON.parse(document.getElementById("exercisesData").textContent);
+
+block scripts
+  script(src="/js/createWorkoutPlan.js")

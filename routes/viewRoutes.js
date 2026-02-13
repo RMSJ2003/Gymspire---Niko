@@ -116,6 +116,7 @@ router.get("/editProfile", authController.protect, viewController.editProfile);
 router.get(
   "/createWorkoutPlan",
   authController.protect,
+  requireWorkoutPlan,
   exerciseController.acquireAllExericses,
   viewController.createWorkoutPlan,
 );
@@ -178,6 +179,12 @@ router.get(
   authController.restrictTo("admin"),
   exerciseController.acquireAllExericses,
   viewController.exercisesManagement,
+);
+
+router.get(
+  "/noWorkoutPlan",
+  authController.protect, // optional if you want only logged-in users
+  viewController.noWorkoutPlan, // make sure this exists
 );
 
 module.exports = router;

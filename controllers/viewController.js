@@ -1,4 +1,5 @@
 const catchAsync = require("../utils/catchAsync");
+const AppError = require("../utils/appError");
 
 exports.signUp = catchAsync(async (req, res, next) => {
   res.status(200).render("signup", {
@@ -135,6 +136,9 @@ exports.editProfile = catchAsync(async (req, res, next) => {
 });
 
 exports.createWorkoutPlan = catchAsync(async (req, res, next) => {
+  if (req.workoutPlan)
+    return next(new AppError("You already have a workout plan."));
+
   res.status(200).render("createWorkoutPlan", {
     title: "Create Workout Plan",
     currentUser: req.user,
@@ -223,3 +227,9 @@ exports.exercisesManagement = catchAsync(async (req, res, next) => {
     currentUser: req.user,
   });
 });
+exports.noWorkoutPlan = (req, res) => {
+  res.status(200).render("noWorkoutPlan", {
+    title: "No Workout Plan",
+    user: req.user,
+  });
+};
