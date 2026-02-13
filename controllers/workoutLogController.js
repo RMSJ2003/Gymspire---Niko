@@ -376,9 +376,9 @@ exports.finishWorkoutLog = catchAsync(async (req, res, next) => {
   }
 
   // 🎥 Challenge workouts REQUIRE a video
-  if (workoutLog.challengeId && !req.file) {
-    return next(new AppError("Challenge workouts require a video", 400));
-  }
+  // if (workoutLog.challengeId && !req.file) {
+  //   return next(new AppError("Challenge workouts require a video", 400));
+  // }
 
   // ☁️ Save Cloudinary video URL if uploaded
   if (req.file) {

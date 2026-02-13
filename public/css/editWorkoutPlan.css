@@ -348,6 +348,15 @@ h4 {
 }
 
 /* =========================
+   ACTIVE TARGET CARD
+========================= */
+.target-card.active {
+  background: #ebda1b;
+  color: #020617;
+  transform: scale(1.05);
+}
+
+/* =========================
    MOBILE RESPONSIVE
 ========================= */
 @media (max-width: 600px) {

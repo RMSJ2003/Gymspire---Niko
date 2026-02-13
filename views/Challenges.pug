@@ -46,10 +46,11 @@ block content
 
         - const alreadyJoined = challenge.participants.some(p => p._id.toString() === user._id.toString())
 
-        if alreadyJoined
-          p.join-status You already joined this challenge
-        else
-          button.join-btn(data-join-code=challenge.joinCode) Join Challenge
+        if user.userType === 'user'
+          if alreadyJoined
+            p.join-status You already joined this challenge
+          else
+            button.join-btn(data-join-code=challenge.joinCode) Join Challenge
 
         if alreadyJoined
           button.start-btn(data-challenge-id=challenge._id) Start Challenge

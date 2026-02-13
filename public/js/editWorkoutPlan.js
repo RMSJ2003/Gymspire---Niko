@@ -32,6 +32,19 @@ Object.keys(grouped).forEach((target) => {
   const card = document.createElement("div");
   card.className = "target-card";
   card.textContent = target;
+
+  // store target name
+  card.dataset.target = target;
+
+  // 🔥 If already selected from DB, make active
+  const hasSelected = grouped[target].some((ex) =>
+    exerciseIds.includes(ex.exerciseId),
+  );
+
+  if (hasSelected) {
+    card.classList.add("active");
+  }
+
   card.addEventListener("click", () => openTargetModal(target));
   targetGrid.appendChild(card);
 });
@@ -50,7 +63,7 @@ function openTargetModal(target) {
       : "";
 
     row.innerHTML = `
-      <label>
+      <label class="checkbox-container">
         <input type="checkbox" name="exerciseIds" value="${exercise.exerciseId}" ${isChecked}>
         <span class="exercise-name">${exercise.name}</span>
       </label>
@@ -59,15 +72,33 @@ function openTargetModal(target) {
 
     targetExerciseList.appendChild(row);
 
-    // ===== UPDATE SELECTED IDS ON CHANGE =====
+    // ===== UPDATE SELECTED IDS + TARGET CARD COLOR =====
     const checkbox = row.querySelector('input[type="checkbox"]');
     checkbox.addEventListener("change", (e) => {
       const id = exercise.exerciseId;
+
       if (e.target.checked) {
         if (!exerciseIds.includes(id)) exerciseIds.push(id);
       } else {
         const index = exerciseIds.indexOf(id);
         if (index > -1) exerciseIds.splice(index, 1);
+      }
+
+      // ===== UPDATE TARGET CARD COLOR =====
+      const hasSelected = grouped[target].some((ex) =>
+        exerciseIds.includes(ex.exerciseId),
+      );
+
+      const targetCard = document.querySelector(
+        `.target-card[data-target="${target}"]`,
+      );
+
+      if (targetCard) {
+        if (hasSelected) {
+          targetCard.classList.add("active");
+        } else {
+          targetCard.classList.remove("active");
+        }
       }
     });
   });

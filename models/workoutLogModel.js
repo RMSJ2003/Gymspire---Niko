@@ -7,70 +7,70 @@ const workoutLogSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+
   workoutPlanId: {
     type: mongoose.Schema.ObjectId,
     ref: "WorkoutPlan",
   },
+
   challengeId: {
-    // Either solo workout or challenge workout. A log can only have a workoutPlanId OR
-    // challengeId
     type: mongoose.Schema.ObjectId,
     ref: "Challenge",
   },
+
   date: {
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   },
+
   status: {
     type: String,
     enum: ["not yet started", "ongoing", "done"],
     default: "ongoing",
   },
+
+  // ==========================
+  // 🎥 VIDEO (ALWAYS OPTIONAL)
+  // ==========================
   videoUrl: {
     type: String,
-    required: function () {
-      // required ONLY if this is a challenge workout log
-      return !!this.challengeId && this.status === "done";
-    },
+    required: false,
     validate: {
       validator: function (v) {
-        // If challengeId exists, videoUrl must be a non-empty string
-        if (this.challengeId) {
-          return typeof v === "string" && v.trim().length > 0;
-        }
-        return true;
+        if (!v) return true;
+        return typeof v === "string" && v.trim().length > 0;
       },
-      message: "videoUrl is required for challenge workouts",
+      message: "videoUrl must be a valid string if provided",
     },
   },
+
+  // ==========================
+  // 🧑‍⚖️ JUDGING FIELDS (OPTIONAL)
+  // ==========================
   judgeStatus: {
     type: String,
     enum: ["pending", "approved", "rejected"],
-    default: 'pending',
-    required: function () {
-      return this.requiresJudgeReview();
-    },
+    default: "pending",
   },
+
   judgeNotes: {
     type: String,
-    required: function () {
-      return this.requiresJudgeReview();
-    },
+    trim: true,
   },
+
   verifiedBy: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
-    required: function () {
-      return this.requiresJudgeReview();
-    },
   },
+
   strengthScore: {
     type: Number,
     default: 0,
-    required: function () {
-      return this.requiresJudgeReview();
-    },
   },
+
+  // ==========================
+  // 🏋️ EXERCISES
+  // ==========================
   exercises: [
     {
       name: {
@@ -90,30 +90,27 @@ const workoutLogSchema = new mongoose.Schema({
           setNumber: {
             type: Number,
             required: true,
-            min: [1, "Set Number must be 1 to 6"],
-            max: [6, "Set Number must be 1 to 6"],
+            min: 1,
+            max: 6,
           },
+
           type: {
             type: String,
             enum: ["warmup", "working"],
-            validate: {
-              validator: function (v) {
-                // only require type for NEW structured workouts
-                return v !== undefined;
-              },
-              message: "A set must have a type (warmup or working)",
-            },
+            required: true,
           },
+
           weight: {
             type: Number,
             required: true,
           },
+
           unit: {
             type: String,
             enum: ["LB", "KG"],
             default: "LB",
-            required: true,
           },
+
           reps: {
             type: Number,
             required: true,
@@ -124,30 +121,21 @@ const workoutLogSchema = new mongoose.Schema({
               },
               {
                 validator: function (v) {
-                  // allow 0 ONLY before workout starts
                   if (v === 0) return true;
 
-                  if (this.type === "warmup") {
-                    return v === 4;
-                  }
-
-                  if (this.type === "working") {
-                    return v >= 8 && v <= 12;
-                  }
+                  if (this.type === "warmup") return v === 4;
+                  if (this.type === "working") return v >= 8 && v <= 12;
 
                   return true;
                 },
-                message: "Invalid number of reps for this set type",
+                message: "Working sets must be 8-12 reps",
               },
             ],
           },
+
           restSeconds: {
             type: Number,
-            validate: {
-              validator: (v) => v !== undefined,
-              message:
-                "A set must have a restSeconds (rest duration in seconds)",
-            },
+            required: true,
           },
         },
       ],
@@ -155,31 +143,38 @@ const workoutLogSchema = new mongoose.Schema({
   ],
 });
 
-// Ensure each exercise has unique set numbers
+// ==========================
+// 🔒 VALIDATIONS
+// ==========================
+
+// Ensure unique set numbers per exercise
 workoutLogSchema.path("exercises").validate(function (exercises) {
   return exercises.every((ex) => {
     const setNumbers = ex.set.map((s) => s.setNumber);
     return setNumbers.length === new Set(setNumbers).size;
   });
-}, "Duplicate setNumber found. Each setNumber must be unique per exercise.");
+}, "Duplicate setNumber found per exercise");
 
+// Ensure either solo OR challenge
 workoutLogSchema.pre("validate", function (next) {
-  if (this.workoutPlanId && this.challengeId)
+  if (this.workoutPlanId && this.challengeId) {
     return next(
-      new AppError("WorkoutLog cannot have both workoutPlanId and challengeId")
+      new AppError("WorkoutLog cannot have both workoutPlanId and challengeId"),
     );
+  }
 
-  if (!this.workoutPlanId && !this.challengeId)
+  if (!this.workoutPlanId && !this.challengeId) {
     return next(
-      new AppError("WorkoutLog must have either workoutPlanId or challengeId")
+      new AppError("WorkoutLog must have either workoutPlanId or challengeId"),
     );
+  }
 
   next();
 });
 
+// Remove challenge-only fields for solo workouts
 workoutLogSchema.pre("validate", function (next) {
-  if (this.isSolo()) {
-    // Remove challenge-only fields
+  if (this.workoutPlanId && !this.challengeId) {
     this.challengeId = undefined;
     this.videoUrl = undefined;
     this.judgeStatus = undefined;
@@ -187,10 +182,12 @@ workoutLogSchema.pre("validate", function (next) {
     this.verifiedBy = undefined;
     this.strengthScore = undefined;
   }
-
   next();
 });
 
+// ==========================
+// 🧠 INSTANCE METHODS
+// ==========================
 workoutLogSchema.methods.isSolo = function () {
   return !!this.workoutPlanId && !this.challengeId;
 };
@@ -199,18 +196,7 @@ workoutLogSchema.methods.isChallenge = function () {
   return !!this.challengeId;
 };
 
-workoutLogSchema.methods.requiresJudgeReview = function () {
-  return this.isChallenge() && this.status === "done" && !this.videoUrl;
-};
-
-/*
-NOTES:
-What !! does
-
-First ! → converts to boolean and negates
-
-Second ! → negates again
-
-*/
+// ==========================
 const WorkoutLog = mongoose.model("WorkoutLog", workoutLogSchema);
 module.exports = WorkoutLog;
+// Write to Richard M. Sahagun

@@ -122,7 +122,7 @@
 }
 
 /* DELETE BUTTON */
-.delete-btn {
+.delete-user-btn {
   background: #f44336;
   color: white;
   border: none;
@@ -133,7 +133,7 @@
   transition: 0.2s;
 }
 
-.delete-btn:hover {
+.delete-user-btn:hover {
   background: #b71c1c;
 }
 

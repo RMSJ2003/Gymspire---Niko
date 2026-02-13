@@ -180,9 +180,9 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
     return next(new AppError("User not found", 404));
   }
 
-  if (user.userType === "admin") {
-    return next(new AppError("Admin accounts cannot be deleted", 403));
-  }
+  // if (user.userType === "admin") {
+  //   return next(new AppError("Admin accounts cannot be deleted", 403));
+  // }
 
   user.emailVerified = false;
   user.active = false;

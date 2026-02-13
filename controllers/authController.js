@@ -175,6 +175,7 @@ exports.createCoach = catchAsync(async (req, res, next) => {
     passwordConfirm,
     pfpUrl,
     userType: "coach",
+    emailVerified: true,
   });
 
   res.status(201).json({
@@ -238,7 +239,8 @@ exports.createAdmin = catchAsync(async (req, res, next) => {
     password,
     passwordConfirm,
     pfpUrl,
-    userType: "coach",
+    userType: "admin",
+    emailVerified: true,
   });
 
   res.status(201).json({
