@@ -1,0 +1,98 @@
+.quote {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+
+  top: 0;
+
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  place-items: center;
+  row-gap: 4rem;
+
+  z-index: 1001;
+
+  background-color: rgba(0, 0, 0, 0.6);
+
+  backdrop-filter: blur(0.4rem);
+
+  animation: hideQuote 0.3s ease forwards 4s;
+}
+
+.quote__message,
+.quote__author {
+  /* text-align:; */
+  color: white;
+  font-style: italic;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+
+  transform: translateY(100vh);
+
+  /* transform: translateY(0); */
+
+  animation: slideInQuote 4s ease forwards;
+}
+
+.quote__message {
+  align-self: end;
+  max-width: 40rem;
+}
+
+.quote__author {
+  align-self: start;
+}
+
+@keyframes slideInQuote {
+  0% {
+  }
+
+  15% {
+    transform: translateY(-10vh);
+  }
+
+  30% {
+    transform: translateY(0);
+  }
+
+  70% {
+    transform: translateY(0);
+  }
+
+  90% {
+    transform: translateY(-10vh);
+  }
+
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+@keyframes hideQuote {
+  from {
+  }
+  to {
+    z-index: -1000;
+    background-color: none;
+
+    backdrop-filter: none;
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+
+@media (max-width: 1010px) {
+  .quote__message,
+  .quote__author {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 540px) {
+  .quote__message,
+  .quote__author {
+    font-size: 1rem;
+    max-width: 25rem;
+  }
+}

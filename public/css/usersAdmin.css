@@ -169,3 +169,9 @@
     right: 1rem;
   }
 }
+
+@media (max-width: 768px) {
+  .table-wrapper {
+    transform: scale(0.8);
+  }
+}
