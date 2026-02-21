@@ -116,10 +116,10 @@ form.addEventListener("submit", async (e) => {
       formMessage.style.color = "green";
       setTimeout(() => (window.location.href = "/workoutPlan"), 600);
     } else {
-      throw new Error("Failed");
+      formMessage.textContent = data.message;
     }
-  } catch {
-    formMessage.textContent = "Something went wrong.";
+  } catch (err) {
+    formMessage.textContent = err.message;
     formMessage.style.color = "red";
   }
 });

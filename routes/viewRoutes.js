@@ -116,7 +116,7 @@ router.get("/editProfile", authController.protect, viewController.editProfile);
 router.get(
   "/createWorkoutPlan",
   authController.protect,
-  requireWorkoutPlan,
+  // requireWorkoutPlan,
   exerciseController.acquireAllExericses,
   viewController.createWorkoutPlan,
 );

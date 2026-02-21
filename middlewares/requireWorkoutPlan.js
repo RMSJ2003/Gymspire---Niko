@@ -3,11 +3,11 @@ const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
 module.exports = catchAsync(async (req, res, next) => {
-const workoutPlan = await WorkoutPlan.findOne({
+  const workoutPlan = await WorkoutPlan.findOne({
     userId: req.user._id,
   }).populate("exerciseDetails");
 
-
+  console.log("hello");
   if (!workoutPlan)
     return next(
       new AppError(

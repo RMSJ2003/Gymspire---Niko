@@ -8,7 +8,8 @@ exports.deleteAllExercises = handlerFactory.deleteAll(Exercise);
 
 // Without json
 exports.acquireAllExericses = catchAsync(async (req, res, next) => {
-  const exercises = await Exercise.find();
+  const exercises = await Exercise.find({ gifURL: { $exists: true, $ne: "" } });
+
   req.exercises = exercises;
 
   next();
