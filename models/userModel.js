@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema({
   },
   userType: {
     type: String,
-    enum: ["user", "coach", "admin"],
+    enum: ["user", "coach", "admin", "clinic"],
     default: "user",
   },
   username: {
@@ -82,6 +82,12 @@ const userSchema = new mongoose.Schema({
   approvedByClinic: {
     type: Boolean,
     default: false,
+    required: [
+      function () {
+        return this.userType === "user";
+      },
+      "User accounts must be approved by a clinic before activation",
+    ],
   },
 });
 

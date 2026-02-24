@@ -1,0 +1,55 @@
+extends ../base
+
+block styles
+  link(rel="stylesheet" href="/css/usersAdmin.css")
+
+block content
+
+  // 🔹 Back Button (upper right of the screen)
+  a.back-btn(href='/adminDashboard')  Back
+
+  .admin-container
+
+    .admin-header
+      h1.page-title #{title}
+      .admin-actions
+        a.admin-btn(href='/createAdmin') + Create Admin
+        a.admin-btn(href='/createCoach') + Create Coach
+
+    .admin-profile
+      h2 Welcome, #{user.username}
+      if user.pfpUrl
+        img.profile-big(src=user.pfpUrl alt="Profile Picture")
+      else
+        img.profile-big(src="/img/default-user.png" alt="Default Profile")
+
+    if users.length === 0
+      p.no-users No users found.
+    else
+      .table-wrapper
+        table.user-table
+          thead
+            tr
+              th Profile
+              th Username
+              th Email
+              th Role
+              th Action
+          tbody
+            each u in users
+              tr
+                td
+                  if u.pfpUrl
+                    img.profile-small(src=u.pfpUrl)
+                  else
+                    img.profile-small(src="/img/default-user.png")
+
+                td #{u.username}
+                td #{u.email}
+                td.role #{u.userType}
+
+                td
+                  button.delete-user-btn(data-user-id=u._id) Delete
+
+block scripts
+  script(src="/js/users.js")
