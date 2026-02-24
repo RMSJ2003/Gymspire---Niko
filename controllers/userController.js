@@ -186,6 +186,7 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 
   user.emailVerified = false;
   user.active = false;
+  user.approvedByClinic = "pending";
   await user.save({ validateBeforeSave: false });
 
   res.status(200).json({

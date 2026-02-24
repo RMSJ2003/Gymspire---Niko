@@ -44,6 +44,7 @@ const createSendToken = (user, statusCode, res) => {
 
   if (user.userType === "admin") redirectTo = "/adminDashboard";
   if (user.userType === "coach") redirectTo = "/coachDashboard";
+  if (user.userType === "clinic") redirectTo = "/clinicDashboard";
 
   res.status(statusCode).json({
     status: "success",
@@ -193,6 +194,71 @@ exports.createCoach = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.createClinic = catchAsync(async (req, res, next) => {
+  const { email, username, password, passwordConfirm } = req.body;
+
+  if (!password) {
+    return next(new AppError("Password is required", 400));
+  }
+
+  if (!isStrongPassword(password)) {
+    return next(
+      new AppError(
+        "Password must be at least 8 characters long and contain at least one letter and one number.",
+        400,
+      ),
+    );
+  }
+
+  const existingUser = await User.findOne({ email }).select("+active");
+  if (existingUser) {
+    return next(new AppError("Email already in use", 400));
+  }
+
+  // 🔥 HANDLE IMAGE
+  let pfpUrl;
+  if (req.file) {
+    const ext = req.file.mimetype.split("/")[1];
+    const filename = `clinic-${Date.now()}.${ext}`;
+
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "public",
+      "img",
+      "users",
+      filename,
+    );
+
+    fs.writeFileSync(filePath, req.file.buffer);
+    pfpUrl = `/img/users/${filename}`;
+  }
+
+  const newUser = await User.create({
+    email,
+    username,
+    password,
+    passwordConfirm,
+    pfpUrl,
+    userType: "clinic",
+    emailVerified: true,
+  });
+
+  res.status(201).json({
+    status: "success",
+    message: "Cinic account created successfully",
+    data: {
+      user: {
+        id: newUser._id,
+        email: newUser.email,
+        username: newUser.username,
+        userType: newUser.userType,
+        pfpUrl: newUser.pfpUrl,
+      },
+    },
+  });
+});
+
 exports.createAdmin = catchAsync(async (req, res, next) => {
   const { email, username, password, passwordConfirm } = req.body;
 
@@ -267,13 +333,14 @@ exports.login = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({ email })
     .setOptions({ includeInactive: true })
-    .select("+password +emailVerified +active");
+    .select("+password +emailVerified +active +approvedByClinic +userType");
 
   // ❗ Check user + password FIRST
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError("Incorrect email or password", 401));
   }
 
+  // Email + deactivation logic
   if (!user.emailVerified && !user.active) {
     return next(
       new AppError(
@@ -287,7 +354,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError("Please verify your email to get access.", 401));
   }
 
-  // 🚨 Deactivated → send special response (NOT error)
+  // 🚨 Deactivated → special response
   if (user.active === false) {
     return res.status(200).json({
       status: "deactivated",
@@ -296,9 +363,27 @@ exports.login = catchAsync(async (req, res, next) => {
     });
   }
 
+  // 🚫 NEW: Clinic approval guard
+  if (user.userType === "user") {
+    if (user.approvedByClinic === "pending") {
+      return res.status(403).json({
+        status: "pending",
+        message: "Your account is waiting for clinic approval.",
+      });
+    }
+
+    if (user.approvedByClinic === "declined") {
+      return res.status(403).json({
+        status: "declined",
+        message: "Your account is declined by clinic.",
+      });
+    }
+  }
+
   // ✅ Normal login
   createSendToken(user, 200, res);
 });
+
 exports.logout = catchAsync(async (req, res, next) => {
   // res.cookie("jwt", "loggedout", {
   //   expires: new Date(Date.now() + 10 * 1000), // Overwrites the JWT cookie that it expires
@@ -492,7 +577,9 @@ exports.reactivateAccount = catchAsync(async (req, res, next) => {
   user.active = true;
   await user.save({ validateBeforeSave: false });
 
-  createSendToken(user, 200, res); // auto login after reactivation
+  res.redirect("/login");
+
+  // createSendToken(user, 200, res); // auto login after reactivation
 });
 
 exports.verifyIacademyEmail = catchAsync(async (req, res, next) => {
@@ -600,63 +687,6 @@ exports.verifyIacademyEmail = catchAsync(async (req, res, next) => {
     message: "Email verified successfully",
   });
 });
-/*
-exports.requestEmailVerificationReactivation = catchAsync(
-  async (req, res, next) => {
-    const { email } = req.body;
-
-    // 1) Check if user exists
-    const user = await User.findOne({ email })
-      .setOptions({ includeInactive: true })
-      .select("+active");
-
-    if (!user) {
-      return next(new AppError("No user found with that email", 404));
-    }
-
-    // 2) Check if email is already verified
-    if (user.emailVerified) {
-      return next(new AppError("Email is already verified", 400));
-    }
-
-    // 3) Check if a valid (non-expired) verification link already exists
-    if (
-      user.emailVerificationReactivationToken &&
-      user.emailVerificationReactivationExpires &&
-      user.emailVerificationReactivationExpires > Date.now()
-    ) {
-      return next(
-        new AppError(
-          "Verification email already sent. Please check your inbox.",
-          429,
-        ),
-      );
-    }
-
-    // 4) Create new verification token (old one is expired or missing)
-    const verificationToken = user.createEmailVerificationReactivationToken();
-
-    await user.save({ validateBeforeSave: false });
-
-    // 5) Send verification email
-    const verificationURL = `${req.protocol}://${req.get(
-      "host",
-    )}/api/v1/auth/verify-email/${verificationToken}`;
-
-    await sendEmail({
-      to: user.email,
-      subject: "Reactivate your account",
-      message: `Click to reactivate your account: ${verificationURL}`,
-    });
-
-    // 6) Response
-    res.status(200).json({
-      status: "success",
-      message: "Verification email sent",
-    });
-  },
-);
-*/
 
 // With this, pug files can now do something like this:
 // if user
@@ -682,6 +712,8 @@ exports.redirectIfLoggedIn = catchAsync(async (req, res, next) => {
     if (res.locals.user.userType === "admin") redirectTo = "/adminDashboard";
     else if (res.locals.user.userType === "coach")
       redirectTo = "/coachDashboard";
+    else if (res.locals.user.userType === "clinic")
+      redirectTo = "/clinicDashboard";
 
     return res.redirect(redirectTo);
   }

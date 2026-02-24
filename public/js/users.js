@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // for admin
   const buttons = document.querySelectorAll(".delete-user-btn");
 
   buttons.forEach((btn) => {
@@ -31,5 +32,31 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Network error.");
       }
     });
+  });
+
+  // for clinic:
+  document.addEventListener("click", async (e) => {
+    const approveBtn = e.target.closest(".approve-user-btn");
+    const declineBtn = e.target.closest(".decline-user-btn");
+
+    if (approveBtn) {
+      const id = approveBtn.dataset.userId;
+
+      await fetch(`/api/v1/clinic/approve/${id}`, {
+        method: "PATCH",
+      });
+
+      location.reload();
+    }
+
+    if (declineBtn) {
+      const id = declineBtn.dataset.userId;
+
+      await fetch(`/api/v1/clinic/decline/${id}`, {
+        method: "PATCH",
+      });
+
+      location.reload();
+    }
   });
 });

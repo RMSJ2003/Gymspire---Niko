@@ -1,0 +1,54 @@
+extends ../base
+
+block styles
+  //-Change to createClinic.css
+  link(rel="stylesheet" href="/css/createCoach.css") 
+
+block content
+  // =========================
+  // BACK BUTTON
+  // =========================
+  .back-btn-container
+    a.back-btn(href="javascript:history.back()") Back
+
+  // =========================
+  // PAGE TITLE & USER INFO
+  // =========================
+  h1 #{title}
+  h2 #{user.username}
+
+  if user.pfpUrl
+    img.profile-pic(src=user.pfpUrl alt="Profile Picture")
+  else
+    img.profile-pic(src="/img/default-user.png" alt="Default Profile")
+
+  // =========================
+  // CREATE CLINIC FORM
+  // =========================
+  form(id='createClinicForm' novalidate) 
+    // 🔥 Global message area
+    p.form-message#formMessage
+
+    label(for='email') Email
+    input(type='email' name='email' id='email' required)
+    small.form-error#emailError
+
+    label(for='username') Username
+    input(type='text' name='username' id='username' required)
+
+    label(for='pfp') Profile Picture URL
+    input(type="file" name="pfp" id="pfp" accept="image/*")
+
+    label(for='password') Password
+    input(type='password' name='password' id='password' required)
+    small.form-error#passwordError
+
+    label(for='passwordConfirm') Confirm Password
+    input(type='password' name='passwordConfirm' id='passwordConfirm' required)
+    small.form-error#passwordConfirmError
+
+    button(type='submit' id='submitBtn')
+      span.btn-text Create Clinic
+
+block scripts
+  script(src='/js/createClinic.js')

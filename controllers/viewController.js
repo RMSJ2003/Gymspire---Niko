@@ -41,6 +41,16 @@ exports.coachDashboard = catchAsync(async (req, res, next) => {
     hideNavbar: false,
   });
 });
+
+exports.clinicDashboard = catchAsync(async (req, res, next) => {
+  res.status(200).render("clinic/clinicDashboard", {
+    title: "Clinic Dashboard",
+    frequencies: req.myTargetWeeklyFrequency,
+    workoutCount: req.weeklyWorkoutCount,
+    hideNavbar: false,
+  });
+});
+
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   res.status(200).render("auth/forgotPassword", {
     title: "Forgot Password",
@@ -199,11 +209,13 @@ exports.createChallenge = catchAsync(async (req, res, next) => {
 });
 
 exports.users = catchAsync(async (req, res, next) => {
-  res.status(200).render("admin/users", {
-    title: "User Management",
-    users: req.users,
-    currentUser: req.user,
-  });
+  res
+    .status(200)
+    .render(req.user.userType === "admin" ? "admin/users" : "clinic/users", {
+      title: "User Management",
+      users: req.users,
+      currentUser: req.user,
+    });
 });
 
 exports.createAdmin = catchAsync(async (req, res, next) => {
@@ -216,6 +228,13 @@ exports.createAdmin = catchAsync(async (req, res, next) => {
 exports.createCoach = catchAsync(async (req, res, next) => {
   res.status(200).render("admin/createCoach", {
     title: "Create Coach",
+    currentUser: req.user,
+  });
+});
+
+exports.createClinic = catchAsync(async (req, res, next) => {
+  res.status(200).render("admin/createClinic", {
+    title: "Create Clinic",
     currentUser: req.user,
   });
 });

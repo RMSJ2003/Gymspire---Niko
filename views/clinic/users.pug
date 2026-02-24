@@ -6,17 +6,14 @@ block styles
 block content
 
   // 🔹 Back Button (upper right of the screen)
-  a.back-btn(href='/adminDashboard')  Back
+  a.back-btn(href='/clinicDashboard')  Back
 
-  .admin-container
+  .clinc-container
 
-    .admin-header
+    .clinc-header
       h1.page-title #{title}
-      .admin-actions
-        a.admin-btn(href='/createAdmin') + Create Admin
-        a.admin-btn(href='/createCoach') + Create Coach
 
-    .admin-profile
+    .clinc-profile
       h2 Welcome, #{user.username}
       if user.pfpUrl
         img.profile-big(src=user.pfpUrl alt="Profile Picture")
@@ -33,23 +30,38 @@ block content
               th Profile
               th Username
               th Email
-              th Role
+              th Status
               th Action
           tbody
             each u in users
-              tr
-                td
-                  if u.pfpUrl
-                    img.profile-small(src=u.pfpUrl)
-                  else
-                    img.profile-small(src="/img/default-user.png")
+              if u.userType === 'user'
+                tr
+                  td
+                    if u.pfpUrl
+                      img.profile-small(src=u.pfpUrl)
+                    else
+                      img.profile-small(src="/img/default-user.png")
 
-                td #{u.username}
-                td #{u.email}
-                td.role #{u.userType}
+                  td #{u.username}
+                  td #{u.email}
+                  td
+                    if u.approvedByClinic === 'pending'
+                      span.status.pending Pending
+                    else if u.approvedByClinic === 'approved'
+                      span.status.approved Approved
+                    else
+                      span.status.declined Declined
 
-                td
-                  button.delete-user-btn(data-user-id=u._id) Delete
+                  td
+                    if u.approvedByClinic === 'pending'
+                      button.approve-user-btn(data-user-id=u._id) Approve
+                      button.decline-user-btn(data-user-id=u._id) Decline
+
+                    else if u.approvedByClinic === 'declined'
+                      button.approve-user-btn(data-user-id=u._id) Approve 
+
+                    else if u.approvedByClinic === 'approved'
+                      button.decline-user-btn(data-user-id=u._id) Decline 
 
 block scripts
   script(src="/js/users.js")

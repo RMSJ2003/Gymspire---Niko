@@ -108,6 +108,19 @@ document.addEventListener("DOMContentLoaded", () => {
         `,
       },
     ];
+  } else if (type === "clinic") {
+    infoData = [
+      {
+        text: `
+          <h2> Users </h2>
+          <ul style="text-align:left; margin-top:10px; line-height:1.6;">
+            <li><strong> View users:</strong> See all registered users in the system.</li>
+            <li><strong> Manage users:</strong> Edit, delete, or assign roles to users as needed.</li>
+            <li><strong> Track activity:</strong> Monitor user engagement and workout activity.</li>
+          </ul>
+        `,
+      },
+    ];
   }
 
   // 🔹 Open modal when info button is clicked

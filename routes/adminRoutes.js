@@ -20,7 +20,15 @@ router
     userController.uploadUserPhoto,
     authController.createCoach,
   );
- 
+
+router
+  .route("/createClinic")
+  .post(
+    authController.restrictTo("admin"),
+    userController.uploadUserPhoto,
+    authController.createClinic,
+  );
+
 router
   .route("/createAdmin")
   .post(
@@ -28,6 +36,5 @@ router
     userController.uploadUserPhoto,
     authController.createAdmin,
   );
-
 
 module.exports = router;

@@ -10,8 +10,7 @@ block content
   // =========================
   nav.navbar
     .nav-logo
-      if user.userType === "admin"
-        a.dashboard-btn(href='/adminDashboard') GymSpire
+      a.dashboard-btn(href='/clinicDashboard') GymSpire
 
     // Centered time
     .nav-center
@@ -79,8 +78,8 @@ block content
   // =========================
   // DASHBOARD CARDS
   // =========================
-  .dashboard(data-type="admin")
-    - const cards = ['Users','Exercises Management'];
+  .dashboard(data-type="clinic")
+    - const cards = ['Users',];
     each item, index in cards
       .card
         h3 #{item}

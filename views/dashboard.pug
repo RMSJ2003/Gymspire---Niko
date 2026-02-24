@@ -19,6 +19,8 @@ block content
         a.dashboard-btn(href='/coachDashboard') GymSpire
       if user.userType === "admin"
         a.dashboard-btn(href='/adminDashboard') GymSpire
+      if user.userType === "clinic"
+        a.dashboard-btn(href='/clinicDashboard') GymSpire
 
     // Centered time
     .nav-center

@@ -68,6 +68,14 @@ router.get(
   viewController.coachDashboard,
 );
 
+router.get(
+  "/clinicDashboard",
+  authController.protect,
+  authController.restrictTo("clinic"),
+  adminController.getGymspireNowStatus,
+  viewController.clinicDashboard,
+);
+
 router.get("/profile", authController.protect, viewController.profile);
 
 router.get(
@@ -154,7 +162,7 @@ router.get(
 router.get(
   "/users",
   authController.protect,
-  authController.restrictTo("admin"),
+  authController.restrictTo("admin", "clinic"),
   userController.acquireAllUsers,
   viewController.users,
 );
@@ -171,6 +179,13 @@ router.get(
   authController.protect,
   authController.restrictTo("admin"),
   viewController.createCoach,
+);
+
+router.get(
+  "/createClinic",
+  authController.protect,
+  authController.restrictTo("admin"),
+  viewController.createClinic,
 );
 
 router.get(

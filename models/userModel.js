@@ -80,8 +80,9 @@ const userSchema = new mongoose.Schema({
     select: false, // We set select to false cuz we don't want users to see active field
   },
   approvedByClinic: {
-    type: Boolean,
-    default: false,
+    type: String,
+    enum: ["approved", "pending", "declined"],
+    default: "pending",
     required: [
       function () {
         return this.userType === "user";
