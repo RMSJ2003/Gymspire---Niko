@@ -79,6 +79,10 @@ const userSchema = new mongoose.Schema({
     default: true, //ofc when user is created, active is set to true
     select: false, // We set select to false cuz we don't want users to see active field
   },
+  approvedByClinic: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // START OF COMMENT FOR IMPORTING DEV DATA
