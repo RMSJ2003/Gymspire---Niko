@@ -135,6 +135,7 @@ const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#password");
 const passwordConfirmInput = document.querySelector("#passwordConfirm");
 const pfpInput = document.querySelector("#pfp");
+const agreeWaiverInput = document.querySelector("#agreeWaiver"); // 🔥 NEW
 
 const formMessage = document.querySelector("#formMessage") || {
   textContent: "",
@@ -173,22 +174,34 @@ function validatePasswords() {
 }
 
 // ===============================
+// Waiver validation
+// ===============================
+function validateWaiver() {
+  if (!agreeWaiverInput.checked) {
+    agreeWaiverInput.setCustomValidity("You must agree to the waiver.");
+  } else {
+    agreeWaiverInput.setCustomValidity("");
+  }
+}
+
+// ===============================
 // Live validation
 // ===============================
 emailInput.addEventListener("input", validateEmail);
 passwordInput.addEventListener("input", validatePasswords);
 passwordConfirmInput.addEventListener("input", validatePasswords);
+agreeWaiverInput.addEventListener("change", validateWaiver); // 🔥 NEW
 
 // ===============================
-// Submit behavior (WITH IMAGE UPLOAD 🔥)
+// Submit behavior (WITH IMAGE UPLOAD + WAIVER 🔥)
 // ===============================
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   validateEmail();
   validatePasswords();
+  validateWaiver(); // 🔥 NEW
 
-  // reset errors
   formMessage.textContent = "";
 
   if (!form.checkValidity()) {
@@ -202,12 +215,14 @@ form.addEventListener("submit", async (e) => {
   let success = false;
 
   try {
-    // 🔥 BUILD FORMDATA (TEXT + FILE)
     const formData = new FormData();
     formData.append("email", emailInput.value);
     formData.append("username", document.querySelector("#username").value);
     formData.append("password", passwordInput.value);
     formData.append("passwordConfirm", passwordConfirmInput.value);
+
+    // 🔥 Add waiver agreement
+    formData.append("agreeWaiver", agreeWaiverInput.checked);
 
     // 🔥 Add profile photo if selected
     if (pfpInput.files[0]) {
@@ -216,7 +231,7 @@ form.addEventListener("submit", async (e) => {
 
     const res = await fetch("/api/v1/auth/signup", {
       method: "POST",
-      body: formData, // 🔥 NO HEADERS — browser sets multipart
+      body: formData,
     });
 
     const data = await res.json();
@@ -227,22 +242,16 @@ form.addEventListener("submit", async (e) => {
 
     success = true;
 
-    // 🔥 SHOW VERIFICATION MESSAGE
     formMessage.classList.add("signup__message--active");
     formMessage.textContent =
       "Account created! A verification email has been sent to your iACADEMY email. Please verify before logging in.";
+
     submitBtn.textContent = "Verification sent";
     submitBtn.disabled = true;
   } catch (err) {
     formMessage.classList.add("signup__message--active");
-    const message = err.message || "Signup failed";
-
-    // 🔥 FIELD ERRORS FIRST
-
-    // 🔥 GLOBAL FORM ERROR
-    formMessage.textContent = message;
+    formMessage.textContent = err.message || "Signup failed";
   } finally {
-    // 🔥 ONLY RESET IF FAILED
     if (!success) {
       submitBtn.disabled = false;
       btnText.textContent = "Create Account";

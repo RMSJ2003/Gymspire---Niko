@@ -28,8 +28,20 @@ block content
     input(type='password' name='passwordConfirm' id='passwordConfirm' required)
     small.form-error#passwordConfirmError
 
-    a(href="") Please fill up the form for 
 
+    a(href="") Please fill up the form for clinic to approve your account.
+
+
+    .div.waiver-section
+      p
+        a(href="/waivers/gymspire-waiver.pdf" target="_blank")
+          | View Waiver (PDF)
+
+      label(for="agreeWaiver")
+        input(type="checkbox" id="agreeWaiver" name="agreeWaiver" required)
+        |  I have read and agree to the waiver.
+
+      small.form-error#waiverError
     button(type='submit' id='submitBtn')
       span.btn-text Create Account
 
