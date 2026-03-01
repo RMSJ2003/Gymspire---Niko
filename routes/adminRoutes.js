@@ -22,14 +22,6 @@ router
   );
 
 router
-  .route("/createClinic")
-  .post(
-    authController.restrictTo("admin"),
-    userController.uploadUserPhoto,
-    authController.createClinic,
-  );
-
-router
   .route("/createAdmin")
   .post(
     authController.restrictTo("admin"),

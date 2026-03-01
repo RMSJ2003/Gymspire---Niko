@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema({
   },
   userType: {
     type: String,
-    enum: ["user", "coach", "admin", "clinic"],
+    enum: ["user", "coach", "admin"],
     default: "user",
   },
   username: {
@@ -78,17 +78,6 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true, //ofc when user is created, active is set to true
     select: false, // We set select to false cuz we don't want users to see active field
-  },
-  approvedByClinic: {
-    type: String,
-    enum: ["approved", "pending", "declined"],
-    default: "pending",
-    required: [
-      function () {
-        return this.userType === "user";
-      },
-      "User accounts must be approved by a clinic before activation",
-    ],
   },
 });
 

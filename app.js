@@ -14,7 +14,6 @@ const workoutLogRouter = require("./routes/workoutLogRoutes");
 const exerciseDbApiRouter = require("./routes/exerciseDbApiRoutes");
 const exerciseRouter = require("./routes/exerciseRoutes");
 const adminRouter = require("./routes/adminRoutes");
-const clinicRouter = require("./routes/clinicRoutes.js");
 const viewRouter = require("./routes/viewRoutes");
 const app = express();
 
@@ -40,7 +39,6 @@ app.use("/api/v1/workout-logs", workoutLogRouter);
 app.use("/api/v1/exercise-db-api", exerciseDbApiRouter);
 app.use("/api/v1/exercises", exerciseRouter);
 app.use("/api/v1/admin", adminRouter);
-app.use("/api/v1/clinic", clinicRouter);
 
 // 🔹 VIEW ROUTES LAST
 app.use(authController.isLoggedIn); // To be able to use user details in pug files

@@ -44,7 +44,6 @@ const createSendToken = (user, statusCode, res) => {
 
   if (user.userType === "admin") redirectTo = "/adminDashboard";
   if (user.userType === "coach") redirectTo = "/coachDashboard";
-  if (user.userType === "clinic") redirectTo = "/clinicDashboard";
 
   res.status(statusCode).json({
     status: "success",
@@ -194,71 +193,6 @@ exports.createCoach = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.createClinic = catchAsync(async (req, res, next) => {
-  const { email, username, password, passwordConfirm } = req.body;
-
-  if (!password) {
-    return next(new AppError("Password is required", 400));
-  }
-
-  if (!isStrongPassword(password)) {
-    return next(
-      new AppError(
-        "Password must be at least 8 characters long and contain at least one letter and one number.",
-        400,
-      ),
-    );
-  }
-
-  const existingUser = await User.findOne({ email }).select("+active");
-  if (existingUser) {
-    return next(new AppError("Email already in use", 400));
-  }
-
-  // 🔥 HANDLE IMAGE
-  let pfpUrl;
-  if (req.file) {
-    const ext = req.file.mimetype.split("/")[1];
-    const filename = `clinic-${Date.now()}.${ext}`;
-
-    const filePath = path.join(
-      __dirname,
-      "..",
-      "public",
-      "img",
-      "users",
-      filename,
-    );
-
-    fs.writeFileSync(filePath, req.file.buffer);
-    pfpUrl = `/img/users/${filename}`;
-  }
-
-  const newUser = await User.create({
-    email,
-    username,
-    password,
-    passwordConfirm,
-    pfpUrl,
-    userType: "clinic",
-    emailVerified: true,
-  });
-
-  res.status(201).json({
-    status: "success",
-    message: "Cinic account created successfully",
-    data: {
-      user: {
-        id: newUser._id,
-        email: newUser.email,
-        username: newUser.username,
-        userType: newUser.userType,
-        pfpUrl: newUser.pfpUrl,
-      },
-    },
-  });
-});
-
 exports.createAdmin = catchAsync(async (req, res, next) => {
   const { email, username, password, passwordConfirm } = req.body;
 
@@ -333,7 +267,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({ email })
     .setOptions({ includeInactive: true })
-    .select("+password +emailVerified +active +approvedByClinic +userType");
+    .select("+password +emailVerified +active +userType");
 
   // ❗ Check user + password FIRST
   if (!user || !(await user.correctPassword(password, user.password))) {
@@ -361,23 +295,6 @@ exports.login = catchAsync(async (req, res, next) => {
       message: "Account is deactivated",
       email: user.email,
     });
-  }
-
-  // 🚫 NEW: Clinic approval guard
-  if (user.userType === "user") {
-    if (user.approvedByClinic === "pending") {
-      return res.status(403).json({
-        status: "pending",
-        message: "Your account is waiting for clinic approval.",
-      });
-    }
-
-    if (user.approvedByClinic === "declined") {
-      return res.status(403).json({
-        status: "declined",
-        message: "Your account is declined by clinic.",
-      });
-    }
   }
 
   // ✅ Normal login
@@ -712,9 +629,6 @@ exports.redirectIfLoggedIn = catchAsync(async (req, res, next) => {
     if (res.locals.user.userType === "admin") redirectTo = "/adminDashboard";
     else if (res.locals.user.userType === "coach")
       redirectTo = "/coachDashboard";
-    else if (res.locals.user.userType === "clinic")
-      redirectTo = "/clinicDashboard";
-
     return res.redirect(redirectTo);
   }
   next();
