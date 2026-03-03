@@ -57,9 +57,9 @@ block content
   else
     p Type: Solo Workout
 
-  // 🔹 EXERCISES
   if log.exercises && log.exercises.length
     h3 Exercises Performed
+
     each ex in log.exercises
       .exercise-card
         h4= ex.name
@@ -73,21 +73,21 @@ block content
             thead
               tr
                 th Set #
-                th Type
                 th Weight
                 th Reps
                 th Rest (sec)
-            tbody
+
+            34
+              - let workingIndex = 0;
+
               each s in ex.set
-                tr
-                  td= s.setNumber
-                  td= s.type
-                  if log.status === "done"
-                    td #{s.weight} #{s.unit}
-                    td= s.reps
-                    td= s.restSeconds
-                  else
-                    if s.type === "warmup"
+                if s.type !== "warmup"
+                  - workingIndex++;
+
+                  tr
+                    td= workingIndex
+
+                    if log.status === "done"
                       td #{s.weight} #{s.unit}
                       td= s.reps
                       td= s.restSeconds
@@ -115,25 +115,22 @@ block content
                           class="set-input"
                         )
                       td= s.restSeconds
+    if log.status !== "done"
+      button#saveSetsBtn Save Working Sets
+      p#setMessage
 
-  // 🔹 SAVE BUTTON ONLY WHEN ONGOING
-  if log.status !== "done"
-    button#saveSetsBtn Save Working Sets
-    p#setMessage
-
-  // 🔹 FINISH BUTTON ONLY WHEN ONGOING
-  if log.status !== "done"
-    input(
-      type="file"
-      accept="video/*"
-      class="video-input"
-      data-log-id=log._id
-      style="display:none"
-    )
-    button#finish-btn(
-      data-log-id=log._id
-      data-is-challenge=log.challengeId ? "true" : "false"
-    ) Finish Workout
+    if log.status !== "done"
+      input(
+        type="file"
+        accept="video/*"
+        class="video-input"
+        data-log-id=log._id
+        style="display:none"
+      )
+      button#finish-btn(
+        data-log-id=log._id
+        data-is-challenge=log.challengeId ? "true" : "false"
+      ) Finish Workout
 
 block scripts
   script.
