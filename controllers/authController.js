@@ -509,10 +509,12 @@ exports.verifyIacademyEmail = catchAsync(async (req, res, next) => {
   const user = await User.findOne({
     emailVerificationToken: hashedToken,
     emailVerificationExpires: { $gt: Date.now() },
-  });
+  })
+    .setOptions({ includeInactive: true })
+    .select("+active");
 
   // 2} If token has not expired, and there is a user, set the new password.
-  if (!user) next(new AppError("Token is invalid or has expired", 400));
+  if (!user) return next(new AppError("Token is invalid or has expired", 400));
 
   user.emailVerified = true;
   user.emailVerificationToken = undefined;
