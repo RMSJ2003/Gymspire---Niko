@@ -85,7 +85,28 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       filename,
     );
 
-    fs.writeFileSync(filePath, req.file.buffer);
+    const cloudinary = require("cloudinary").v2;
+
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+
+    if (req.file) {
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "gymspire/users" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          },
+        );
+        stream.end(req.file.buffer);
+      });
+
+      updates.pfpUrl = result.secure_url;
+    }
 
     updates.pfpUrl = `/img/users/${filename}`;
   }
@@ -148,7 +169,28 @@ exports.updateProfilePhoto = catchAsync(async (req, res, next) => {
     filename,
   );
 
-  fs.writeFileSync(filePath, req.file.buffer);
+  const cloudinary = require("cloudinary").v2;
+
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+
+  if (req.file) {
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "gymspire/users" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        },
+      );
+      stream.end(req.file.buffer);
+    });
+
+    updates.pfpUrl = result.secure_url;
+  }
 
   const photoUrl = `/img/users/${filename}`;
 
