@@ -500,22 +500,18 @@ exports.acquireMyWorkoutLogs = catchAsync(async (req, res, next) => {
 });
 
 exports.acquireMyWorkoutLog = catchAsync(async (req, res, next) => {
-  const log = await WorkoutLog.findOne({
-    _id: req.params.id,
-    userId: req.user._id,
-  }).populate("verifiedBy");
+  const workoutLog = await WorkoutLog.findById(req.params.id)
+    .populate("challengeId", "name startTime endTime")
+    .populate("workoutPlanId", "name")
+    .populate("verifiedBy", "username");
 
-  console.log(log);
-
-  if (!log) {
+  if (!workoutLog) {
     return next(new AppError("Workout log not found", 404));
   }
 
-  req.myWorkoutLog = log;
-
+  req.myWorkoutLog = workoutLog;
   next();
 });
-
 exports.acquireSubmissions = catchAsync(async (req, res, next) => {
   const { challengeId } = req.params;
 

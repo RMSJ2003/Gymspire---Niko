@@ -116,7 +116,7 @@ exports.workoutLogs = catchAsync(async (req, res, next) => {
 });
 
 exports.workoutLog = catchAsync(async (req, res, next) => {
-  console.log(req.myWorkoutLog);
+  console.log("Workout Log for workoutLog.pug: ", req.myWorkoutLog);
 
   res.status(200).render("workoutLog", {
     title: "Workout Log",
