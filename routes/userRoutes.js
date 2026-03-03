@@ -7,11 +7,16 @@ const router = express.Router();
 // USED authController.protect -------------------------- START
 // Only logged in user can access these routes:
 
-router.use(authController.protect); 
+router.use(authController.protect);
 
 router.get("/me", userController.getMe, userController.getUser);
-router.patch("/updateMe", userController.uploadUserPhoto, userController.updateMe);
+router.patch(
+  "/updateMe",
+  userController.uploadUserPhoto,
+  userController.updateMe,
+);
 router.delete("/deleteMe", userController.deleteMe);
+router.delete("/permanentDeleteMe", userController.permanentDeleteMe);
 
 router.route("/").get(userController.getAllUsers);
 

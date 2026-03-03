@@ -36,9 +36,15 @@ block content
         a(href='/editProfile') Edit Profile
         form(id="deleteForm")
           p.form-message#formMessage
+
+          button(type="submit" id="deleteBtn") Deactivate Account
+          br
+          br
+
           p.warning-message
             | ⚠️ This action is permanent and cannot be undone.
-          button(type="submit" id="deleteBtn") Delete Account
+
+          button(type="button" id="permanentDeleteBtn") Delete Account
 
 block scripts 
   script(src='/js/profile.js')

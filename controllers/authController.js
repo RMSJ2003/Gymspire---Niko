@@ -67,7 +67,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     if (existingUser.active === false) {
       return next(
         new AppError(
-          "Account is deactivated. To reactivate, please verify the email.",
+          "Unable to create account. Please use a different email address.",
           400,
         ),
       );

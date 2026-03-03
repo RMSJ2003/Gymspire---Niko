@@ -3,6 +3,9 @@ const path = require("path");
 
 const multer = require("multer");
 const User = require("../models/userModel");
+const WorkoutLog = require("../models/workoutLogModel");
+const WorkoutPlan = require("../models/workoutPlanModel");
+const Challenge = require("../models/challengeModel");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const factory = require("./handlerFactory");
@@ -129,6 +132,30 @@ exports.deleteMe = catchAsync(async (req, res) => {
     active: false,
     emailVerified: false,
   });
+
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});
+
+exports.permanentDeleteMe = catchAsync(async (req, res, next) => {
+  const userId = req.user.id;
+
+  // 2️⃣ Remove user from Challenge.participants array
+  await Challenge.updateMany(
+    { participants: userId },
+    { $pull: { participants: userId } },
+  );
+
+  // 3️⃣ Delete workout logs
+  await WorkoutLog.deleteMany({ userId });
+
+  // 4️⃣ Delete workout plans
+  await WorkoutPlan.deleteMany({ userId });
+
+  // 5️⃣ Finally delete user
+  await User.findByIdAndDelete(userId);
 
   res.status(204).json({
     status: "success",
