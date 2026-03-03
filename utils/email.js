@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 
 const sendEmail = async (options) => {
+  console.log('before transport');
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -9,6 +10,7 @@ const sendEmail = async (options) => {
     },
   });
 
+  console.log('before mailoptions');
   const mailOptions = {
     from: "Gymspire <gymspire@gmail.com>",
     to: options.to, // ✅ FIXED
@@ -17,6 +19,7 @@ const sendEmail = async (options) => {
   };
 
   try {
+    console.log('before email send');
     await transporter.sendMail(mailOptions);
     console.log("✅ Email sent to:", options.to);
   } catch (err) {
