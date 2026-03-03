@@ -6,6 +6,7 @@ const sendEmail = async (options) => {
 
     const apiKey = defaultClient.authentications["api-key"];
     apiKey.apiKey = process.env.BREVO_API_KEY;
+    console.log(apiKey);
 
     const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
@@ -14,10 +15,12 @@ const sendEmail = async (options) => {
     sendSmtpEmail.subject = options.subject;
     sendSmtpEmail.textContent = options.message;
     sendSmtpEmail.sender = {
-      name: "Gymspire",
-      email: "gymspire@gmail.com", // must verify this sender
+      name: "GymSpire",
+      email: "gymspireproduction@gmail.com",
     };
     sendSmtpEmail.to = [{ email: options.to }];
+
+    console.log(sendSmtpEmail.sender);
 
     await apiInstance.sendTransacEmail(sendSmtpEmail);
 
