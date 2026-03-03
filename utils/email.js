@@ -1,31 +1,25 @@
-const nodemailer = require("nodemailer");
-
 const sendEmail = async (options) => {
-  console.log('before transport');
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.GMAIL_USERNAME,
-      pass: process.env.GMAIL_PASSWORD, // MUST be an App Password
-    },
-  });
-
-  console.log('before mailoptions');
-  const mailOptions = {
-    from: "Gymspire <gymspire@gmail.com>",
-    to: options.to, // ✅ FIXED
-    subject: options.subject,
-    text: options.message,
-  };
-
   try {
-    console.log('before email send');
-    await transporter.sendMail(mailOptions);
-    console.log("✅ Email sent to:", options.to);
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.GMAIL_USERNAME,
+        pass: process.env.GMAIL_PASSWORD,
+      },
+    });
+
+    await transporter.sendMail({
+      from: "Gymspire <gymspire@gmail.com>",
+      to: options.to,
+      subject: options.subject,
+      text: options.message,
+    });
+
+    console.log("✅ Email sent");
   } catch (err) {
-    console.error("❌ Email failed:", err);
-    throw err;
+    console.error("❌ Email failed but NOT crashing server:", err.message);
+    // ❗ DO NOT THROW
   }
 };
-
-module.exports = sendEmail;
