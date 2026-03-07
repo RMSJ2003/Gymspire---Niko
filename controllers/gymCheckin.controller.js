@@ -93,7 +93,6 @@ exports.autoCheckin = catchAsync(async (req, res, next) => {
       user: req.user.id,
       checkinTime: now,
       source: "workout", // came from starting a workout, not manual tap
-      workoutLog: req.body.workoutLogId || null,
     });
 
     await User.findByIdAndUpdate(req.user.id, {

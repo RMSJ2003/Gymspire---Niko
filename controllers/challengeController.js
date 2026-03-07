@@ -254,6 +254,7 @@ exports.getChallenge = catchAsync(async (req, res, next) => {
   // STEP 1: Extract possible identifiers
   // ================================
   const { joinCode, challengeId } = req.params;
+  console.log("getchallenge");
 
   // ================================
   // STEP 2: Determine query source
@@ -290,6 +291,8 @@ exports.getChallenge = catchAsync(async (req, res, next) => {
 });
 
 exports.getgetChallenge = catchAsync(async (req, res, next) => {
+  console.log("getchallenge");
+
   res.status(200).json({
     status: "success",
     data: { data: req.challenge },
