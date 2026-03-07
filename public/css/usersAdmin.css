@@ -1,177 +1,908 @@
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700;800&display=swap");
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "DM Sans", Arial, sans-serif;
+  background: #f4f4f5;
+  color: #1a1a1a;
+}
+
 /* BACK BUTTON */
 .back-btn {
-  position: fixed; /* fixed to viewport */
-  top: 1.5rem; /* distance from top of screen */
-  right: 1.5rem; /* distance from right edge */
-  display: inline-block;
+  position: fixed;
+  top: 1.2rem;
+  left: 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 0.5rem 1rem;
-  background-color: #d25353;
+  background: #d25353;
   color: white;
   text-decoration: none;
-  border-radius: 0.5rem;
-  font-weight: bold;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
   transition: 0.2s;
-  z-index: 1000; /* always on top */
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(210, 83, 83, 0.35);
+}
+
+.back-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: white;
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
 }
 
 .back-btn:hover {
-  background-color: #9e3b3b;
+  background: #b11226;
+  transform: translateX(-2px);
 }
 
-/* =========================
-   ADMIN CONTAINER
-========================= */
+/* CONTAINER */
 .admin-container {
   max-width: 1200px;
-  margin: 4rem auto 2rem auto; /* leaves space from top */
-  padding: 1rem 2rem;
-  position: relative;
+  margin: 0 auto;
+  padding: 5rem 2rem 3rem;
 }
 
 /* HEADER */
 .admin-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
-.page-title {
+.admin-header__left h1.page-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2.6rem;
   color: #d25353;
-  font-size: 2rem;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.page-subtitle {
+  font-size: 0.88rem;
+  color: #888;
+  margin-top: 4px;
+  font-weight: 500;
 }
 
 .admin-actions {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .admin-btn {
-  background: #d25353;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.55rem 1.1rem;
+  background: linear-gradient(135deg, #d25353, #b11226);
   color: white;
-  padding: 0.6rem 1.2rem;
-  border-radius: 0.6rem;
   text-decoration: none;
-  font-weight: bold;
+  border-radius: 9px;
+  font-weight: 700;
+  font-size: 0.85rem;
   transition: 0.2s;
+  box-shadow: 0 3px 10px rgba(177, 18, 38, 0.25);
+  white-space: nowrap;
+}
+
+.admin-btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: white;
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  flex-shrink: 0;
 }
 
 .admin-btn:hover {
-  background: #9e3b3b;
+  filter: brightness(1.1);
+  transform: translateY(-1px);
 }
 
-/* PROFILE SECTION */
-.admin-profile {
-  text-align: center;
+.admin-btn--outline {
+  background: white;
+  color: #d25353;
+  border: 2px solid #d25353;
+  box-shadow: none;
+}
+
+.admin-btn--outline svg {
+  stroke: #d25353;
+}
+.admin-btn--outline:hover {
+  background: #fff5f5;
+}
+
+/* STAT CARDS */
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
   margin-bottom: 2rem;
 }
 
-.profile-big {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #d25353;
-  margin-top: 0.5rem;
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.1rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid rgba(210, 83, 83, 0.12);
+  border-left: 4px solid #d25353;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(210, 83, 83, 0.12);
+}
+
+.stat-number {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2rem;
+  color: #d25353;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* TABLE */
 .table-wrapper {
+  background: white;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+  border: 1px solid rgba(210, 83, 83, 0.1);
   overflow-x: auto;
 }
 
 .user-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  min-width: 560px;
 }
 
 .user-table thead {
-  background: #d25353;
-  color: white;
+  background: linear-gradient(135deg, #d25353, #b11226);
 }
 
-.user-table th,
-.user-table td {
-  padding: 1rem;
+.user-table th {
+  padding: 1rem 1.2rem;
   text-align: left;
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
 }
 
-.user-table tbody tr:nth-child(even) {
-  background: #f9f9f9;
+.user-table tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.15s;
 }
 
+.user-table tbody tr:last-child {
+  border-bottom: none;
+}
 .user-table tbody tr:hover {
-  background: #ffe5e5;
+  background: #fff8f8;
+}
+
+.user-table td {
+  padding: 0.9rem 1.2rem;
+  vertical-align: middle;
+}
+
+/* Avatar */
+.avatar-wrap {
+  position: relative;
+  width: 44px;
+  height: 44px;
 }
 
 .profile-small {
-  width: 45px;
-  height: 45px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid rgba(210, 83, 83, 0.3);
+  display: block;
 }
 
-/* ROLE BADGE */
-.role {
-  font-weight: bold;
+.status-dot {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.status-dot.online {
+  background: #22c55e;
+}
+.status-dot.offline {
+  background: #ccc;
+}
+
+/* User info */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.user-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+}
+.user-email {
+  font-size: 0.78rem;
+  color: #999;
+  font-weight: 400;
+}
+
+/* Role badge */
+.role-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.role-user {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+}
+.role-coach {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+.role-admin {
+  background: rgba(210, 83, 83, 0.1);
   color: #d25353;
 }
 
-/* DELETE BUTTON */
-.delete-user-btn {
-  background: #f44336;
-  color: white;
+/* Gym status */
+.gym-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.gym-status-badge.at-gym {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+.gym-status-badge.offline {
+  background: #f4f4f5;
+  color: #aaa;
+}
+
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  display: inline-block;
+  animation: pulse 1.6s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.4);
+  }
+}
+
+/* Action buttons */
+.action-btns {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.4rem 0.85rem;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 7px;
+  font-family: "DM Sans", Arial, sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
   cursor: pointer;
-  font-weight: bold;
-  transition: 0.2s;
+  transition: 0.18s;
+  white-space: nowrap;
 }
 
+.action-btn svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.attendance-btn {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+}
+.attendance-btn:hover {
+  background: #2563eb;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+}
+
+.delete-user-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
 .delete-user-btn:hover {
-  background: #b71c1c;
+  background: #dc2626;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.25);
 }
 
-/* NO USERS */
-.no-users {
+/* Empty state */
+.empty-state {
   text-align: center;
-  margin-top: 2rem;
-  font-weight: bold;
+  padding: 4rem 2rem;
+  color: #aaa;
+}
+.empty-state svg {
+  width: 56px;
+  height: 56px;
+  stroke: #ddd;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  margin-bottom: 1rem;
+}
+.empty-state p {
+  font-weight: 600;
+  font-size: 1rem;
 }
 
 /* =========================
-   RESPONSIVE
+   ATTENDANCE DRAWER
 ========================= */
-@media (max-width: 768px) {
-  .admin-header {
-    flex-direction: column;
-    gap: 1rem;
-  }
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+  z-index: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
 
-  .admin-actions {
-    flex-direction: column;
-    width: 100%;
-  }
+.drawer-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
 
-  .admin-btn {
-    width: 100%;
-    text-align: center;
-  }
+.attendance-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 420px;
+  max-width: 100vw;
+  height: 100vh;
+  background: white;
+  z-index: 600;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.15);
+}
 
-  .back-btn {
-    width: auto;
-    top: 1rem;
-    right: 1rem;
+.attendance-drawer.open {
+  transform: translateX(0);
+}
+
+/* Drawer header */
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.4rem;
+  border-bottom: 1px solid #f0f0f0;
+  background: linear-gradient(135deg, #d25353, #b11226);
+  flex-shrink: 0;
+}
+
+.drawer-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#drawerPfp {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+}
+
+.drawer-user-text h3 {
+  font-weight: 800;
+  font-size: 1rem;
+  color: white;
+  line-height: 1.2;
+}
+#drawerSubtitle {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.drawer-close {
+  width: 34px;
+  height: 34px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.18s;
+  flex-shrink: 0;
+}
+
+.drawer-close svg {
+  width: 16px;
+  height: 16px;
+  stroke: white !important;
+  fill: none !important;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: block;
+  pointer-events: none;
+}
+.drawer-close-x {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+  display: block;
+  pointer-events: none;
+  font-family: Arial, sans-serif;
+}
+.drawer-close:hover {
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Drawer stats */
+.drawer-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.d-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0.5rem;
+  border-right: 1px solid #f0f0f0;
+  gap: 2px;
+}
+
+.d-stat:last-child {
+  border-right: none;
+}
+
+.d-stat span:first-child {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.7rem;
+  color: #d25353;
+  line-height: 1;
+}
+
+.d-stat span:last-child {
+  font-size: 0.7rem;
+  color: #aaa;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  text-align: center;
+}
+
+/* Drawer scrollable body */
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.2rem 1.4rem;
+}
+
+/* Loading */
+.drawer-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem 0;
+  color: #aaa;
+  font-size: 0.88rem;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f0f0f0;
+  border-top-color: #d25353;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
+/* Attendance record */
+.attendance-record {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid #f5f5f5;
+  animation: fadeIn 0.22s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.attendance-record:last-child {
+  border-bottom: none;
+}
+
+.record-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.record-icon.manual {
+  background: rgba(34, 197, 94, 0.1);
+}
+.record-icon.workout {
+  background: rgba(210, 83, 83, 0.1);
+}
+
+.record-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.record-date {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #1a1a1a;
+}
+.record-time {
+  font-size: 0.78rem;
+  color: #888;
+  margin-top: 2px;
+}
+
+.record-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+
+.record-source {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.source-manual {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+.source-workout {
+  background: rgba(210, 83, 83, 0.1);
+  color: #d25353;
+}
+
+.record-duration {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 500;
+}
+
+/* No attendance */
+.no-attendance {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #bbb;
+}
+.no-attendance p {
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+/* =========================
+   RESPONSIVE — TABLET
+========================= */
+@media (max-width: 900px) {
+  .admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .user-table th:nth-child(4),
+  .user-table td:nth-child(4) {
+    display: none;
+  }
+}
+
+/* =========================
+   RESPONSIVE — MOBILE
+   Table → Card layout
+========================= */
 @media (max-width: 768px) {
+  /* Layout */
+  .admin-container {
+    padding: 4.5rem 1rem 2rem;
+  }
+
+  /* Back button — icon only */
+  .back-btn span {
+    display: none;
+  }
+  .back-btn {
+    padding: 0.55rem 0.7rem;
+    top: 0.9rem;
+    left: 0.9rem;
+  }
+
+  /* Header stacks */
+  .admin-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  .admin-header__left h1.page-title {
+    font-size: 2rem;
+  }
+
+  .admin-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+  .admin-btn {
+    justify-content: center;
+  }
+
+  /* Stats — 2 col */
+  .admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  .stat-number {
+    font-size: 1.6rem;
+  }
+
+  /* ── TABLE → CARD FLIP ── */
+  /* Hide the table header entirely */
+  .user-table thead {
+    display: none;
+  }
+
+  /* Make each row a card */
+  .user-table,
+  .user-table tbody,
+  .user-table tr {
+    display: block;
+    width: 100%;
+  }
+
   .table-wrapper {
-    transform: scale(0.8);
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    overflow: visible;
+  }
+
+  .user-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .user-table tr {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(210, 83, 83, 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    column-gap: 0.85rem;
+    row-gap: 0.6rem;
+    align-items: center;
+    transition: box-shadow 0.18s;
+  }
+
+  .user-table tr:hover {
+    box-shadow: 0 4px 16px rgba(210, 83, 83, 0.12);
+    background: white;
+  }
+
+  /* Col 1 row 1: avatar */
+  .user-table td:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    display: flex;
+    align-items: center;
+    padding: 0;
+  }
+
+  /* Col 2 row 1: username + email */
+  .user-table td:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 0;
+  }
+
+  /* Col 3 row 1: role badge — top right */
+  .user-table td:nth-child(3) {
+    grid-column: 3;
+    grid-row: 1;
+    padding: 0;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  /* Col 4 (gym status) — hidden on mobile, shown in row 2 via action row */
+  .user-table td:nth-child(4) {
+    display: none;
+  }
+
+  /* Col 5 row 2: action buttons — span full width below */
+  .user-table td:nth-child(5) {
+    grid-column: 2 / 4;
+    grid-row: 2;
+    padding: 0;
+  }
+
+  /* Action buttons full width on mobile */
+  .action-btns {
+    gap: 0.5rem;
+  }
+  .action-btn {
+    flex: 1;
+    justify-content: center;
+    font-size: 0.8rem;
+    padding: 0.45rem 0.5rem;
+  }
+  .action-btn span {
+    display: inline;
+  } /* show labels again since we have space */
+
+  /* Drawer full screen */
+  .attendance-drawer {
+    width: 100vw;
+  }
+  .drawer-stats .d-stat span:first-child {
+    font-size: 1.4rem;
+  }
+}
+
+/* =========================
+   RESPONSIVE — SMALL PHONES
+========================= */
+@media (max-width: 420px) {
+  .admin-actions {
+    grid-template-columns: 1fr;
+  }
+  .admin-btn {
+    width: 100%;
+  }
+
+  .user-name {
+    font-size: 0.85rem;
+  }
+  .user-email {
+    font-size: 0.72rem;
+  }
+
+  .action-btn {
+    font-size: 0.75rem;
+  }
+
+  .drawer-header {
+    padding: 1.1rem;
+  }
+  #drawerPfp {
+    width: 38px;
+    height: 38px;
+  }
+  .drawer-user-text h3 {
+    font-size: 0.9rem;
   }
 }

@@ -1,208 +1,71 @@
-// const form = document.querySelector("#signupForm");
-// const emailInput = document.querySelector("#email");
-// const passwordInput = document.querySelector("#password");
-// const passwordConfirmInput = document.querySelector("#passwordConfirm");
-// const pfpInput = document.querySelector("#pfp");
+// Avatar preview
+document.getElementById("pfp").addEventListener("change", function () {
+  const file = this.files[0];
+  if (!file) return;
 
-// const emailError = document.querySelector("#emailError");
-// const passwordError = document.querySelector("#passwordError");
-// const passwordConfirmError = document.querySelector("#passwordConfirmError");
-// const formMessage = document.querySelector("#formMessage") || { textContent: "" };
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = document.getElementById("avatarImg");
+    img.src = e.target.result;
+    img.classList.add("visible"); // ✅ CSS class, not inline style
+    document.getElementById("avatarPlaceholder").style.display = "none";
+    document.getElementById("avatarPreview").style.border =
+      "2.5px solid #d25353";
+  };
+  reader.readAsDataURL(file);
+});
 
-// const submitBtn = document.querySelector("#submitBtn");
-// const btnText = submitBtn.querySelector(".btn-text");
-
-// const IACADEMY_EMAIL_REGEX =
-//   /^[a-zA-Z0-9._%+-]+@(iacademy\.ph|iacademy\.edu\.ph)$/;
-
-// // ===============================
-// // Email validation (iACADEMY only)
-// // ===============================
-// function validateEmail() {
-//   const email = emailInput.value.trim().toLowerCase();
-
-//   if (!IACADEMY_EMAIL_REGEX.test(email)) {
-//     emailInput.setCustomValidity(
-//       "Only iACADEMY emails (@iacademy.ph or @iacademy.edu.ph) are allowed."
-//     );
-//   } else {
-//     emailInput.setCustomValidity("");
-//   }
-// }
-
-// // ===============================
-// // Password match validation
-// // ===============================
-// function validatePasswords() {
-//   if (passwordInput.value !== passwordConfirmInput.value) {
-//     passwordConfirmInput.setCustomValidity("Passwords do not match");
-//   } else {
-//     passwordConfirmInput.setCustomValidity("");
-//   }
-// }
-
-// // ===============================
-// // Live validation
-// // ===============================
-// emailInput.addEventListener("input", validateEmail);
-// passwordInput.addEventListener("input", validatePasswords);
-// passwordConfirmInput.addEventListener("input", validatePasswords);
-
-// // ===============================
-// // Submit behavior (WITH IMAGE UPLOAD 🔥)
-// // ===============================
-// form.addEventListener("submit", async (e) => {
-//   e.preventDefault();
-
-//   validateEmail();
-//   validatePasswords();
-
-//   // reset errors
-//   emailError.textContent = "";
-//   passwordError.textContent = "";
-//   passwordConfirmError.textContent = "";
-//   formMessage.textContent = "";
-
-//   if (!form.checkValidity()) {
-//     form.reportValidity();
-//     return;
-//   }
-
-//   submitBtn.disabled = true;
-//   btnText.textContent = "Creating account...";
-
-//   let success = false;
-
-//   try {
-//     // 🔥 BUILD FORMDATA (TEXT + FILE)
-//     const formData = new FormData();
-//     formData.append("email", emailInput.value);
-//     formData.append("username", document.querySelector("#username").value);
-//     formData.append("password", passwordInput.value);
-//     formData.append("passwordConfirm", passwordConfirmInput.value);
-
-//     // 🔥 Add profile photo if selected
-//     if (pfpInput.files[0]) {
-//       formData.append("pfp", pfpInput.files[0]);
-//     }
-
-//     const res = await fetch("/api/v1/auth/signup", {
-//       method: "POST",
-//       body: formData,    // 🔥 NO HEADERS — browser sets multipart
-//     });
-
-//     const data = await res.json();
-
-//     if (!res.ok) {
-//       throw new Error(data.message || "Signup failed");
-//     }
-
-//     // 🔥 SUCCESS UI
-//     success = true;
-//     formMessage.textContent = "Account created successfully! Redirecting...";
-//     submitBtn.disabled = true;
-
-//     // 🔥 SHORT DELAY THEN REDIRECT
-//     setTimeout(() => {
-//       window.location.href = data.redirectTo || "/dashboard";
-//     }, 800);
-
-//   } catch (err) {
-//     const message = err.message || "Signup failed";
-
-//     // 🔥 FIELD ERRORS FIRST
-//     if (message.toLowerCase().includes("email")) {
-//       emailError.textContent = message;
-//     } else if (message.toLowerCase().includes("confirm")) {
-//       passwordConfirmError.textContent = message;
-//     } else if (message.toLowerCase().includes("password")) {
-//       passwordError.textContent = message;
-//     } else {
-//       // 🔥 GLOBAL FORM ERROR
-//       formMessage.textContent = message;
-//     }
-//   } finally {
-//     // 🔥 ONLY RESET IF FAILED
-//     if (!success) {
-//       submitBtn.disabled = false;
-//       btnText.textContent = "Create Account";
-//     }
-//   }
-// });
-
+// ===== DOM =====
 const form = document.querySelector("#signupForm");
 const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#password");
 const passwordConfirmInput = document.querySelector("#passwordConfirm");
 const pfpInput = document.querySelector("#pfp");
-const agreeWaiverInput = document.querySelector("#agreeWaiver"); // 🔥 NEW
-
-const formMessage = document.querySelector("#formMessage") || {
-  textContent: "",
-};
-
+const agreeWaiverInput = document.querySelector("#agreeWaiver");
+const formMessage = document.querySelector("#formMessage");
 const submitBtn = document.querySelector("#submitBtn");
 const btnText = submitBtn.querySelector(".btn-text");
 
 const IACADEMY_EMAIL_REGEX =
   /^[a-zA-Z0-9._%+-]+@(iacademy\.ph|iacademy\.edu\.ph)$/;
 
-// ===============================
-// Email validation (iACADEMY only)
-// ===============================
+// ===== Validation =====
 function validateEmail() {
   const email = emailInput.value.trim().toLowerCase();
-
-  if (!IACADEMY_EMAIL_REGEX.test(email)) {
-    emailInput.setCustomValidity(
-      "Only iACADEMY emails (@iacademy.ph or @iacademy.edu.ph) are allowed.",
-    );
-  } else {
-    emailInput.setCustomValidity("");
-  }
+  emailInput.setCustomValidity(
+    IACADEMY_EMAIL_REGEX.test(email)
+      ? ""
+      : "Only iACADEMY emails (@iacademy.ph or @iacademy.edu.ph) are allowed.",
+  );
 }
 
-// ===============================
-// Password match validation
-// ===============================
 function validatePasswords() {
-  if (passwordInput.value !== passwordConfirmInput.value) {
-    passwordConfirmInput.setCustomValidity("Passwords do not match");
-  } else {
-    passwordConfirmInput.setCustomValidity("");
-  }
+  passwordConfirmInput.setCustomValidity(
+    passwordInput.value !== passwordConfirmInput.value
+      ? "Passwords do not match"
+      : "",
+  );
 }
 
-// ===============================
-// Waiver validation
-// ===============================
 function validateWaiver() {
-  if (!agreeWaiverInput.checked) {
-    agreeWaiverInput.setCustomValidity("You must agree to the waiver.");
-  } else {
-    agreeWaiverInput.setCustomValidity("");
-  }
+  agreeWaiverInput.setCustomValidity(
+    agreeWaiverInput.checked ? "" : "You must agree to the waiver.",
+  );
 }
 
-// ===============================
-// Live validation
-// ===============================
 emailInput.addEventListener("input", validateEmail);
 passwordInput.addEventListener("input", validatePasswords);
 passwordConfirmInput.addEventListener("input", validatePasswords);
-agreeWaiverInput.addEventListener("change", validateWaiver); // 🔥 NEW
+agreeWaiverInput.addEventListener("change", validateWaiver);
 
-// ===============================
-// Submit behavior (WITH IMAGE UPLOAD + WAIVER 🔥)
-// ===============================
+// ===== Submit =====
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-
   validateEmail();
   validatePasswords();
-  validateWaiver(); // 🔥 NEW
-
+  validateWaiver();
   formMessage.textContent = "";
+  formMessage.classList.remove("signup__message--active", "success");
 
   if (!form.checkValidity()) {
     form.reportValidity();
@@ -211,7 +74,6 @@ form.addEventListener("submit", async (e) => {
 
   submitBtn.disabled = true;
   btnText.textContent = "Creating account...";
-
   let success = false;
 
   try {
@@ -220,33 +82,21 @@ form.addEventListener("submit", async (e) => {
     formData.append("username", document.querySelector("#username").value);
     formData.append("password", passwordInput.value);
     formData.append("passwordConfirm", passwordConfirmInput.value);
-
-    // 🔥 Add waiver agreement
     formData.append("agreeWaiver", agreeWaiverInput.checked);
-
-    // 🔥 Add profile photo if selected
-    if (pfpInput.files[0]) {
-      formData.append("pfp", pfpInput.files[0]);
-    }
+    if (pfpInput.files[0]) formData.append("pfp", pfpInput.files[0]);
 
     const res = await fetch("/api/v1/auth/signup", {
       method: "POST",
       body: formData,
     });
-
     const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.message || "Signup failed");
-    }
+    if (!res.ok) throw new Error(data.message || "Signup failed");
 
     success = true;
-
-    formMessage.classList.add("signup__message--active");
+    formMessage.classList.add("signup__message--active", "success");
     formMessage.textContent =
       "Account created! A verification email has been sent to your iACADEMY email. Please verify before logging in.";
-
-    submitBtn.textContent = "Verification sent";
+    submitBtn.textContent = "Verification sent ✓";
     submitBtn.disabled = true;
   } catch (err) {
     formMessage.classList.add("signup__message--active");

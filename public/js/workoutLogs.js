@@ -1,3 +1,5 @@
+/* workoutLogs.js */
+
 const finishButtons = document.querySelectorAll(".finish-btn");
 const finishMessage = document.querySelector("#finishMessage");
 

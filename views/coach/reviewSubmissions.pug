@@ -4,115 +4,101 @@ block styles
   link(rel="stylesheet" href="/css/reviewSubmissions.css")
 
 block content
-  // =========================
-  // TOP BAR
-  // =========================
   .top-bar
     a.dashboard-btn(href="/coachDashboard") Dashboard
     a.back-btn(href="javascript:history.back()") Back
 
-  h1 #{title}
-  h2 Coach: #{user.username}
+  .page-header
+    h1 Challenge Submissions
+    p.page-subtitle Reviewing as &nbsp;
+      span.coach-name #{user.username}
 
-  if !submissions || submissions.length === 0
-    p No submissions yet for this challenge.
-  else
-    each log in submissions
-      .submission-card
-        // Error message placeholder
-        p.error-message(style="color:red; font-weight:bold; display:none; margin-top:10px;")
+  .submissions-wrapper
+    if !submissions || submissions.length === 0
+      .empty-state
+        p.empty-icon 📋
+        p No submissions yet for this challenge.
+    else
+      each log in submissions
+        .submission-card
+          p.error-message
 
-        // =====================
-        // User & Meta Info
-        // =====================
-        if log.userId && log.userId.username
-          h3 Submission by #{log.userId.username}
-        else
-          h3 Submission by User
+          .submission-header
+            .submission-user
+              .user-avatar
+                | #{log.userId && log.userId.username ? log.userId.username[0].toUpperCase() : '?'}
+              .user-info
+                h3= log.userId && log.userId.username ? log.userId.username : 'Unknown User'
+                if log.judgeStatus === "approved"
+                  span.status-badge status-approved ✔ Approved
+                else if log.judgeStatus === "rejected"
+                  span.status-badge status-rejected ✘ Rejected
+                else
+                  span.status-badge status-pending ⏳ Pending Review
 
-        // =====================
-        // Status Badge
-        // =====================
-        p
-          | Status:
-          if log.judgeStatus === "approved"
-            span.status.approved Approved
-          else if log.judgeStatus === "rejected"
-            span.status.rejected Rejected
-          else
-            span.status.pending Pending
-
-        // =====================
-        // Exercises & Sets (FULL DETAIL)
-        // =====================
-        h4 Exercises & Sets
-        if log.exercises && log.exercises.length
-          each ex in log.exercises
-            .exercise-block
-              h4 #{ex.name} (#{ex.target})
-
-              - let workingIndex = 0;
-
-              if ex.set && ex.set.length
-                table
-                  thead
-                    tr
-                      th Set #
-                      th Weight
-                      th Reps
-                  tbody
-                    - let workingIndex = 0;
-                    each s in ex.set
-                      if s.type !== "warmup"
-                        - workingIndex++;
-
-                        tr
-                          td= workingIndex
-                          td #{s.weight || '-'} #{s.unit || ''}
-                          td #{s.reps || '-'}
+          .submission-body
+            .exercises-col
+              h4.section-label 📊 Exercises & Sets
+              if log.exercises && log.exercises.length
+                each ex in log.exercises
+                  .exercise-block
+                    .exercise-block-header
+                      span.ex-name= ex.name
+                      span.ex-target= ex.target
+                    if ex.set && ex.set.length
+                      table
+                        thead
+                          tr
+                            th Set
+                            th Weight
+                            th Reps
+                        tbody
+                          - let wi = 0;
+                          each s in ex.set
+                            if s.type !== "warmup"
+                              - wi++;
+                              tr
+                                td= wi
+                                td #{s.weight || '—'} #{s.unit || ''}
+                                td= s.reps || '—'
+                    else
+                      p.no-data No sets recorded.
               else
-                p No sets submitted.
-        else
-          p No exercises submitted.
+                p.no-data No exercises submitted.
 
-        // =====================
-        // Video Preview
-        // =====================
-        if log.videoUrl
-          video(controls width="250" style="margin-top:10px; border-radius:6px;")
-            source(src=log.videoUrl type="video/mp4")
-        else
-          p(style="color:red; margin-top:5px")  No video submitted.
+            .video-col
+              h4.section-label 🎥 Submission Video
+              if log.videoUrl
+                video(controls)
+                  source(src=log.videoUrl type="video/mp4")
+              else
+                .no-video
+                  span 🚫
+                  p No video submitted
 
-        // =====================
-        // Verification Actions
-        // =====================
-        if log.judgeStatus === "pending"
-          form.verify-form(
-            data-log-id=log._id
-            action=`/api/v1/workout-logs/${log._id}/verify`
-            method="POST"
-            class="verify-form"
-          )
-            label(for="judgeNotes") Coach Notes
-            textarea(
-              name="judgeNotes"
-              rows="3"
-              placeholder="Enter feedback for the athlete..."
+          if log.judgeStatus === "pending"
+            form.verify-form(
+              data-log-id=log._id
+              action=`/api/v1/workout-logs/${log._id}/verify`
+              method="POST"
             )
-
-            br
-            br
-
-            button.approve(type="submit" name="decision" value="approved")  Approve
-            button.reject(type="submit" name="decision" value="rejected")  Reject
-        else
-          p.reviewed This submission has already been reviewed.
-
-          if log.judgeNotes
-            p
-              strong Coach Notes:
-              |  #{log.judgeNotes}
+              .form-section
+                label.form-label(for="judgeNotes") Coach Notes
+                textarea(
+                  name="judgeNotes"
+                  rows="3"
+                  placeholder="Enter feedback for the athlete..."
+                )
+              .form-actions
+                button.btn-approve(type="submit" name="decision" value="approved") ✔ Approve
+                button.btn-reject(type="submit" name="decision" value="rejected") ✘ Reject
+          else
+            .reviewed-block
+              p.reviewed-text ✔ This submission has already been reviewed.
+              if log.judgeNotes
+                .coach-notes
+                  span.notes-label Coach Notes:
+                  p= log.judgeNotes
 
 block scripts
   script(src="/js/reviewSubmissions.js")

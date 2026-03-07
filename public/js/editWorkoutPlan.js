@@ -1,160 +1,112 @@
-// ===== DATA =====
 const exercises = window.exercises || [];
 const selectedIds = window.selectedIds || [];
 
-// DOM elements
 const targetGrid = document.getElementById("targetGrid");
 const targetModal = document.getElementById("targetModal");
 const closeTargetModal = document.getElementById("closeTargetModal");
 const targetTitle = document.getElementById("targetTitle");
 const targetExerciseList = document.getElementById("targetExerciseList");
-const form = document.querySelector("#editWorkoutPlanForm");
-const formMessage = document.querySelector("#formMessage");
 
-// MODAL FOR EXERCISE INSTRUCTIONS
 const modal = document.getElementById("exerciseModal");
 const closeModal = document.getElementById("closeModal");
 const modalGif = document.getElementById("modalGif");
 const modalInstructions = document.getElementById("modalInstructions");
 
-// ===== MEMORY STORAGE FOR SELECTED EXERCISES =====
-let exerciseIds = [...selectedIds];
+const form = document.querySelector("#editWorkoutPlanForm");
+const formMessage = document.querySelector("#formMessage");
 
-// ===== GROUP EXERCISES BY TARGET =====
+/* ONE EXERCISE PER MUSCLE */
+let selectedByTarget = {};
+
+/* PRELOAD FROM DB */
+selectedIds.forEach((id) => {
+  const ex = exercises.find((e) => e.exerciseId === id);
+  if (ex) selectedByTarget[ex.target] = id;
+});
+
+/* GROUP EXERCISES BY TARGET */
 const grouped = {};
 exercises.forEach((ex, index) => {
   if (!grouped[ex.target]) grouped[ex.target] = [];
   grouped[ex.target].push({ ...ex, index });
 });
 
-// ===== CREATE TARGET CARDS =====
+/* BUILD TARGET CARDS */
 Object.keys(grouped).forEach((target) => {
   const card = document.createElement("div");
   card.className = "target-card";
-  card.textContent = target;
-
-  // store target name
   card.dataset.target = target;
+  card.innerHTML = `<span>${target}</span>`;
 
-  // 🔥 If already selected from DB, make active
-  const hasSelected = grouped[target].some((ex) =>
-    exerciseIds.includes(ex.exerciseId),
-  );
+  if (selectedByTarget[target]) card.classList.add("active");
 
-  if (hasSelected) {
-    card.classList.add("active");
-  }
-
-  card.addEventListener("click", () => openTargetModal(target));
+  card.onclick = () => openTargetModal(target);
   targetGrid.appendChild(card);
 });
 
-// ===== OPEN TARGET MODAL =====
+/* OPEN TARGET MODAL */
 function openTargetModal(target) {
   targetTitle.textContent = target;
   targetExerciseList.innerHTML = "";
 
-  grouped[target].forEach((exercise) => {
-    const row = document.createElement("div");
-    row.className = "exercise-row";
+  grouped[target].forEach((ex) => {
+    const isSelected = selectedByTarget[target] === ex.exerciseId;
 
-    const isChecked = exerciseIds.includes(exercise.exerciseId)
-      ? "checked"
-      : "";
+    const row = document.createElement("div");
+    row.className = "exercise-row" + (isSelected ? " selected" : "");
 
     row.innerHTML = `
-      <label class="checkbox-container">
-        <input type="checkbox" name="exerciseIds" value="${exercise.exerciseId}" ${isChecked}>
-        <span class="exercise-name">${exercise.name}</span>
-      </label>
-      <button class="info-btn" data-index="${exercise.index}">i</button>
+      <div class="exercise-left">
+        <input type="radio" name="exercise-${target}" value="${ex.exerciseId}" ${isSelected ? "checked" : ""}>
+        <span class="exercise-name">${ex.name}</span>
+      </div>
+      <button class="info-btn" data-index="${ex.index}" type="button" title="View exercise info">i</button>
     `;
 
+    const radio = row.querySelector("input");
+
+    row.onclick = (e) => {
+      if (e.target.classList.contains("info-btn")) return;
+
+      selectedByTarget[target] = ex.exerciseId;
+
+      // Deselect all in this group
+      document
+        .querySelectorAll(`input[name="exercise-${target}"]`)
+        .forEach((r) => {
+          r.checked = false;
+          r.closest(".exercise-row").classList.remove("selected");
+        });
+
+      radio.checked = true;
+      row.classList.add("selected");
+
+      const card = document.querySelector(`[data-target="${target}"]`);
+      if (card) card.classList.add("active");
+    };
+
     targetExerciseList.appendChild(row);
-
-    // ===== UPDATE SELECTED IDS + TARGET CARD COLOR =====
-    const checkbox = row.querySelector('input[type="checkbox"]');
-    checkbox.addEventListener("change", (e) => {
-      const id = exercise.exerciseId;
-
-      if (e.target.checked) {
-        if (!exerciseIds.includes(id)) exerciseIds.push(id);
-      } else {
-        const index = exerciseIds.indexOf(id);
-        if (index > -1) exerciseIds.splice(index, 1);
-      }
-
-      // ===== UPDATE TARGET CARD COLOR =====
-      const hasSelected = grouped[target].some((ex) =>
-        exerciseIds.includes(ex.exerciseId),
-      );
-
-      const targetCard = document.querySelector(
-        `.target-card[data-target="${target}"]`,
-      );
-
-      if (targetCard) {
-        if (hasSelected) {
-          targetCard.classList.add("active");
-        } else {
-          targetCard.classList.remove("active");
-        }
-      }
-    });
   });
 
   attachInfoButtons();
   targetModal.classList.remove("hidden");
 }
 
-// ===== CLOSE TARGET MODAL =====
-closeTargetModal.addEventListener("click", () => {
-  targetModal.classList.add("hidden");
-});
-
-// ===== FORM SUBMIT =====
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  if (exerciseIds.length === 0) {
-    formMessage.textContent = "Please select at least one exercise.";
-    formMessage.style.color = "red";
-    return;
-  }
-
-  try {
-    console.log("Selected exercise IDs:", exerciseIds);
-
-    const res = await fetch("/api/v1/workout-plans", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ exerciseIds }),
-    });
-
-    const data = await res.json();
-    if (data.status === "success") {
-      formMessage.textContent = "Workout plan updated!";
-      formMessage.style.color = "green";
-      setTimeout(() => (window.location.href = "/workoutPlan"), 600);
-    }
-  } catch {
-    formMessage.textContent = "Something went wrong.";
-    formMessage.style.color = "red";
-  }
-});
-
-// ===== INSTRUCTION MODAL =====
+/* ATTACH INFO BUTTON HANDLERS */
 function attachInfoButtons() {
   document.querySelectorAll(".info-btn").forEach((btn) => {
-    btn.onclick = () => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+
       const ex = exercises[btn.dataset.index];
+      if (!ex) return;
 
       modalGif.src = ex.gifURL || "";
       modalGif.style.display = ex.gifURL ? "block" : "none";
 
       modalInstructions.innerHTML =
-        "<h4>Instructions:</h4><ul>" +
-        ex.instructions.map((s) => `<li>${s}</li>`).join("") +
+        "<h4>Instructions</h4><ul>" +
+        (ex.instructions || []).map((s) => `<li>${s}</li>`).join("") +
         "</ul>";
 
       modal.classList.remove("hidden");
@@ -162,7 +114,56 @@ function attachInfoButtons() {
   });
 }
 
-closeModal.addEventListener("click", () => modal.classList.add("hidden"));
-modal.addEventListener("click", (e) => {
+/* CLOSE MODALS */
+closeTargetModal.onclick = () => targetModal.classList.add("hidden");
+closeModal.onclick = () => modal.classList.add("hidden");
+
+// Close on backdrop click
+targetModal.onclick = (e) => {
+  if (e.target === targetModal) targetModal.classList.add("hidden");
+};
+modal.onclick = (e) => {
   if (e.target === modal) modal.classList.add("hidden");
+};
+
+// Close on Escape
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    targetModal.classList.add("hidden");
+    modal.classList.add("hidden");
+  }
+});
+
+/* SUBMIT */
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const exerciseIds = Object.values(selectedByTarget);
+
+  if (exerciseIds.length === 0) {
+    formMessage.textContent = "Please select at least one exercise.";
+    return;
+  }
+
+  formMessage.textContent = "";
+
+  try {
+    const res = await fetch("/api/v1/workout-plans", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ exerciseIds }),
+    });
+
+    const data = await res.json();
+
+    if (data.status === "success") {
+      formMessage.style.color = "#3a9e6a";
+      formMessage.textContent = "Workout plan updated!";
+      setTimeout(() => (location.href = "/workoutPlan"), 700);
+    } else {
+      formMessage.textContent = data.message || "Something went wrong.";
+    }
+  } catch (err) {
+    formMessage.textContent = "Network error. Please try again.";
+  }
 });

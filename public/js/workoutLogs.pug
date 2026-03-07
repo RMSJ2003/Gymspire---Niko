@@ -49,7 +49,11 @@ block content
 
           .card-buttons
             a.view-log-btn(href=`/workoutLogs/${log._id}`) View Workout Log
+            if log.status !== "done"
+              input(type="file" accept="video/*" class="video-input" data-log-id=log._id style="display:none")
+              button.finish-btn(data-log-id=log._id data-is-challenge=log.challengeId ? "true" : "false") Finish Workout
 
+  p#finishMessage
 
 block scripts
   script(src="/js/workoutLogs.js")

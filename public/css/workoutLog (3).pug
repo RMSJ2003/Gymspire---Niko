@@ -13,73 +13,8 @@ block content
       a(href='/adminDashboard') Dashboard
     a(href='javascript:history.back()') Back
 
-  -
-    // ============================================
-    // DELOAD DETECTION
-    // Count consecutive weeks (Mon-Sun) with at
-    // least one "done" log, up to today's week.
-    // ============================================
-    let consecutiveWeeks = 0;
-    let shouldDeload = false;
-    let deloadWeeks = 0;
-
-    if (prevLog && prevLog.length) {
-      // Helper: get Monday of the week for a given date (ISO week start)
-      function getWeekKey(date) {
-        const d = new Date(date);
-        const day = d.getUTCDay(); // 0=Sun,1=Mon...
-        const diff = (day === 0 ? -6 : 1) - day;
-        d.setUTCDate(d.getUTCDate() + diff);
-        return `${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()}`;
-      }
-
-      // Collect distinct week keys that had a done log
-      const weekSet = new Set();
-      prevLog.forEach(l => {
-        if (l.status === "done") weekSet.add(getWeekKey(l.date));
-      });
-      // Also count current log's week
-      weekSet.add(getWeekKey(log.date));
-
-      // Sort weeks ascending
-      const weeks = Array.from(weekSet).sort();
-
-      // Count consecutive weeks ending at the most recent
-      let streak = 1;
-      for (let i = weeks.length - 1; i > 0; i--) {
-        // Parse week keys back to dates to check adjacency
-        const curr = weeks[i].split("-").map(Number);
-        const prev2 = weeks[i - 1].split("-").map(Number);
-        const currDate = new Date(Date.UTC(curr[0], curr[1], curr[2]));
-        const prevDate = new Date(Date.UTC(prev2[0], prev2[1], prev2[2]));
-        const diffDays = (currDate - prevDate) / (1000 * 60 * 60 * 24);
-        if (diffDays === 7) {
-          streak++;
-        } else {
-          break;
-        }
-      }
-
-      consecutiveWeeks = streak;
-      shouldDeload = streak >= 4;
-      deloadWeeks = streak;
-    }
-
   h1 #{title}
   h2 #{user.username}
-
-  if shouldDeload
-    .deload-banner
-      .deload-banner-icon 🔄
-      .deload-banner-body
-        strong Deload Week Recommended
-        p You've trained <strong>#{deloadWeeks} consecutive weeks</strong>. Your body needs recovery to keep progressing. Consider a deload this week.
-        ul.deload-tips
-          li Reduce weight by <strong>40–50%</strong> on all exercises
-          li Keep the same sets and rep range
-          li Focus on <strong>form and mind-muscle connection</strong>
-          li Avoid pushing to failure this week
-        button.deload-dismiss(type="button") Dismiss
 
   if user.pfpUrl
     img.profile-pic(src=user.pfpUrl alt="Profile Picture")
@@ -171,7 +106,6 @@ block content
                   else
                     tr(
                       data-set-id=s._id
-                      data-saved=s.weight && s.weight > 0 ? "true" : "false"
                       data-prev-weight=prev ? prev.weight : ""
                       data-prev-reps=prev ? prev.reps : ""
                       data-prev-unit=prev ? (prev.unit || "LB") : ""

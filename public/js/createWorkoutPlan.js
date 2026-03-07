@@ -1,6 +1,9 @@
 // ===== DATA =====
 const exercises = window.exercises || [];
-const exerciseIds = []; // for new plan, start empty
+const exerciseIds = [];
+
+// track selected exercise per muscle
+const selectedByTarget = {};
 
 // DOM elements
 const targetGrid = document.getElementById("targetGrid");
@@ -11,14 +14,14 @@ const targetExerciseList = document.getElementById("targetExerciseList");
 const form = document.querySelector("#createWorkoutPlanForm");
 const formMessage = document.querySelector("#formMessage");
 
-// MODAL FOR EXERCISE INSTRUCTIONS
 const modal = document.getElementById("exerciseModal");
 const closeModal = document.getElementById("closeModal");
 const modalGif = document.getElementById("modalGif");
 const modalInstructions = document.getElementById("modalInstructions");
 
-// ===== GROUP EXERCISES BY TARGET =====
+// ===== GROUP EXERCISES =====
 const grouped = {};
+
 exercises.forEach((ex, index) => {
   if (!grouped[ex.target]) grouped[ex.target] = [];
   grouped[ex.target].push({ ...ex, index });
@@ -27,71 +30,107 @@ exercises.forEach((ex, index) => {
 // ===== CREATE TARGET CARDS =====
 Object.keys(grouped).forEach((target) => {
   const card = document.createElement("div");
+
   card.className = "target-card";
   card.textContent = target;
   card.dataset.target = target;
 
-  card.addEventListener("click", () => openTargetModal(target));
+  card.onclick = () => openTargetModal(target);
+
   targetGrid.appendChild(card);
 });
 
-// ===== OPEN TARGET MODAL =====
+// ===== OPEN MODAL =====
 function openTargetModal(target) {
   targetTitle.textContent = target;
   targetExerciseList.innerHTML = "";
 
-  grouped[target].forEach((exercise) => {
+  grouped[target].forEach((ex) => {
+    const checked = selectedByTarget[target] === ex.exerciseId ? "checked" : "";
+
     const row = document.createElement("div");
     row.className = "exercise-row";
 
-    const isChecked = exerciseIds.includes(exercise.exerciseId)
-      ? "checked"
-      : "";
+    if (checked) row.classList.add("selected");
 
     row.innerHTML = `
-      <label class="checkbox-container">
-        <input type="checkbox" name="exerciseIds" value="${exercise.exerciseId}" ${isChecked}>
-        <span class="exercise-name">${exercise.name}</span>
-      </label>
-      <button class="info-btn" data-index="${exercise.index}">i</button>
+      <div class="exercise-left">
+        <input type="radio" name="exercise-${target}" value="${ex.exerciseId}" ${checked}>
+        <span class="exercise-name">${ex.name}</span>
+      </div>
+      <button class="info-btn" data-index="${ex.index}" type="button">i</button>
     `;
 
+    const radio = row.querySelector("input");
+
+    row.onclick = (e) => {
+      if (e.target.classList.contains("info-btn")) return;
+
+      selectedByTarget[target] = ex.exerciseId;
+
+      // remove previous exercise from same muscle
+      for (let i = exerciseIds.length - 1; i >= 0; i--) {
+        const existing = exercises.find((e) => e.exerciseId === exerciseIds[i]);
+
+        if (existing && existing.target === target) {
+          exerciseIds.splice(i, 1);
+        }
+      }
+
+      exerciseIds.push(ex.exerciseId);
+
+      document
+        .querySelectorAll(`input[name="exercise-${target}"]`)
+        .forEach((r) => {
+          r.checked = false;
+          r.closest(".exercise-row").classList.remove("selected");
+        });
+
+      radio.checked = true;
+      row.classList.add("selected");
+
+      const card = document.querySelector(`[data-target="${target}"]`);
+      if (card) card.classList.add("active");
+    };
+
     targetExerciseList.appendChild(row);
-
-    // ===== UPDATE SELECTED IDS + TARGET CARD COLOR =====
-    const checkbox = row.querySelector('input[type="checkbox"]');
-    checkbox.addEventListener("change", (e) => {
-      const id = exercise.exerciseId;
-
-      if (e.target.checked) {
-        if (!exerciseIds.includes(id)) exerciseIds.push(id);
-      } else {
-        const idx = exerciseIds.indexOf(id);
-        if (idx > -1) exerciseIds.splice(idx, 1);
-      }
-
-      // ===== UPDATE TARGET CARD COLOR =====
-      const hasSelected = grouped[target].some((ex) =>
-        exerciseIds.includes(ex.exerciseId),
-      );
-      const targetCard = document.querySelector(
-        `.target-card[data-target="${target}"]`,
-      );
-      if (targetCard) {
-        if (hasSelected) targetCard.classList.add("active");
-        else targetCard.classList.remove("active");
-      }
-    });
   });
 
   attachInfoButtons();
+
   targetModal.classList.remove("hidden");
 }
 
 // ===== CLOSE TARGET MODAL =====
-closeTargetModal.addEventListener("click", () => {
-  targetModal.classList.add("hidden");
-});
+closeTargetModal.onclick = () => targetModal.classList.add("hidden");
+
+// ===== INFO BUTTON =====
+function attachInfoButtons() {
+  document.querySelectorAll(".info-btn").forEach((btn) => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+
+      const ex = exercises[btn.dataset.index];
+
+      modalGif.src = ex.gifURL || "";
+      modalGif.style.display = ex.gifURL ? "block" : "none";
+
+      modalInstructions.innerHTML =
+        "<h4>Instructions:</h4><ul>" +
+        ex.instructions.map((s) => `<li>${s}</li>`).join("") +
+        "</ul>";
+
+      modal.classList.remove("hidden");
+    };
+  });
+}
+
+// ===== CLOSE MODAL =====
+closeModal.onclick = () => modal.classList.add("hidden");
+
+modal.onclick = (e) => {
+  if (e.target === modal) modal.classList.add("hidden");
+};
 
 // ===== FORM SUBMIT =====
 form.addEventListener("submit", async (e) => {
@@ -111,10 +150,14 @@ form.addEventListener("submit", async (e) => {
     });
 
     const data = await res.json();
+
     if (data.status === "success") {
       formMessage.textContent = "Workout plan created!";
       formMessage.style.color = "green";
-      setTimeout(() => (window.location.href = "/workoutPlan"), 600);
+
+      setTimeout(() => {
+        window.location.href = "/workoutPlan";
+      }, 600);
     } else {
       formMessage.textContent = data.message;
     }
@@ -122,29 +165,4 @@ form.addEventListener("submit", async (e) => {
     formMessage.textContent = err.message;
     formMessage.style.color = "red";
   }
-});
-
-// ===== EXERCISE INSTRUCTIONS MODAL =====
-function attachInfoButtons() {
-  document.querySelectorAll(".info-btn").forEach((btn) => {
-    btn.onclick = () => {
-      const ex = exercises[btn.dataset.index];
-
-      modalGif.src = ex.gifURL || "";
-      modalGif.style.display = ex.gifURL ? "block" : "none";
-
-      modalInstructions.innerHTML =
-        "<h4>Instructions:</h4><ul>" +
-        ex.instructions.map((s) => `<li>${s}</li>`).join("") +
-        "</ul>";
-
-      modal.classList.remove("hidden");
-    };
-  });
-}
-
-// ===== CLOSE MODAL =====
-closeModal.addEventListener("click", () => modal.classList.add("hidden"));
-modal.addEventListener("click", (e) => {
-  if (e.target === modal) modal.classList.add("hidden");
 });

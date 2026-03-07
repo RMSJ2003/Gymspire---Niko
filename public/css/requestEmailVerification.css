@@ -1,20 +1,32 @@
-/* Reset & base */
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap");
+
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  background-color: #dddddd;
-  color: black;
+  background-color: #1a1a1a;
+  background-image:
+    radial-gradient(
+      ellipse at 20% 50%,
+      rgba(210, 83, 83, 0.14) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 80% 20%,
+      rgba(244, 196, 48, 0.09) 0%,
+      transparent 50%
+    );
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  font-family: Arial, sans-serif;
-  padding: 16px;
+  font-family: "DM Sans", sans-serif;
+  padding: 24px 16px;
 }
 
-/* Container / Card */
 .section-email-verification {
   display: flex;
   justify-content: center;
@@ -24,125 +36,243 @@ body {
 
 .card {
   width: 100%;
-  max-width: 420px;
-  background-color: white;
-  padding: 32px;
-  border-radius: 12px;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
-  color: #020617;
+  max-width: 440px;
+  background: #fff;
+  padding: 40px 36px 36px;
+  border-radius: 20px;
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  animation: slideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* NAV LINKS ROW */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  margin-bottom: 10px;
+}
+
+.logo-icon {
+  width: 46px;
+  height: 46px;
+  background: linear-gradient(135deg, #d25353 0%, #b11226 100%);
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(210, 83, 83, 0.5);
+  flex-shrink: 0;
+}
+
+.logo-icon svg {
+  width: 26px;
+  height: 26px;
+  fill: white;
+}
+
+.logo-text {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2.1rem;
+  letter-spacing: 0.06em;
+  color: #111;
+  line-height: 1;
+}
+.logo-text span {
+  color: #d25353;
+}
+
+.logo-divider {
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, #d25353, #f4c430);
+  border-radius: 2px;
+  margin: 14px auto 22px;
+}
+
+.verify-icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(
+    135deg,
+    rgba(210, 83, 83, 0.1),
+    rgba(244, 196, 48, 0.1)
+  );
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+  border: 1.5px solid rgba(210, 83, 83, 0.2);
+}
+
+.verify-icon svg {
+  width: 26px;
+  height: 26px;
+  fill: #d25353;
+}
+
+h2 {
+  text-align: center;
+  color: #111;
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 0.88rem;
+  color: #888;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
 .links-row {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 22px;
 }
 
 .email-verification__link {
-  font-size: 0.85rem;
+  font-size: 0.83rem;
   text-decoration: none;
-  color: blue;
+  color: #d25353;
+  font-weight: 500;
+  transition: color 0.18s;
 }
 
 .email-verification__link:hover {
-  color: aquamarine;
+  color: #b11226;
+  text-decoration: underline;
 }
 
 .email-verification__divider {
   font-size: 0.85rem;
-  color: black;
+  color: #ccc;
 }
 
-/* FORM */
 .email-verification__form {
   display: flex;
   flex-direction: column;
 }
 
 .email-verification__label {
-  font-size: 0.9rem;
-  color: black;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #555;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   margin-bottom: 6px;
 }
 
 .email-verification__input {
   width: 100%;
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid #334155;
-  background-color: whitesmoke;
-  color: #020617;
-  font-size: 1rem;
-  margin-bottom: 12px;
+  padding: 13px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e2e2;
+  background-color: #f9f9f9;
+  color: #111;
+  font-size: 0.97rem;
+  font-family: "DM Sans", sans-serif;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
+  outline: none;
+  margin-bottom: 16px;
 }
 
 .email-verification__input:focus {
-  border-color: #b11226;
-  box-shadow: 0 0 0 2px rgba(177, 18, 38, 0.15);
+  border-color: #d25353;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(210, 83, 83, 0.12);
 }
 
-/* BUTTON */
 .email-verification__button {
   width: 100%;
   padding: 14px;
-  border-radius: 8px;
-  background-color: #d25353;
-  color: whitesmoke;
-  font-weight: bold;
-  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #d25353 0%, #b11226 100%);
+  color: #fff;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 700;
+  font-size: 0.97rem;
+  letter-spacing: 0.03em;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 0.2s ease;
   gap: 8px;
-  border: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 18px rgba(177, 18, 38, 0.35);
 }
 
-.email-verification__button:hover {
-  background-color: #ea7b7b;
-  color: black;
+.email-verification__button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(177, 18, 38, 0.5);
+  filter: brightness(1.07);
 }
 
-/* FORM MESSAGE */
+.email-verification__button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .email-verification__message {
   text-align: center;
-  margin-top: 12px;
-  font-size: 0.9rem;
+  margin-top: 16px;
+  font-size: 0.88rem;
+  min-height: 18px;
+  border-radius: 8px;
+  transition: all 0.2s;
 }
 
-/* ERROR AND SUCCESS COLORS */
 .email-verification__message--active {
-  color: #f87171; /* red for errors */
+  padding: 10px 14px;
+  background: #fff3f3;
+  border: 1px solid #f5c0c0;
+  color: #c0392b;
 }
 
-/* Optional: if your JS wants success color */
 .email-verification__message.success {
-  color: #22c55e; /* green for success */
+  background: #f0faf4;
+  border-color: #a8d5b5;
+  color: #1e7e45;
+  padding: 10px 14px;
 }
 
-/* ========================= */
-/* 📱 MOBILE (Phones) */
 @media (max-width: 480px) {
   .card {
-    width: 100%;
-    max-width: 360px;
-    padding: 22px 18px;
+    padding: 28px 20px 24px;
   }
-
+  .logo-text {
+    font-size: 1.75rem;
+  }
   .links-row {
     flex-direction: column;
     gap: 6px;
   }
 }
 
-/* ========================= */
-/* 📱 TABLET */
 @media (max-width: 768px) {
   .card {
-    max-width: 360px;
+    max-width: 400px;
   }
 }

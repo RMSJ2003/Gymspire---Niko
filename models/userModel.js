@@ -79,6 +79,14 @@ const userSchema = new mongoose.Schema({
     default: true, //ofc when user is created, active is set to true
     select: false, // We set select to false cuz we don't want users to see active field
   },
+  // Add to your existing User schema
+  isAtGym: { type: Boolean, default: false },
+  gymCheckinTime: { type: Date },
+  gymStatus: {
+    type: String,
+    enum: ["atGym", "logging", "offline"],
+    default: "offline",
+  },
 });
 
 // START OF COMMENT FOR IMPORTING DEV DATA

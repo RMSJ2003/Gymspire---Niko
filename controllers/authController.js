@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const GymAttendance = require("../models/gymAttendanceModel");
 const sendEmail = require("./../utils/email");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
@@ -308,6 +309,11 @@ exports.logout = catchAsync(async (req, res, next) => {
   //   // almost immediately
   //   httpOnly: true,
   // });
+  // ✅ Close any open attendance record on logout
+  if (req.user) {
+    const { closeAttendance } = require("./userController");
+    await closeAttendance(req.user.id);
+  }
   req.user = undefined;
 
   res.clearCookie("jwt");

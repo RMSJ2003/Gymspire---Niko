@@ -4,9 +4,10 @@ const challengeController = require("../controllers/challengeController");
 const authController = require("../controllers/authController");
 const requireActiveChallenge = require("../middlewares/requireActiveChallenge");
 const requireWorkoutPlan = require("../middlewares/requireWorkoutPlan");
+const userController = require("../controllers/userController");
 const autoFinishStaleWorkouts = require("../middlewares/authFinishStaleWorkouts");
 const upload = require("../middlewares/uploadVideo");
-
+const gymCheckinController = require("../controllers/gymCheckin.controller");
 const router = express.Router();
 
 router.use(authController.protect);
@@ -17,6 +18,7 @@ router
     challengeController.getChallenge,
     requireActiveChallenge,
     autoFinishStaleWorkouts,
+    gymCheckinController.autoCheckin, // ← runs first, records attendance
     workoutLogController.createMyChallengeWorkoutLog,
   ); // Create a challenge log (Start challenge)
 
@@ -25,6 +27,7 @@ router
   .post(
     requireWorkoutPlan,
     autoFinishStaleWorkouts,
+    gymCheckinController.autoCheckin, // ← runs first, records attendance
     workoutLogController.createMySoloWorkoutLog,
   )
   .get(workoutLogController.getMyWorkoutLogs);

@@ -11,6 +11,7 @@ const catchAsync = require("../utils/catchAsync");
 const ensureNoOngoingWorkoutLog = require("../utils/ensureNoOngoingWorkoutLogs");
 const createDefaultSets = require("../utils/defaultWorkoutSets");
 const { enforceMuscleRest } = require("../services/restRule.service");
+const { closeAttendance } = require("./userController");
 
 function computeStrengthScore(workoutLog) {
   let score = 0;
@@ -391,6 +392,9 @@ exports.finishWorkoutLog = catchAsync(async (req, res, next) => {
   if (req.file) {
     workoutLog.videoUrl = req.file.path; // real playable URL
   }
+  // ✅ Close attendance record — fills checkoutTime + durationMinutes
+  await closeAttendance(req.user.id);
+
   workoutLog.status = "done";
   await workoutLog.save();
   res.status(200).json({
@@ -423,30 +427,25 @@ exports.verifyChallengeWorkoutLog = catchAsync(async (req, res, next) => {
 
   if (!workoutLog) return next(new AppError("Workout log not found"));
 
-  // Must be challenge workout
   if (!workoutLog.challengeId)
     return next(new AppError("Solo workouts cannot be verified", 400));
 
-  // Load challenge
   const challenge = await Challenge.findById(workoutLog.challengeId);
 
   if (!challenge) return next(new AppError("Challenge not found", 404));
 
-  // 🚫 Conflict of interest: coach is participant in this challenge
   const isParticipant = challenge.participants.some(
     (p) => p.toString() === req.user._id.toString(),
   );
 
-  if (isParticipant) {
+  if (isParticipant)
     return next(
       new AppError(
         "Coaches who are participants cannot verify workouts in this challenge.",
         403,
       ),
     );
-  }
 
-  // 🚫 Prevent self-verification (extra safety)
   if (workoutLog.userId.toString() === req.user._id.toString())
     return next(
       new AppError(
@@ -455,26 +454,21 @@ exports.verifyChallengeWorkoutLog = catchAsync(async (req, res, next) => {
       ),
     );
 
-  // Must be finished
   if (workoutLog.status !== "done")
     return next(
       new AppError("Workout must be finished before verification", 401),
     );
 
-  // Must have video
-  if (!workoutLog.videoUrl)
-    return next(new AppError("Workout has no video submission", 409));
+  // ✅ REMOVED: video check — video is optional per system design
+  // Submissions without video can still be approved/rejected by coach
 
-  // Prevent double verification
   if (workoutLog.judgeStatus !== "pending")
     return next(new AppError("Workout already verified", 409));
 
-  // Apply judge decision
   workoutLog.judgeStatus = decision;
   workoutLog.judgeNotes = judgeNotes || "";
   workoutLog.verifiedBy = req.user._id;
 
-  // Compute score
   if (decision === "approved")
     workoutLog.strengthScore = computeStrengthScore(workoutLog);
 
@@ -485,7 +479,6 @@ exports.verifyChallengeWorkoutLog = catchAsync(async (req, res, next) => {
     data: workoutLog,
   });
 });
-
 // Without JSON
 exports.acquireMyWorkoutLogs = catchAsync(async (req, res, next) => {
   const workoutLogs = await WorkoutLog.find({

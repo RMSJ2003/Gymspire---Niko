@@ -12,11 +12,11 @@ body {
   background: white;
   color: black;
   min-height: 100vh;
-  padding: 5rem 1rem 2rem 1rem; /* space for fixed top bar */
+  padding: 5rem 1rem 2rem 1rem;
 }
 
 /* =========================
-   TOP BAR (Dashboard / Back)
+   TOP BAR
 ========================= */
 .top-bar {
   position: fixed;
@@ -28,8 +28,6 @@ body {
   align-items: center;
   padding: 0.8rem 1rem;
   background: white;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   z-index: 999;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
@@ -47,7 +45,6 @@ body {
 
 .top-bar a:hover {
   color: #f4c430;
-  border: 2px solid #d25353;
 }
 
 /* =========================
@@ -60,34 +57,26 @@ h4 {
   text-align: center;
   margin-bottom: 0.8rem;
 }
-
 h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: black;
 }
-
 h2 {
   font-size: 1.5rem;
   font-weight: 500;
-  color: black;
 }
-
 h3 {
   font-size: 1.2rem;
   font-weight: 500;
-  color: black;
 }
-
 h4 {
   font-size: 1.1rem;
   font-weight: 500;
-  color: black;
   margin-bottom: 0.5rem;
 }
 
 /* =========================
-   PROFILE PICTURE
+   PROFILE PIC
 ========================= */
 .profile-pic {
   width: 150px;
@@ -99,24 +88,18 @@ h4 {
   margin: 1rem auto;
 }
 
-/* =========================
-   STATUS / TYPE / INFO TEXT
-========================= */
 p {
   text-align: center;
   margin: 0.5rem 0;
   font-weight: 500;
-  color: black;
 }
-
-/* Optional: Highlight special info in green */
 p.important {
   color: #22c55e;
   font-weight: 600;
 }
 
 /* =========================
-   BUTTONS (save working set/finish workout)
+   BUTTONS (global)
 ========================= */
 button,
 .btn {
@@ -128,42 +111,40 @@ button,
   color: whitesmoke;
   font-weight: bold;
   border-radius: 0.5rem;
-  text-align: center;
-  text-decoration: none;
   border: none;
   cursor: pointer;
   transition: 0.3s;
+  text-align: center;
+  text-decoration: none;
 }
-
 button:hover,
 .btn:hover {
   color: #f4c430;
 }
+button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  color: whitesmoke;
+}
 
 /* =========================
-   EXERCISE CARDS
+   EXERCISE CARD
 ========================= */
 .exercise-card {
   background: #d25353;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid #d25353;
   border-radius: 1rem;
   padding: 1rem;
   margin: 1rem auto;
-  max-width: 600px;
+  max-width: 680px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
-
 .exercise-card h4 {
   margin-bottom: 0.5rem;
 }
-
 .exercise-card p {
   color: black;
   margin-bottom: 0.5rem;
 }
-
 .exercise-card img {
   display: block;
   margin: 0.5rem auto;
@@ -172,7 +153,7 @@ button:hover,
 }
 
 /* =========================
-   TABLE STYLING
+   TABLE
 ========================= */
 table {
   width: 100%;
@@ -180,21 +161,408 @@ table {
   margin: 0.5rem 0 1rem 0;
   text-align: center;
 }
-
 th,
 td {
   border: 1px solid black;
-  padding: 6px;
+  padding: 8px 4px;
 }
-
 th {
-  background-color: white;
+  background: white;
   color: black;
 }
 
 /* =========================
-   VIDEO
+   ROW STATES
 ========================= */
+tr.row-active td {
+  background: rgba(255, 255, 255, 0.12);
+}
+tr.row-done td {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+/* =========================
+   WEIGHT ROW (spinner + LB side by side)
+========================= */
+.weight-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+
+.unit-side-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.5px;
+}
+
+/* =========================
+   SPINNER
+========================= */
+.set-input-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.spin-btn {
+  width: 44px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 6px;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: background 0.15s;
+  margin: 0;
+  display: block;
+}
+.spin-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.4);
+  color: #f4c430;
+}
+.spin-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.spin-display {
+  width: 60px;
+  height: 46px;
+  background: white;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #d25353;
+  text-align: center;
+  line-height: 46px;
+  user-select: none;
+  transition: opacity 0.2s;
+}
+
+.spinner-disabled .spin-display {
+  opacity: 0.45;
+  color: #a04040;
+}
+
+/* =========================
+   ACTION CELL
+========================= */
+td.action-cell {
+  min-width: 120px;
+  vertical-align: middle;
+}
+
+.row-start-btn {
+  margin: 0 auto;
+  padding: 0.45rem 1.1rem;
+  background: #22c55e;
+  color: white;
+  font-weight: bold;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.2s;
+  display: block;
+  width: max-content;
+}
+.row-start-btn:hover:not(:disabled) {
+  background: #16a34a;
+  color: #fff;
+}
+.row-start-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.row-save-btn {
+  margin: 0 auto;
+  padding: 0.45rem 1rem;
+  background: #ebd31b;
+  color: #1a1a1a;
+  font-weight: bold;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.2s;
+  display: block;
+  width: max-content;
+}
+.row-save-btn:hover:not(:disabled) {
+  background: #d4be10;
+}
+.row-save-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.row-save-btn.saved {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: default;
+}
+
+/* =========================
+   REST TIMER
+========================= */
+.rest-timer {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+}
+.rest-timer.active {
+  display: flex;
+}
+
+.timer-ring {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+.timer-ring svg {
+  transform: rotate(-90deg);
+  width: 40px;
+  height: 40px;
+}
+.timer-ring circle {
+  fill: none;
+  stroke-width: 3;
+}
+.timer-ring .bg {
+  stroke: rgba(255, 255, 255, 0.2);
+}
+.timer-ring .progress {
+  stroke: #f4c430;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.timer-countdown {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: white;
+}
+
+.timer-skip {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: 0.2s;
+  margin: 0;
+  display: block;
+  width: max-content;
+}
+.timer-skip:hover {
+  background: rgba(255, 255, 255, 0.32);
+  color: #f4c430;
+}
+
+/* =========================
+   DELOAD BANNER
+========================= */
+.deload-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  max-width: 680px;
+  margin: 0 auto 1.5rem auto;
+  padding: 1rem 1.2rem;
+  background: linear-gradient(135deg, #1e3a5f 0%, #1a2f4a 100%);
+  border: 1px solid #3b82f6;
+  border-left: 5px solid #3b82f6;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+  animation: tipFadeIn 0.5s ease;
+}
+
+.deload-banner-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.deload-banner-body {
+  flex: 1;
+}
+
+.deload-banner-body strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #93c5fd;
+  margin-bottom: 0.35rem;
+}
+
+.deload-banner-body p {
+  font-size: 0.85rem;
+  color: #bfdbfe;
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.deload-banner-body p strong {
+  display: inline;
+  color: #fbbf24;
+  font-size: inherit;
+}
+
+.deload-tips {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem 0;
+}
+
+.deload-tips li {
+  font-size: 0.82rem;
+  color: #bfdbfe;
+  padding: 0.2rem 0;
+  padding-left: 1.2rem;
+  position: relative;
+  text-align: left;
+}
+
+.deload-tips li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #34d399;
+  font-weight: 700;
+}
+
+.deload-tips li strong {
+  display: inline;
+  color: #fde68a;
+  font-size: inherit;
+}
+
+.deload-dismiss {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  color: #93c5fd;
+  border-radius: 6px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  margin: 0;
+  width: max-content;
+  display: block;
+}
+
+.deload-dismiss:hover {
+  background: rgba(59, 130, 246, 0.35);
+  color: white;
+}
+
+/* =========================
+   PREVIOUS PERFORMANCE HINT
+========================= */
+.prev-hint-row td {
+  border: none !important;
+  padding: 4px 8px 2px 8px !important;
+  background: transparent !important;
+}
+
+.prev-hint {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: rgba(235, 211, 27, 0.15);
+  border: 1px solid rgba(235, 211, 27, 0.45);
+  color: #fff9c4;
+  animation: tipFadeIn 0.35s ease;
+}
+
+.prev-hint strong {
+  font-weight: 700;
+  color: #fde68a;
+}
+
+.prev-hint-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+/* =========================
+   PROGRESSIVE OVERLOAD TIP
+========================= */
+.overload-tip-row td {
+  border: none !important;
+  padding: 4px 8px 8px 8px !important;
+  background: transparent !important;
+}
+
+.overload-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 0.55rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.4;
+  animation: tipFadeIn 0.4s ease;
+}
+
+.overload-tip strong {
+  font-weight: 700;
+}
+
+.overload-level-up {
+  background: rgba(251, 191, 36, 0.22);
+  border: 1px solid rgba(251, 191, 36, 0.6);
+  color: #fff8e1;
+}
+
+.overload-push {
+  background: rgba(34, 197, 94, 0.18);
+  border: 1px solid rgba(34, 197, 94, 0.5);
+  color: #d1fae5;
+}
+
+.overload-steady {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.overload-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+@keyframes tipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 video {
   display: block;
   max-width: 100%;
@@ -203,9 +571,6 @@ video {
   border: 1px solid #22c55e;
 }
 
-/* =========================
-   ALERT / MESSAGES
-========================= */
 #setMessage {
   text-align: center;
   font-weight: bold;
@@ -213,35 +578,92 @@ video {
 }
 
 /* =========================
-   MOBILE RESPONSIVE
+   MOBILE
 ========================= */
 @media (max-width: 600px) {
   .profile-pic {
     width: 120px;
     height: 120px;
   }
-
   h1 {
     font-size: 1.5rem;
   }
-
   h2,
   h3,
   h4 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
-
   .exercise-card {
-    margin: 1rem 0.5rem;
-    padding: 0.8rem;
+    margin: 1rem 0.3rem;
+    padding: 0.7rem;
   }
-
   button,
   .btn {
     width: 100%;
   }
-
   table {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
+  .spin-display {
+    font-size: 1.15rem;
+    height: 40px;
+    line-height: 40px;
+    width: 50px;
+  }
+  .spin-btn {
+    width: 38px;
+  }
+  td.action-cell {
+    min-width: 90px;
+  }
+}
+
+/* Weight = 0 validation error */
+.spin-display.spin-error {
+  background: #d25353;
+  color: white;
+  animation: shake 0.35s ease;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.weight-zero-err {
+  display: block;
+  font-size: 0.78rem;
+  color: white;
+  background: #b83f3f;
+  font-weight: 700;
+  margin-top: 0.4rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 5px;
+  text-align: center;
+  white-space: nowrap;
+  animation: tipFadeIn 0.2s ease;
+}
+
+/* Finish guard error */
+.finish-error-msg {
+  display: none;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: white;
+  background: #b83f3f;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  margin: 0.5rem auto;
+  width: max-content;
+  max-width: 90%;
+  animation: tipFadeIn 0.2s ease;
 }

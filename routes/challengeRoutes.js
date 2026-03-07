@@ -8,32 +8,27 @@ const router = express.Router();
 
 router.use(authController.protect);
 
+// ✅ More specific routes FIRST
 router.post(
   "/:joinCode/join",
   requireWorkoutPlan,
   challengeController.getChallenge,
   requireActiveChallenge,
-  challengeController.joinChallenge
+  challengeController.joinChallenge,
 );
+
+router.get("/:challengeId/leaderboard", challengeController.getLeaderboard); // ✅ before /:challengeId
 
 router.get(
   "/:challengeId",
   requireWorkoutPlan,
   challengeController.getChallenge,
-  challengeController.getgetChallenge
+  challengeController.getgetChallenge,
 );
 
 router
   .route("/")
-  .post(
-    // Create challenge: exerciseIds sent via body
-    authController.restrictTo("coach"),
-    challengeController.createChallenge
-  )
+  .post(authController.restrictTo("coach"), challengeController.createChallenge)
   .get(challengeController.getAllChallenges);
-
-router
-  .route("/:challengeId/leaderboard")
-  .get(challengeController.getLeaderboard);
 
 module.exports = router;

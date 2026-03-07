@@ -1,6 +1,3 @@
-/* =========================
-   GLOBAL RESET
-========================= */
 * {
   margin: 0;
   padding: 0;
@@ -10,267 +7,397 @@
 body {
   font-family: Arial, sans-serif;
   color: black;
-  background-color: #dddddd;
+  background-color: #f0f0f0;
   min-height: 100vh;
-  padding-top: 5rem; /* space for fixed navbar */
+  padding-top: 4.5rem;
 }
 
-/* =========================
-   TOP BAR
-========================= */
+/* ── TOP BAR ── */
 .top-bar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   display: flex;
-  justify-content: space-between; /* buttons at left/right */
+  justify-content: space-between;
   align-items: center;
-  padding: 0.8rem 1rem;
+  padding: 0.7rem 1.2rem;
   background: white;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   z-index: 999;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .top-bar a {
-  padding: 0.5rem 1.2rem;
-  border: 2px solid #d25353;
+  padding: 0.45rem 1.1rem;
   background: #d25353;
-  color: whitesmoke;
+  color: white;
   font-weight: bold;
   border-radius: 0.5rem;
   text-decoration: none;
-  transition: all 0.3s ease;
-  margin: 0;
+  font-size: 0.9rem;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 .top-bar a:hover {
+  background: #b83f3f;
   color: #f4c430;
 }
 
-.logout-btn {
-  background-color: #f87171;
-  color: white;
-}
-
-.logout-btn:hover {
-  background-color: #ef4444;
-}
-
-/* =========================
-   HEADINGS
-========================= */
-h1,
-h2,
-h3,
-h4 {
+/* ── PAGE HEADER ── */
+.page-header {
+  background: white;
+  border-bottom: 3px solid #d25353;
+  padding: 1.2rem 1.5rem;
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-h1 {
-  font-size: 2rem;
+.page-header h1 {
+  font-size: 1.6rem;
   font-weight: 700;
-  color: black;
+  margin-bottom: 0.2rem;
 }
 
-h2 {
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: black;
+.page-subtitle {
+  font-size: 0.9rem;
+  color: #666;
 }
 
-h3 {
-  font-size: 1.3rem;
-  font-weight: 500;
-  color: black;
+.coach-name {
+  font-weight: bold;
+  color: #d25353;
+}
+
+/* ── WRAPPER ── */
+.submissions-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+}
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #888;
+}
+
+.empty-icon {
+  font-size: 3rem;
   margin-bottom: 0.5rem;
 }
 
-h4 {
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: black;
+/* ── SUBMISSION CARD ── */
+.submission-card {
+  background: white;
+  border-radius: 0.8rem;
+  border-left: 5px solid #d25353;
+  padding: 1.4rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* ── SUBMISSION HEADER ── */
+.submission-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #d25353;
+  color: white;
+  font-size: 1.3rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-info h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: left;
   margin-bottom: 0.3rem;
 }
 
-/* =========================
-   SUBMISSION CARD
-========================= */
-.submission-card {
-  backdrop-filter: blur(12px);
-  border: 1px solid #d25353;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  background-color: white;
-}
-
-/* =========================
-   ERROR MESSAGE
-========================= */
-.error-message {
-  color: #f87171; /* red */
+.status-badge {
+  display: inline-block;
+  font-size: 0.78rem;
   font-weight: bold;
-  margin-top: 10px;
-  display: none;
+  padding: 0.2rem 0.65rem;
+  border-radius: 2rem;
 }
 
-/* =========================
-   STATUS BADGE
-========================= */
-.submission-card p span {
-  font-weight: bold;
-  margin-left: 8px;
+.status-approved {
+  background: #dcfce7;
+  color: #16a34a;
+}
+.status-rejected {
+  background: #fee2e2;
+  color: #dc2626;
+}
+.status-pending {
+  background: #fef9c3;
+  color: #b45309;
 }
 
-.submission-card p span.approved {
-  color: #22c55e;
+/* ── SUBMISSION BODY (two columns) ── */
+.submission-body {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 1.5rem;
+  align-items: start;
+  margin-bottom: 1.2rem;
 }
 
-.submission-card p span.rejected {
-  color: #f87171;
+.section-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #d25353;
+  text-align: left;
+  margin-bottom: 0.7rem;
 }
 
-.submission-card p span.pending {
-  color: #facc15;
-}
-
-/* =========================
-   EXERCISE BLOCK
-========================= */
+/* ── EXERCISE BLOCKS ── */
 .exercise-block {
-  margin-top: 15px;
-  padding: 10px;
-  border: 1px solid #d25353;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #eee;
+  border-radius: 0.6rem;
+  overflow: hidden;
+  margin-bottom: 0.8rem;
+}
+
+.exercise-block-header {
+  background: #fff4f4;
+  padding: 0.5rem 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid #fca5a5;
+}
+
+.ex-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #111;
+}
+
+.ex-target {
+  font-size: 0.75rem;
+  background: #d25353;
+  color: white;
+  padding: 0.1rem 0.5rem;
+  border-radius: 2rem;
+  text-transform: capitalize;
 }
 
 .exercise-block table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 8px;
+  font-size: 0.85rem;
 }
 
 .exercise-block th,
 .exercise-block td {
-  border: 1px solid black;
-  padding: 6px;
+  padding: 0.4rem 0.7rem;
   text-align: center;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .exercise-block th {
-  background-color: #d25353;
-  color: whitesmoke;
+  background: #d25353;
+  color: white;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-/* =========================
-   VIDEO PREVIEW
-========================= */
-.submission-card video {
-  width: 250px;
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin: 10px auto;
-  border-radius: 8px;
-  border: 1px solid #ebd31b;
+.exercise-block tr:last-child td {
+  border-bottom: none;
 }
 
-/* =========================
-   VERIFY FORM
-========================= */
-.verify-form label {
-  font-weight: bold;
+.exercise-block tr:nth-child(even) td {
+  background: #fafafa;
+}
+
+.no-data {
+  font-size: 0.82rem;
+  color: #999;
+  padding: 0.5rem 0.8rem;
+}
+
+/* ── VIDEO COLUMN ── */
+.video-col {
+  position: sticky;
+  top: 5.5rem;
+}
+
+.video-col video {
+  width: 100%;
+  border-radius: 0.6rem;
+  border: 2px solid #ebd31b;
   display: block;
-  margin-bottom: 5px;
+}
+
+.no-video {
+  background: #fafafa;
+  border: 2px dashed #ddd;
+  border-radius: 0.6rem;
+  padding: 1.5rem;
+  text-align: center;
+  color: #aaa;
+  font-size: 0.85rem;
+}
+
+.no-video span {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+/* ── VERIFY FORM ── */
+.verify-form {
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+}
+
+.form-section {
+  margin-bottom: 0.8rem;
+}
+
+.form-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #555;
+  display: block;
+  margin-bottom: 0.4rem;
 }
 
 .verify-form textarea {
   width: 100%;
-  margin-top: 5px;
-  border-radius: 6px;
-  padding: 5px;
-  border: 1px solid #ebd31b;
-  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.88rem;
   color: black;
+  background: #fafafa;
   resize: vertical;
+  transition: border-color 0.2s;
 }
 
-.verify-form button {
+.verify-form textarea:focus {
+  outline: none;
+  border-color: #d25353;
+  background: white;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.btn-approve,
+.btn-reject {
   cursor: pointer;
-  border-radius: 6px;
-  padding: 8px 15px;
-  font-weight: bold;
-  margin-right: 10px;
-  transition: 0.3s;
   border: none;
-  color: black;
+  border-radius: 0.45rem;
+  padding: 0.5rem 1.3rem;
+  font-weight: bold;
+  font-size: 0.88rem;
+  transition: all 0.2s;
 }
 
-.verify-form button[value="approved"] {
-  background-color: #ebd31b;
+.btn-approve {
+  background: #ebd31b;
+  color: #111;
+}
+.btn-approve:hover {
+  background: #d4bc10;
 }
 
-.verify-form button[value="approved"]:hover {
-  background-color: whitesmoke;
-  color: #020617;
+.btn-reject {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+.btn-reject:hover {
+  background: #fecaca;
 }
 
-.verify-form button[value="rejected"] {
-  background-color: #f87171;
+/* ── REVIEWED BLOCK ── */
+.reviewed-block {
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
 }
 
-.verify-form button[value="rejected"]:hover {
-  background-color: #ef4444;
+.reviewed-text {
+  font-size: 0.88rem;
+  color: #16a34a;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
-/* =========================
-   REVIEWED NOTE
-========================= */
-.submission-card p strong {
-  color: #22c55e;
+.coach-notes {
+  background: #f9f9f9;
+  border-left: 3px solid #d25353;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0 0.4rem 0.4rem 0;
+  font-size: 0.85rem;
 }
 
-/* =========================
-   MOBILE RESPONSIVE
-========================= */
-@media (max-width: 900px) {
-  /* Keep dashboard left, back right */
-  .top-bar {
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 0.8rem 1rem;
+.notes-label {
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #d25353;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+/* ── ERROR MESSAGE ── */
+.error-message {
+  display: none;
+  color: #dc2626;
+  font-weight: bold;
+  font-size: 0.85rem;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 0.4rem;
+  padding: 0.5rem 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+  .submission-body {
+    grid-template-columns: 1fr;
   }
 
-  .dashboard-btn {
-    order: 1; /* left */
+  .video-col {
+    position: static;
   }
 
-  .back-btn {
-    order: 2; /* right */
+  .form-actions {
+    flex-direction: column;
   }
 
-  /* Resize buttons on small screens */
-  .top-bar a {
-    font-size: 0.85rem;
-    padding: 0.4rem 0.8rem;
-  }
-
-  .submission-card {
-    padding: 1rem;
-  }
-
-  .exercise-block table,
-  .exercise-block th,
-  .exercise-block td {
-    font-size: 0.85rem;
-  }
-
-  .submission-card video {
+  .btn-approve,
+  .btn-reject {
     width: 100%;
+    text-align: center;
   }
 }

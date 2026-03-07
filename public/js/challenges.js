@@ -29,7 +29,7 @@ joinButtons.forEach((btn) => {
 });
 
 // ==============================
-// LEADERBOARD
+// LEADERBOARD (Two-Tier)
 // ==============================
 const leaderboardButtons = document.querySelectorAll(".leaderboard-btn");
 
@@ -39,6 +39,7 @@ leaderboardButtons.forEach((btn) => {
     const container = document.querySelector(`#leaderboard-${challengeId}`);
     if (container.style.display === "block") {
       container.style.display = "none";
+      btn.textContent = "View Leaderboard";
       return;
     }
     try {
@@ -50,19 +51,65 @@ leaderboardButtons.forEach((btn) => {
         container.style.display = "block";
         return;
       }
+
       const leaderboard = data.data;
       if (leaderboard.length === 0) {
         container.innerHTML = "<p>No leaderboard data yet.</p>";
         container.style.display = "block";
+        btn.textContent = "Hide Leaderboard";
         return;
       }
-      let html = `<h4>Leaderboard</h4><table><tr><th>Rank</th><th>Username</th><th>Score</th></tr>`;
-      leaderboard.forEach((row) => {
-        html += `<tr><td>#${row.rank}</td><td>${row.username}</td><td>${row.strengthScore}</td></tr>`;
-      });
-      html += "</table>";
+
+      const verified = leaderboard.filter(
+        (r) => r.judgeStatus === "approved" && r.videoUrl,
+      );
+      const unverified = leaderboard.filter(
+        (r) => !(r.judgeStatus === "approved" && r.videoUrl),
+      );
+
+      const buildRows = (rows, startRank) =>
+        rows
+          .map(
+            (row, i) => `
+        <tr>
+          <td>#${startRank + i}</td>
+          <td>${row.username}</td>
+<td>${row.strengthScore != null ? row.strengthScore.toFixed(2) : "—"}</td>          <td>
+            ${
+              row.judgeStatus === "approved" && row.videoUrl
+                ? `<span class="lb-badge lb-verified">✔ Verified</span>`
+                : row.videoUrl
+                  ? `<span class="lb-badge lb-pending">⏳ Pending</span>`
+                  : `<span class="lb-badge lb-no-video">No Video</span>`
+            }
+          </td>
+        </tr>`,
+          )
+          .join("");
+
+      let html = `<h4>Leaderboard</h4>`;
+
+      if (verified.length) {
+        html += `
+          <p class="lb-tier-label lb-tier-verified">✔ Verified Submissions</p>
+          <table>
+            <tr><th>Rank</th><th>Username</th><th>Score</th><th>Status</th></tr>
+            ${buildRows(verified, 1)}
+          </table>`;
+      }
+
+      if (unverified.length) {
+        html += `
+          <p class="lb-tier-label lb-tier-unverified">⏳ Unverified Submissions</p>
+          <table>
+            <tr><th>Rank</th><th>Username</th><th>Score</th><th>Status</th></tr>
+            ${buildRows(unverified, 1)}
+          </table>`;
+      }
+
       container.innerHTML = html;
       container.style.display = "block";
+      btn.textContent = "Hide Leaderboard";
     } catch (err) {
       console.error(err);
       container.innerHTML =

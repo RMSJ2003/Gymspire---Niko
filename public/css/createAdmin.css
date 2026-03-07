@@ -1,135 +1,423 @@
-/* =========================
-   GLOBAL RESET
-========================= */
-* {
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap");
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f9f9f9;
-  color: #333;
+  font-family: "DM Sans", sans-serif;
+  background-color: #1a1a1a;
+  background-image:
+    radial-gradient(
+      ellipse at 20% 50%,
+      rgba(210, 83, 83, 0.14) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 80% 20%,
+      rgba(244, 196, 48, 0.09) 0%,
+      transparent 50%
+    );
   min-height: 100vh;
-  padding: 2rem 1rem 4rem 1rem;
   display: flex;
-  flex-direction: column;
-  align-items: center; /* Center horizontally */
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem 4rem;
 }
 
 /* =========================
    BACK BUTTON
 ========================= */
-.back-btn-container {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 1rem;
+.back-btn {
+  position: fixed;
+  top: 1.2rem;
+  left: 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: 0.2s;
+  z-index: 100;
+  backdrop-filter: blur(6px);
 }
 
-.back-btn {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  background-color: #d25353;
-  color: #fff;
-  font-weight: bold;
-  border-radius: 0.5rem;
-  text-decoration: none;
-  transition: 0.3s;
+.back-btn svg {
+  width: 15px;
+  height: 15px;
+  stroke: white;
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
 }
 
 .back-btn:hover {
-  background-color: #9e3b3b;
+  background: #d25353;
+  border-color: #d25353;
 }
 
 /* =========================
-   PROFILE & TITLES
+   PAGE WRAP
 ========================= */
-h1,
-h2 {
-  text-align: center;
-  margin: 0.5rem 0;
+.page-wrap {
+  width: 100%;
+  max-width: 460px;
+  margin-top: 4rem;
 }
 
-.profile-pic {
-  width: 150px;
-  height: 150px;
+/* =========================
+   CARD
+========================= */
+.card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 40px 36px 36px;
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  animation: slideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   LOGO
+========================= */
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  margin-bottom: 10px;
+}
+
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #d25353 0%, #b11226 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(210, 83, 83, 0.45);
+  flex-shrink: 0;
+}
+
+.logo-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: white;
+}
+
+.logo-text {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2rem;
+  letter-spacing: 0.06em;
+  color: #111;
+  line-height: 1;
+}
+
+.logo-text span {
+  color: #d25353;
+}
+
+.logo-divider {
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, #d25353, #f4c430);
+  border-radius: 2px;
+  margin: 10px auto 18px;
+}
+
+/* =========================
+   CARD TITLE
+========================= */
+.card-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.7rem;
+  letter-spacing: 0.05em;
+  color: #111;
+  text-align: center;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.card-subtitle {
+  text-align: center;
+  font-size: 0.83rem;
+  color: #888;
+  font-weight: 400;
+  margin-bottom: 22px;
+}
+
+.card-subtitle strong {
+  color: #d25353;
+  font-weight: 700;
+}
+
+/* =========================
+   AVATAR UPLOAD
+========================= */
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 22px;
+  gap: 8px;
+}
+
+.avatar-preview {
+  position: relative;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
+  cursor: pointer;
+  overflow: hidden;
+  border: 3px solid rgba(210, 83, 83, 0.3);
+  transition: border-color 0.2s;
+}
+
+.avatar-preview:hover {
+  border-color: #d25353;
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  margin: 1rem auto; /* Center horizontally */
   display: block;
 }
 
-/* =========================
-   FORM STYLING
-========================= */
-form#createAdminForm {
-  max-width: 500px;
-  width: 100%;
-  margin: 2rem auto;
-  background: #fff;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
 }
 
-form#createAdminForm label {
-  font-weight: 600;
+.avatar-preview:hover .avatar-overlay {
+  opacity: 1;
 }
 
-form#createAdminForm input[type="text"],
-form#createAdminForm input[type="email"],
-form#createAdminForm input[type="password"],
-form#createAdminForm input[type="file"] {
-  padding: 0.5rem;
-  border-radius: 0.4rem;
-  border: 1px solid #ccc;
-  width: 100%;
+.avatar-overlay svg {
+  width: 22px;
+  height: 22px;
+  stroke: white;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-small.form-error {
-  color: #d25353;
-  font-size: 0.85rem;
-}
-
-/* =========================
-   FORM BUTTON
-========================= */
-form#createAdminForm button#submitBtn {
-  margin-top: 1rem;
-  padding: 0.6rem 1.2rem;
-  border: none;
-  background-color: #d25353;
-  color: white;
-  font-weight: bold;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-form#createAdminForm button#submitBtn:hover {
-  background-color: #9e3b3b;
+.avatar-hint {
+  font-size: 0.75rem;
+  color: #bbb;
+  font-weight: 400;
 }
 
 /* =========================
    FORM MESSAGE
 ========================= */
-p.form-message {
-  margin-top: 0.5rem;
-  font-weight: 600;
-  color: #d25353;
+.form-message {
   text-align: center;
+  font-size: 0.83rem;
+  font-weight: 600;
+  min-height: 20px;
+  margin-bottom: 8px;
+  color: #d25353;
+}
+
+.form-message.success {
+  color: #16a34a;
+}
+
+/* =========================
+   FORM
+========================= */
+#createAdminForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.field-group label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #444;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.field-group input {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 10px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.9rem;
+  color: #111;
+  background: #fafafa;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s,
+    background 0.18s;
+  outline: none;
+}
+
+.field-group input:focus {
+  border-color: #d25353;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(210, 83, 83, 0.1);
+}
+
+.field-group input::placeholder {
+  color: #ccc;
+}
+
+/* Password wrapper with show/hide toggle */
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrap input {
+  padding-right: 42px;
+}
+
+.toggle-pw {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #bbb;
+  transition: color 0.18s;
+}
+
+.toggle-pw:hover {
+  color: #d25353;
+}
+
+.toggle-pw svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+/* Error text */
+.form-error {
+  font-size: 0.77rem;
+  color: #d25353;
+  font-weight: 500;
+  min-height: 16px;
+}
+
+/* =========================
+   SUBMIT BUTTON
+========================= */
+#submitBtn {
+  width: 100%;
+  margin-top: 6px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #d25353 0%, #b11226 100%);
+  color: white;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  box-shadow: 0 4px 16px rgba(177, 18, 38, 0.35);
+  transition:
+    filter 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+#submitBtn:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(177, 18, 38, 0.45);
+}
+
+#submitBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* =========================
    RESPONSIVE
 ========================= */
-@media (max-width: 600px) {
-  form#createAdminForm {
-    padding: 1rem;
+@media (max-width: 520px) {
+  body {
+    padding: 1rem 1rem 3rem;
+  }
+  .page-wrap {
+    margin-top: 3.5rem;
+  }
+  .card {
+    padding: 28px 20px 24px;
+    border-radius: 16px;
+  }
+  .logo-text {
+    font-size: 1.7rem;
+  }
+  .card-title {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .card {
+    padding: 22px 14px 20px;
+  }
+  .back-btn span {
+    display: none;
+  }
+  .back-btn {
+    padding: 0.5rem 0.65rem;
   }
 }

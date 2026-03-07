@@ -4,21 +4,35 @@ const authController = require("../controllers/authController");
 
 const router = express.Router();
 
-// USED authController.protect -------------------------- START
-// Only logged in user can access these routes:
-
+// All routes below require login
 router.use(authController.protect);
 
+// ── SELF ────────────────────────────────────────────────────
 router.get("/me", userController.getMe, userController.getUser);
+
 router.patch(
   "/updateMe",
   userController.uploadUserPhoto,
   userController.updateMe,
 );
+
 router.delete("/deleteMe", userController.deleteMe);
 router.delete("/permanentDeleteMe", userController.permanentDeleteMe);
 
-router.route("/").get(userController.getAllUsers);
+// ── GYM CHECK-IN ────────────────────────────────────────────
+// PATCH /api/v1/users/gymCheckin
+// Body: { status: "atGym" | "offline" }
+router.patch("/gymCheckin", userController.gymCheckin);
+
+// ── ADMIN / ALL USERS ───────────────────────────────────────
+router.get("/", userController.getAllUsers);
+
+router.get(
+  "/:id/attendance",
+  authController.protect,
+  authController.restrictTo("admin", "coach"),
+  userController.getUserAttendance,
+);
 
 router
   .route("/:id")
@@ -26,10 +40,10 @@ router
   .patch(userController.updateUser)
   .delete(userController.deleteUser);
 
-router
-  .route("/:id/role")
-  .patch(authController.restrictTo("admin"), userController.updateUserRole);
+router.patch(
+  "/:id/role",
+  authController.restrictTo("admin"),
+  userController.updateUserRole,
+);
 
 module.exports = router;
-
-// USED authController.protect -------------------------- END

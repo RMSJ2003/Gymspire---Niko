@@ -18,7 +18,9 @@ block content
         a.dashboard-btn(href='/adminDashboard') GymSpire
       if user.userType === "clinic"
         a.dashboard-btn(href='/clinicDashboard') GymSpire
+
     .nav-center
+
     .nav-right
       button.hamburger ☰
       .panel
@@ -27,7 +29,7 @@ block content
           button(type="submit") Logout
 
   // =========================
-  // QUOTE BANNER
+  // QUOTE BANNER (replaces full-screen overlay)
   // =========================
   .quote-banner
     .quote-banner__inner
@@ -41,11 +43,9 @@ block content
     h2 Welcome, #{user.username}
 
   // =========================
-  // STATUS + EXERCISE LOG GRID
+  // STATUS + EXERCISE LOG CONTAINERS
   // =========================
   .status-exercise-grid
-
-    //- Card 1 — Workout recommendation
     .status-card
       p
         if recommended
@@ -57,55 +57,20 @@ block content
         | Active GymSpire Sessions: 
         data(value=currentLoad) #{currentLoad}
 
-    //- ──────────────────────────────────────────────────
-    //- Card 2 — Currently Working Out  ← CHECK-IN IS HERE
-    //- ──────────────────────────────────────────────────
-    .status-card.checkin-card
+    .status-card
       h3 Currently Working Out
-
-      //- One-tap check-in for users physically at the gym
-      //- but not logging a workout session
-      button.checkin-btn#checkinBtn
-        svg(xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24')
-          path(d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z')
-        span#checkinBtnText I'm at the gym
-
-      //- Nudge shown after check-in
-      .workout-prompt#workoutPrompt
-        svg(xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24')
-          path(d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z')
-        | You're checked in! Want to log your session?&nbsp;
-        a(href='/startSoloWorkout') Start Workout →
-
-      .card-divider
-
-      //- Online users list — badges show "Logging" vs "At Gym"
       if onlineUsers.length === 0
-        p.empty-state No one is currently working out.
+        p No users are currently working out.
       else
         .online-users
           each u in onlineUsers
             .online-user
               if u.pfpUrl
-                img(src=u.pfpUrl alt=u.username width='32' height='32')
+                img(src=u.pfpUrl alt=u.username width="40" height="40" style="border-radius:50%;")
               else
-                img(src='/img/default-user.png' alt=u.username width='32' height='32')
+                img(src="/img/default-user.png" alt=u.username width="40" height="40" style="border-radius:50%;")
               span= u.username
-              if u.gymStatus === 'logging'
-                span.user-badge.badge-workout Logging
-              else if u.gymStatus === 'atGym'
-                span.user-badge.badge-atgym At Gym
 
-      //- Silent attendance confirmation
-      p.attendance-logged#attendanceLogged
-        | ✓ Attendance recorded at 
-        span#checkinTime
-
-      //- Check out
-      .checkout-row#checkoutRow
-        button.checkout-link#checkoutBtn Leave gym / Check out
-
-    //- Card 3 — Targeted muscles
     .exercise-log-card
       h3 Targeted Muscles This Week
       if frequencies.length === 0
@@ -122,7 +87,7 @@ block content
   // =========================
   .workout-week-card
     p
-      | Workouts this week:&nbsp;
+      | Workouts this week: 
       if workoutCount === 0
         strong No workout yet
       else
@@ -154,4 +119,3 @@ block content
   // =========================
   script(src="/js/dashboard.js")
   script(src="/js/quoteBanner.js")
-  script(src="/js/gymCheckin.js")

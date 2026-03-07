@@ -102,6 +102,7 @@ router.get(
 router.get(
   "/workoutLogs/:id",
   authController.protect,
+  workoutLogController.acquireMyWorkoutLogs,
   workoutLogController.acquireMyWorkoutLog,
   viewController.workoutLog,
 );

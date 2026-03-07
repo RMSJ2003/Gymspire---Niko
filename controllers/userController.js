@@ -1,110 +1,169 @@
-const fs = require("fs");
-const path = require("path");
-
 const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+
 const User = require("../models/userModel");
 const WorkoutLog = require("../models/workoutLogModel");
 const WorkoutPlan = require("../models/workoutPlanModel");
+const GymAttendance = require("../models/gymAttendanceModel");
 const Challenge = require("../models/challengeModel");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const factory = require("./handlerFactory");
 
-// Image (Multer) - START
-
-// This phase:
-// - File is in req.file.buffer
-// - NOT saved yet
-// - We control filename ourselves
-const multerStorage = multer.memoryStorage();
-
-// Allow only images
-const multerFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image")) {
-    cb(null, true);
-  } else {
-    cb(new AppError("Please upload an image file", 400), false);
-  }
-};
-
-// Final upload middleware
-const upload = multer({
-  storage: multerStorage,
-  fileFilter: multerFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 🔥 5 MB limit
-  },
+// ============================================================
+// CLOUDINARY CONFIG (once, at the top)
+// ============================================================
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
 });
 
-// This means: Input name must be pfp, File is available as req.file
+// ============================================================
+// MULTER — memory storage, images only, 5 MB cap
+// ============================================================
+const upload = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("image")) {
+      cb(null, true);
+    } else {
+      cb(new AppError("Please upload an image file", 400), false);
+    }
+  },
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
+
 exports.uploadUserPhoto = upload.single("pfp");
 
-// Image - END
-
-const filterObj = (obj, ...allowedFields) => {
-  const newObj = {};
-
-  // Object.keys will be looping through an object in javascript and return an array of keys of the object.
-  Object.keys(obj).forEach((fieldName) => {
-    if (allowedFields.includes(fieldName)) newObj[fieldName] = obj[fieldName];
+// ============================================================
+// HELPER — upload buffer to Cloudinary, return secure_url
+// ============================================================
+const uploadToCloudinary = (buffer) =>
+  new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "gymspire/users" },
+      (error, result) => (error ? reject(error) : resolve(result)),
+    );
+    stream.end(buffer);
   });
+// ============================================================
+// AUTO CHECKOUT HELPER
+// Call this whenever a workout ends OR user logs out.
+// Closes the open GymAttendance record and clears User status.
+// ============================================================
 
-  return newObj;
+// Add to top of userController.js:
+// const GymAttendance = require("../models/gymAttendanceModel");
+
+// ── REUSABLE HELPER (not a route handler) ───────────────────
+// Use this inside other controllers too (e.g. workoutLogController)
+const closeAttendance = async (userId) => {
+  const now = new Date();
+
+  // Close open attendance record
+  const openRecord = await GymAttendance.findOne({
+    user: userId,
+    checkoutTime: null,
+  }).sort({ checkinTime: -1 });
+
+  if (openRecord) {
+    const durationMs = now - openRecord.checkinTime;
+    openRecord.checkoutTime = now;
+    openRecord.durationMinutes = Math.round(durationMs / 60000);
+    await openRecord.save();
+  }
+
+  // Clear live status on User
+  await User.findByIdAndUpdate(userId, {
+    isAtGym: false,
+    gymStatus: "offline",
+    gymCheckinTime: null,
+  });
 };
 
+// Export so other controllers can use it
+exports.closeAttendance = closeAttendance;
+
+exports.getUserAttendance = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+
+  const records = await GymAttendance.find({ user: id })
+    .sort({ checkinTime: -1 }) // newest first
+    .limit(100); // cap at 100 records
+
+  res.status(200).json({
+    status: "success",
+    results: records.length,
+    data: records,
+  });
+});
+
+// ── ROUTE HANDLER: manual "Leave gym" button ─────────────────
+// PATCH /api/v1/users/gymCheckin  body: { status: "offline" }
+exports.gymCheckin = catchAsync(async (req, res, next) => {
+  const { status } = req.body;
+
+  if (!["atGym", "offline"].includes(status)) {
+    return next(new AppError('Status must be "atGym" or "offline"', 400));
+  }
+
+  if (status === "atGym") {
+    const now = new Date();
+
+    await User.findByIdAndUpdate(req.user.id, {
+      isAtGym: true,
+      gymStatus: "atGym",
+      gymCheckinTime: now,
+    });
+
+    await GymAttendance.create({
+      user: req.user.id,
+      checkinTime: now,
+      source: "manual",
+    });
+  } else {
+    // Manual checkout via "Leave gym" button
+    await closeAttendance(req.user.id);
+  }
+
+  res.status(200).json({ status: "success" });
+});
+// ============================================================
+// GET ME
+// ============================================================
 exports.getMe = (req, res, next) => {
-  req.params.id = req.user.id; // There is a authController.protect in the userRoutes so we still have access of ID in req.user
+  req.params.id = req.user.id;
   next();
 };
 
+// ============================================================
+// UPDATE ME (username + optional photo)
+// ============================================================
 exports.updateMe = catchAsync(async (req, res, next) => {
-  console.log("req.file:", req.file);
-  console.log("req.body:", req.body);
-  // 1) Block password updates
-  if (req.body.password || req.body.passwordConfirm)
+  // Block password changes through this route
+  if (req.body.password || req.body.passwordConfirm) {
     return next(
       new AppError(
         "This route is not for password updates. Please use /updateMyPassword",
         400,
       ),
     );
+  }
 
   const updates = {};
 
-  // Username update
-  if (req.body.username) {
-    updates.username = req.body.username;
-  }
+  if (req.body.username) updates.username = req.body.username;
 
-  // Photo update
   if (req.file) {
     try {
-      const cloudinary = require("cloudinary").v2;
-
-      cloudinary.config({
-        cloud_name: process.env.CLOUDINARY_NAME,
-        api_key: process.env.CLOUDINARY_KEY,
-        api_secret: process.env.CLOUDINARY_SECRET,
-      });
-
-      const result = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: "gymspire/users" },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          },
-        );
-
-        stream.end(req.file.buffer);
-      });
-
+      const result = await uploadToCloudinary(req.file.buffer);
       updates.pfpUrl = result.secure_url;
     } catch (err) {
-      console.error("Cloudinary upload failed:", err);
       return next(new AppError("Image upload failed", 500));
     }
   }
+
   const updatedUser = await User.findByIdAndUpdate(req.user.id, updates, {
     new: true,
     runValidators: true,
@@ -112,53 +171,75 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    data: {
-      user: updatedUser,
-    },
+    data: { user: updatedUser },
   });
 });
 
+// ============================================================
+// DELETE ME (soft delete)
+// ============================================================
 exports.deleteMe = catchAsync(async (req, res) => {
   await User.findByIdAndUpdate(req.user.id, {
     active: false,
     emailVerified: false,
   });
 
-  res.status(204).json({
-    status: "success",
-    data: null,
-  });
+  res.status(204).json({ status: "success", data: null });
 });
 
-exports.permanentDeleteMe = catchAsync(async (req, res, next) => {
+// ============================================================
+// PERMANENT DELETE ME
+// ============================================================
+exports.permanentDeleteMe = catchAsync(async (req, res) => {
   const userId = req.user.id;
 
-  // 2️⃣ Remove user from Challenge.participants array
   await Challenge.updateMany(
     { participants: userId },
     { $pull: { participants: userId } },
   );
-
-  // 3️⃣ Delete workout logs
   await WorkoutLog.deleteMany({ userId });
-
-  // 4️⃣ Delete workout plans
   await WorkoutPlan.deleteMany({ userId });
-
-  // 5️⃣ Finally delete user
   await User.findByIdAndDelete(userId);
 
-  res.status(204).json({
-    status: "success",
-    data: null,
-  });
+  res.status(204).json({ status: "success", data: null });
 });
 
+// ============================================================
+// GYM CHECK-IN
+// PATCH /api/v1/users/gymCheckin
+// Body: { status: "atGym" | "offline" }
+//
+// Uses fields on the User model — no separate collection needed:
+//   isAtGym:        Boolean  (default: false)
+//   gymStatus:      String   enum ["atGym", "logging", "offline"]
+//   gymCheckinTime: Date
+// ============================================================
+exports.gymCheckin = catchAsync(async (req, res, next) => {
+  const { status } = req.body;
+
+  if (!["atGym", "offline"].includes(status)) {
+    return next(new AppError('Status must be "atGym" or "offline"', 400));
+  }
+
+  const updates =
+    status === "atGym"
+      ? { isAtGym: true, gymStatus: "atGym", gymCheckinTime: new Date() }
+      : { isAtGym: false, gymStatus: "offline", gymCheckinTime: null };
+
+  await User.findByIdAndUpdate(req.user.id, updates);
+
+  res.status(200).json({ status: "success" });
+});
+
+// ============================================================
+// UPDATE USER ROLE (admin only)
+// ============================================================
 exports.updateUserRole = catchAsync(async (req, res, next) => {
   const { userType } = req.body;
 
-  if (!["coach", "admin"].includes(userType))
+  if (!["coach", "admin"].includes(userType)) {
     return next(new AppError("Invalid role", 400));
+  }
 
   const user = await User.findByIdAndUpdate(
     req.params.id,
@@ -166,83 +247,18 @@ exports.updateUserRole = catchAsync(async (req, res, next) => {
     { new: true, runValidators: true },
   );
 
-  res.status(200).json({
-    status: "success",
-    data: user,
-  });
+  if (!user) return next(new AppError("User not found", 404));
+
+  res.status(200).json({ status: "success", data: user });
 });
 
-exports.updateProfilePhoto = catchAsync(async (req, res, next) => {
-  if (!req.file) return next(new AppError("Please upload a file", 400));
-
-  const ext = req.file.mimetype.split("/")[1];
-  const filename = `user-${req.user._id}.${ext}`;
-
-  const filePath = path.join(
-    __dirname,
-    "..",
-    "public",
-    "img",
-    "users",
-    filename,
-  );
-
-  const cloudinary = require("cloudinary").v2;
-
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  });
-
-  if (req.file) {
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: "gymspire/users" },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        },
-      );
-      stream.end(req.file.buffer);
-    });
-
-    updates.pfpUrl = result.secure_url;
-  }
-
-  const photoUrl = `/img/users/${filename}`;
-
-  const updatedUser = await User.findByIdAndUpdate(
-    req.user._id,
-    { pfpUrl: photoUrl },
-    { new: true, runValidators: true },
-  );
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      user: updatedUser,
-    },
-  });
-});
-
-exports.getAllUsers = factory.getAll(User);
-
-exports.getUser = factory.getOne(User);
-
-exports.updateUser = factory.updateOne(User);
-
-// exports.deleteUser = factory.deleteOne(User);
+// ============================================================
+// ADMIN — deactivate user
+// ============================================================
 exports.deleteUser = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.params.id);
 
-  if (!user) {
-    return next(new AppError("User not found", 404));
-  }
-
-  // if (user.userType === "admin") {
-  //   return next(new AppError("Admin accounts cannot be deleted", 403));
-  // }
+  if (!user) return next(new AppError("User not found", 404));
 
   user.emailVerified = false;
   user.active = false;
@@ -255,10 +271,17 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
   });
 });
 
-// Without JSON
-exports.acquireAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-  req.users = users;
+// ============================================================
+// FACTORY ROUTES
+// ============================================================
+exports.getAllUsers = factory.getAll(User);
+exports.getUser = factory.getOne(User);
+exports.updateUser = factory.updateOne(User);
 
+// ============================================================
+// MIDDLEWARE — attach all users to req (no JSON response)
+// ============================================================
+exports.acquireAllUsers = catchAsync(async (req, res, next) => {
+  req.users = await User.find();
   next();
 });

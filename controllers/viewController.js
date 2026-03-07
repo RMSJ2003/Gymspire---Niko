@@ -97,6 +97,7 @@ exports.workoutPlan = catchAsync(async (req, res, next) => {
 
 exports.challenges = catchAsync(async (req, res, next) => {
   const challenges = req.challenges || [];
+  console.log(req.challenges);
 
   res.status(200).render("challenges", {
     title: "Challenges",
@@ -122,6 +123,7 @@ exports.workoutLog = catchAsync(async (req, res, next) => {
     title: "Workout Log",
     user: req.user,
     log: req.myWorkoutLog,
+    prevLog: req.myWorkoutLogs,
   });
 });
 
@@ -190,7 +192,6 @@ exports.editWorkoutPlan = catchAsync(async (req, res, next) => {
 
 exports.personalRecord = catchAsync(async (req, res, next) => {
   console.log(req.exercises);
-  
 
   res.status(200).render("personalRecord", {
     title: "My Personal Records",

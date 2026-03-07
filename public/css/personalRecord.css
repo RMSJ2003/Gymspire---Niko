@@ -1,11 +1,18 @@
 /* =========================
-   PAGE LAYOUT
+   GLOBAL RESET
 ========================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   font-family: Arial, sans-serif;
-  background-color: white;
-  padding: 6rem 1rem 2rem 1rem;
+  background: white;
+  color: black;
   min-height: 100vh;
+  padding: 5rem 1rem 3rem 1rem;
 }
 
 /* =========================
@@ -18,20 +25,23 @@ body {
   right: 0;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 0.8rem 1rem;
   background: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
   z-index: 999;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .top-bar a {
-  padding: 0.5rem 1rem;
+  padding: 0.45rem 1.1rem;
   border: 2px solid #d25353;
   background: #d25353;
-  color: white;
-  border-radius: 0.5rem;
+  color: whitesmoke;
   font-weight: bold;
+  border-radius: 0.5rem;
   text-decoration: none;
+  font-size: 0.9rem;
+  transition: 0.2s ease;
 }
 
 .top-bar a:hover {
@@ -39,108 +49,479 @@ body {
 }
 
 /* =========================
-   PROFILE
+   PAGE HEADER
+========================= */
+h1 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.3rem;
+  color: black;
+}
+
+h2 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: center;
+  color: black;
+  margin-bottom: 0.5rem;
+}
+
+h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.2rem;
+  color: black;
+}
+
+/* =========================
+   PROFILE PIC
 ========================= */
 .profile-pic {
-  width: 150px;
-  height: 150px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  border: 4px solid #ebda1b;
-  display: block;
-  margin: 2rem auto;
   object-fit: cover;
+  border: 4px solid #ebd31b;
+  display: block;
+  margin: 0.8rem auto 1rem auto;
 }
 
 /* =========================
-   HEADINGS
-========================= */
-h1,h2,h3 {
-  text-align: center;
-  margin-bottom: 0.8rem;
-}
-
-/* =========================
-   TARGET GRID
+   MUSCLE GRID
 ========================= */
 .target-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(140px,1fr));
-  gap: 1rem;
-  max-width: 900px;
-  margin: 2rem auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  justify-content: center;
+  max-width: 700px;
+  margin: 0 auto 2rem auto;
 }
 
 .target-card {
-  background:#d25353;
-  color:white;
-  font-weight:bold;
-  padding:1.5rem;
-  text-align:center;
-  border-radius:0.7rem;
-  cursor:pointer;
-  transition:0.3s;
+  padding: 0.7rem 1.4rem;
+  background: #d25353;
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  transition: 0.2s;
+  text-transform: capitalize;
+  border: 2px solid transparent;
+  user-select: none;
 }
 
 .target-card:hover {
-  transform:scale(1.05);
-  background:#b91c1c;
+  background: #b83f3f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(210, 83, 83, 0.35);
 }
 
 /* =========================
-   EXERCISE LIST
-========================= */
-.exercise-row {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:#ea7b7b;
-  padding:0.6rem 1rem;
-  border-radius:0.6rem;
-  margin-bottom:0.5rem;
-}
-
-.exercise-row button {
-  background:transparent;
-  border:1px solid #ebda1b;
-  color:#ebda1b;
-  padding:0.3rem 0.6rem;
-  border-radius:0.4rem;
-  cursor:pointer;
-}
-
-/* =========================
-   MODAL
+   MODAL OVERLAY
 ========================= */
 .modal {
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  bottom:0;
-  background:rgba(0,0,0,0.7);
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  backdrop-filter: blur(3px);
 }
 
 .modal.hidden {
-  display:none;
-}
-
-.modal-content.large {
-  background:white;
-  padding:1rem;
-  border-radius:1rem;
-  max-width:700px;
-  width:95%;
-  max-height:80vh;
-  overflow-y:auto;
+  display: none;
 }
 
 /* =========================
-   RESULT
+   MODAL CONTENT
 ========================= */
-#prResult {
-  text-align:center;
-  margin-top:1.5rem;
+.modal-content {
+  background: white;
+  border-radius: 1.2rem;
+  width: 100%;
+  max-width: 560px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: modalIn 0.25s ease;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.2rem 0.8rem 1.2rem;
+  border-bottom: 2px solid #d25353;
+  flex-shrink: 0;
+  background: #d25353;
+}
+
+.modal-header h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.modal-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: 0.2s;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.35);
+  color: #f4c430;
+}
+
+/* Modal Body — scrollable list */
+.modal-body {
+  overflow-y: auto;
+  flex: 1;
+  padding: 0.8rem 1rem;
+  background: white;
+}
+
+/* =========================
+   EXERCISE ROWS
+========================= */
+.exercise-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.6rem;
+  background: #fff4f4;
+  margin-bottom: 0.5rem;
+  border: 1px solid rgba(210, 83, 83, 0.2);
+  transition: 0.15s;
+}
+
+.exercise-row:hover {
+  background: rgba(210, 83, 83, 0.08);
+  border-color: rgba(210, 83, 83, 0.4);
+}
+
+.exercise-row span {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: black;
+  text-transform: capitalize;
+  flex: 1;
+}
+
+.view-pr-btn {
+  padding: 0.3rem 0.85rem;
+  background: #d25353;
+  color: white;
+  font-weight: 700;
+  border-radius: 0.45rem;
+  border: none;
+  cursor: pointer;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  transition: 0.2s;
+  margin: 0;
+  width: max-content;
+  display: inline-block;
+}
+
+.view-pr-btn:hover {
+  background: #b83f3f;
+  color: #f4c430;
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: black;
+  font-size: 0.9rem;
+}
+
+.empty-state-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  color: black;
+}
+
+/* =========================
+   PR RESULT CARD (inside modal)
+========================= */
+.pr-card {
+  background: #d25353;
+  border-radius: 0.9rem;
+  padding: 1.1rem 1.2rem;
+  margin-top: 0.5rem;
+  animation: modalIn 0.2s ease;
+}
+
+.pr-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.pr-card-header span {
+  font-size: 1.3rem;
+}
+
+.pr-card-header strong {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: white;
+}
+
+.pr-card-exercise {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 0.8rem;
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.pr-stats {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.pr-stat {
+  flex: 1;
+  min-width: 80px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  text-align: center;
+}
+
+.pr-stat-label {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.pr-stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+}
+
+.pr-date {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.7rem;
+  text-align: right;
+}
+
+.pr-error {
+  text-align: center;
+  padding: 1rem;
+  color: #d25353;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+/* =========================
+   BACK BUTTON (inside modal)
+========================= */
+#backToList {
+  background: rgba(210, 83, 83, 0.1);
+  border: 1px solid rgba(210, 83, 83, 0.3);
+  color: #d25353;
+  border-radius: 6px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  margin: 0 0 1rem 0;
+  width: max-content;
+  display: block;
+}
+
+#backToList:hover {
+  background: #d25353;
+  color: white;
+}
+
+/* =========================
+   LOADING
+========================= */
+.pr-loading {
+  text-align: center;
+  padding: 1.5rem;
+  color: #d25353;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+/* =========================
+   MOBILE — up to 600px
+========================= */
+@media (max-width: 600px) {
+  body {
+    padding: 4.5rem 0.75rem 2.5rem 0.75rem;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+  h2 {
+    font-size: 0.95rem;
+  }
+  h3 {
+    font-size: 1rem;
+  }
+
+  .profile-pic {
+    width: 80px;
+    height: 80px;
+  }
+
+  .target-grid {
+    gap: 0.5rem;
+  }
+
+  .target-card {
+    font-size: 0.85rem;
+    padding: 0.6rem 1rem;
+    flex: 1 1 calc(50% - 0.5rem);
+    text-align: center;
+  }
+
+  .modal {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal-content {
+    max-height: 90vh;
+    border-radius: 1.2rem 1.2rem 0 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .modal-header {
+    padding: 0.9rem 1rem 0.7rem 1rem;
+  }
+
+  .modal-header h3 {
+    font-size: 1rem;
+  }
+
+  .modal-body {
+    padding: 0.7rem 0.75rem;
+  }
+
+  .exercise-row {
+    padding: 0.65rem 0.75rem;
+    gap: 0.5rem;
+  }
+  .exercise-row span {
+    font-size: 0.82rem;
+  }
+  .view-pr-btn {
+    font-size: 0.75rem;
+    padding: 0.28rem 0.7rem;
+  }
+
+  .pr-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pr-stat {
+    min-width: unset;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.9rem;
+    text-align: left;
+  }
+
+  .pr-stat-label {
+    margin-bottom: 0;
+    font-size: 0.7rem;
+  }
+  .pr-stat-value {
+    font-size: 1rem;
+  }
+  .pr-card {
+    padding: 0.9rem 1rem;
+  }
+  .pr-card-header strong {
+    font-size: 0.88rem;
+  }
+  .pr-date {
+    font-size: 0.72rem;
+  }
+  .empty-state {
+    padding: 1.5rem 0.5rem;
+  }
+  .empty-state-icon {
+    font-size: 2rem;
+  }
+}
+
+/* =========================
+   TABLET — 601px to 900px
+========================= */
+@media (min-width: 601px) and (max-width: 900px) {
+  .target-card {
+    flex: 1 1 calc(33% - 0.7rem);
+    text-align: center;
+  }
+
+  .modal-content {
+    max-width: 480px;
+  }
 }
