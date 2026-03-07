@@ -39,8 +39,8 @@ h2 {
   color: black;
 }
 
-/* Inputs */
-#loginForm input {
+/* Inputs (EXCLUDE CHECKBOX) */
+#loginForm input:not([type="checkbox"]) {
   width: 100%;
   padding: 12px;
   margin-top: 6px;
@@ -111,7 +111,7 @@ h2 {
   color: black;
 }
 
-/* Signup button (secondary) */
+/* Signup button */
 #signupBtn {
   border: none;
   background-color: #f4c430;
@@ -139,24 +139,40 @@ h2 {
   font-size: 0.9rem;
 }
 
-/* 🔴 Error color */
 .form-message.error {
   color: #f87171;
 }
 
-/* 🟢 Success color */
 .form-message.success {
   color: #22c55e;
 }
 
 /* ========================= */
-/* 📱 MOBILE (Phones) */
-@media (max-width: 480px) {
-  body {
-    justify-content: center;
-    align-items: center;
-  }
+/* SHOW PASSWORD CHECKBOX */
+.checkbox-show-password {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* ✅ clean spacing */
+  margin: 8px 0 12px 0;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: black;
+}
 
+/* Checkbox */
+#loginForm input[type="checkbox"] {
+  width: auto;
+  height: 16px;
+  accent-color: #d25353;
+  cursor: pointer;
+  margin: 0;
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+/* ========================= */
+/* MOBILE */
+@media (max-width: 480px) {
   #loginForm {
     width: 100%;
     max-width: 360px;
@@ -167,7 +183,6 @@ h2 {
     font-size: 1.4rem;
   }
 
-  /* Stack links on mobile */
   .links-row {
     flex-direction: column;
     gap: 8px;
@@ -180,7 +195,7 @@ h2 {
 }
 
 /* ========================= */
-/* 📱 TABLET */
+/* TABLET */
 @media (max-width: 768px) {
   #loginForm {
     max-width: 360px;

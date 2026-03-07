@@ -517,6 +517,7 @@ exports.verifyIacademyEmail = catchAsync(async (req, res, next) => {
   if (!user) return next(new AppError("Token is invalid or has expired", 400));
 
   user.emailVerified = true;
+  user.active = true;
   user.emailVerificationToken = undefined;
   user.emailVerificationExpires = undefined;
   await user.save({ validateBeforeSave: false });

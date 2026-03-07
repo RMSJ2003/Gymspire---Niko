@@ -1,13 +1,12 @@
 extends base
-//- base.pug
 
 block styles
   link(rel="stylesheet" href="/css/login.css")
 
 block content
-  form(id='loginForm' novalidate) 
+  form(id='loginForm' novalidate)
     h2 Login
-    // 🔥 Global message area
+
     p.form-message#formMessage
 
     label(for='email') Email
@@ -16,9 +15,13 @@ block content
 
     label(for='password') Password
     input(type='password' name='password' id='password' required)
-    small.form-error#passwordError 
+    small.form-error#passwordError
 
-    // 🔹 Links row (flexbox)
+    // ✅ Show Password checkbox
+    label.show-password-label
+      input(type="checkbox" id="showPassword")
+      | Show Password
+
     .links-row
       a.login__verify-email(href='/requestEmailVerification') Verify email
       a(href='/forgotPassword') Forgot password?

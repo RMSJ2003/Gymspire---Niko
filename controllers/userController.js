@@ -58,6 +58,8 @@ exports.getMe = (req, res, next) => {
 };
 
 exports.updateMe = catchAsync(async (req, res, next) => {
+  console.log("req.file:", req.file);
+  console.log("req.body:", req.body);
   // 1) Block password updates
   if (req.body.password || req.body.passwordConfirm)
     return next(
@@ -76,27 +78,15 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   // Photo update
   if (req.file) {
-    const ext = req.file.mimetype.split("/")[1];
-    const filename = `user-${req.user._id}.${ext}`;
+    try {
+      const cloudinary = require("cloudinary").v2;
 
-    const filePath = path.join(
-      __dirname,
-      "..",
-      "public",
-      "img",
-      "users",
-      filename,
-    );
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_NAME,
+        api_key: process.env.CLOUDINARY_KEY,
+        api_secret: process.env.CLOUDINARY_SECRET,
+      });
 
-    const cloudinary = require("cloudinary").v2;
-
-    cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-    });
-
-    if (req.file) {
       const result = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           { folder: "gymspire/users" },
@@ -105,15 +95,16 @@ exports.updateMe = catchAsync(async (req, res, next) => {
             else resolve(result);
           },
         );
+
         stream.end(req.file.buffer);
       });
 
       updates.pfpUrl = result.secure_url;
+    } catch (err) {
+      console.error("Cloudinary upload failed:", err);
+      return next(new AppError("Image upload failed", 500));
     }
-
-    updates.pfpUrl = `/img/users/${filename}`;
   }
-
   const updatedUser = await User.findByIdAndUpdate(req.user.id, updates, {
     new: true,
     runValidators: true,

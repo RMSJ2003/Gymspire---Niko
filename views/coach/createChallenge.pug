@@ -1,14 +1,20 @@
 extends ../base
 
 block styles
-  link(rel="stylesheet" href="/css/createChallenge.css")
+  link(rel="stylesheet" href="/css/createWorkoutPlan.css")
 
 block content
   // =========================
-  // BACK BUTTON
+  // TOP BAR
   // =========================
-  .back-btn-container
-    a.back-btn(href="javascript:history.back()")  Back
+  .top-bar
+    if user.userType === "user"
+      a.dashboard-btn(href='/dashboard') Dashboard
+    if user.userType === "coach"
+      a.dashboard-btn(href='/coachDashboard') Dashboard
+    if user.userType === "admin"
+      a.dashboard-btn(href='/adminDashboard') Dashboard
+    a.back-btn(href='javascript:history.back()') Back
 
   h1 #{title}
   h2 #{user.username}
@@ -18,48 +24,64 @@ block content
   else
     img.profile-pic(src="/img/default-user.png" alt="Default Profile")
 
-  if exercises.length === 0
-    p No exercises available.
-  else
-    form#createChallengeForm
-      // =====================
-      // Challenge Info
-      // =====================
-      label(for="name") Challenge Name
-      input(type="text" name="name" id="name" required placeholder="Enter challenge name")
+  // =====================
+  // Challenge Info
+  // =====================
+  form.form-section#createChallengeForm.hidden
 
-      br
-      br
+    label(for="name") Challenge Name
+    input(type="text" name="name" id="name" required)
 
-      label(for="startTime") Start Time
-      input(type="datetime-local" name="startTime" id="startTime" required)
+    br
+    br
 
-      br
-      br
+    label(for="startTime") Start Time
+    input(type="datetime-local" name="startTime" id="startTime" required)
 
-      label(for="endTime") End Time
-      input(type="datetime-local" name="endTime" id="endTime" required)
+    br
+    br
 
-      hr
+    label(for="endTime") End Time
+    input(type="datetime-local" name="endTime" id="endTime" required)
 
-      each exercise in exercises
-        .exercise-card
-          label
-            input(type="checkbox" name="exerciseIds" value=exercise.exerciseId)
-            h3= exercise.name
-            p Target: #{exercise.target}
+  // =========================
+  // TARGET GRID
+  // =========================
+  .target-grid#targetGrid
 
-            if exercise.gifURL
-              img.exercise-gif(src=exercise.gifURL alt=exercise.name)
+  // =========================
+  // CREATE BUTTON
+  // =========================
+  .update-section
+    p.form-message#formMessage
+    button(type="submit" form="createChallengeForm") Create Challenge
 
-            if exercise.instructions && exercise.instructions.length
-              h4 Instructions:
-              ul
-                each step in exercise.instructions
-                  li= step
+  // =========================
+  // TARGET MODAL (Exercises)
+  // =========================
+  .modal.hidden#targetModal
+    .modal-content.large
+      button#closeTargetModal ×
+      h3#targetTitle
+      .exercise-list#targetExerciseList
 
-      button(type="submit") Create Challenge
-      p.form-message#formMessage
+  // =========================
+  // EXERCISE INFO MODAL
+  // =========================
+  .modal.hidden#exerciseModal
+    .modal-content
+      button#closeModal ×
+      img#modalGif
+      div#modalInstructions
+
+  // =========================
+  // PASS DATA TO JS
+  // =========================
+  script#exercisesData(type="application/json").
+    !{JSON.stringify(exercises)}
+
+  script.
+    window.exercises = JSON.parse(document.getElementById("exercisesData").textContent)
 
 block scripts
-  script(src='/js/createChallenge.js')
+  script(src="/js/createChallenge.js")
