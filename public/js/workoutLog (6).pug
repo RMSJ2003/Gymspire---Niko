@@ -44,90 +44,9 @@ block content
       deloadWeeks = streak;
     }
 
-  //- ═══════════════════════════════════════
-  //- HERO HEADER
-  //- ═══════════════════════════════════════
-  .workout-hero
-    .workout-hero-bg
+  h1 #{title}
+  h2 #{user.username}
 
-    .workout-hero-inner
-      //- Left: avatar + user info
-      .hero-identity
-        .hero-avatar-wrap
-          if user.pfpUrl
-            img.hero-avatar(src=user.pfpUrl alt="Profile Picture")
-          else
-            img.hero-avatar(src="/img/default-user.png" alt="Default Profile")
-          - const isOngoing = log.status === "ongoing"
-          span.hero-status-dot(class=isOngoing ? "dot-live" : "dot-done")
-
-        .hero-user-info
-          span.hero-username= user.username
-          span.hero-date= log.date.toDateString()
-
-      //- Right: stat pills
-      .hero-stats
-        .hero-stat-pill
-          span.pill-label TYPE
-          span.pill-value= log.challengeId ? "🏆 Challenge" : "🏋️ Solo"
-
-        .hero-stat-pill
-          span.pill-label STATUS
-          if log.status === "ongoing"
-            span.pill-value.pill-live ● LIVE
-          else
-            span.pill-value.pill-done ✓ Done
-
-        if log.challengeId && log.strengthScore >= 0
-          .hero-stat-pill
-            span.pill-label SCORE
-            span.pill-value= log.strengthScore > 0 ? log.strengthScore.toFixed(1) : "—"
-
-        if log.challengeId
-          .hero-stat-pill
-            span.pill-label JUDGE
-            if log.judgeStatus === "approved"
-              span.pill-value.pill-approved ✓ Approved
-            else if log.judgeStatus === "rejected"
-              span.pill-value.pill-rejected ✗ Rejected
-            else
-              span.pill-value.pill-pending ⏳ Pending
-
-  //- ═══════════════════════════════════════
-  //- CHALLENGE DETAIL CARD (if challenge)
-  //- ═══════════════════════════════════════
-  if log.challengeId
-    .challenge-detail-card
-      if log.judgeNotes
-        .detail-row
-          span.detail-label 📋 Judge Notes
-          span.detail-value= log.judgeNotes
-      else
-        .detail-row
-          span.detail-label 📋 Judge Notes
-          span.detail-value.muted No notes yet
-
-      if log.verifiedBy && log.verifiedBy.username
-        .detail-row
-          span.detail-label ✅ Verified by
-          span.detail-value= log.verifiedBy.username
-      else
-        .detail-row
-          span.detail-label ✅ Verified by
-          span.detail-value.muted Not verified yet
-
-      if log.videoUrl
-        .detail-row.detail-row-video
-          span.detail-label 🎥 Video
-          video(src=log.videoUrl controls preload="metadata")
-      else
-        .detail-row
-          span.detail-label 🎥 Video
-          span.detail-value.muted No video submitted
-
-  //- ═══════════════════════════════════════
-  //- DELOAD BANNER
-  //- ═══════════════════════════════════════
   if shouldDeload
     .deload-banner
       .deload-banner-icon 🔄
@@ -141,11 +60,40 @@ block content
           li Avoid pushing to failure this week
         button.deload-dismiss(type="button") Dismiss
 
-  //- ═══════════════════════════════════════
-  //- EXERCISES
-  //- ═══════════════════════════════════════
+  if user.pfpUrl
+    img.profile-pic(src=user.pfpUrl alt="Profile Picture")
+  else
+    img.profile-pic(src="/img/default-user.png" alt="Default Profile")
+
+  h2 Date: #{log.date.toDateString()}
+  p Status: #{log.status}
+
+  if log.challengeId
+    p Strength Score: #{log.strengthScore >= 0 ? log.strengthScore : "Not calculated yet"}
+
+    if log.judgeNotes
+      p Judge Notes: #{log.judgeNotes}
+    else
+      p Judge Notes: No judge notes yet
+
+    if log.verifiedBy && log.verifiedBy.username
+      p Verified by: #{log.verifiedBy.username}
+    else
+      p Verified by: Not verified yet
+
+    if log.videoUrl
+      p Video:
+      video(src=log.videoUrl controls preload="metadata" style="max-width:100%; margin-top:8px;")
+    else
+      p Video: No video submitted
+
+  if log.challengeId
+    p Type: Challenge Workout
+  else
+    p Type: Solo Workout
+
   if log.exercises && log.exercises.length
-    .exercises-label Exercises
+    h3 Exercises Performed
 
     -
       const prevLookup = {};
@@ -214,6 +162,7 @@ block content
                       )
                       td.action-cell
 
+        //- Add Set button — hidden when workout is done
         if log.status !== "done"
           .add-set-row
             button.add-set-btn(

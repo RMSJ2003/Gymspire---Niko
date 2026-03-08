@@ -15,14 +15,8 @@ const modalInstructions = document.getElementById("modalInstructions");
 const form = document.querySelector("#editWorkoutPlanForm");
 const formMessage = document.querySelector("#formMessage");
 
-/* ONE EXERCISE PER MUSCLE */
-let selectedByTarget = {};
-
-/* PRELOAD FROM DB */
-selectedIds.forEach((id) => {
-  const ex = exercises.find((e) => e.exerciseId === id);
-  if (ex) selectedByTarget[ex.target] = id;
-});
+/* ── MULTI-SELECT: Set of selected exerciseIds ── */
+let selectedSet = new Set(selectedIds);
 
 /* GROUP EXERCISES BY TARGET */
 const grouped = {};
@@ -36,13 +30,28 @@ Object.keys(grouped).forEach((target) => {
   const card = document.createElement("div");
   card.className = "target-card";
   card.dataset.target = target;
-  card.innerHTML = `<span>${target}</span>`;
 
-  if (selectedByTarget[target]) card.classList.add("active");
+  const anySelected = grouped[target].some((ex) =>
+    selectedSet.has(ex.exerciseId),
+  );
+  if (anySelected) card.classList.add("active");
 
+  // Show count badge if multiple selected
+  updateCardLabel(card, target);
   card.onclick = () => openTargetModal(target);
   targetGrid.appendChild(card);
 });
+
+function updateCardLabel(card, target) {
+  const count = grouped[target].filter((ex) =>
+    selectedSet.has(ex.exerciseId),
+  ).length;
+  card.innerHTML =
+    `<span>${target}</span>` +
+    (count > 0 ? `<span class="muscle-count">${count} selected</span>` : "");
+  if (count > 0) card.classList.add("active");
+  else card.classList.remove("active");
+}
 
 /* OPEN TARGET MODAL */
 function openTargetModal(target) {
@@ -50,39 +59,52 @@ function openTargetModal(target) {
   targetExerciseList.innerHTML = "";
 
   grouped[target].forEach((ex) => {
-    const isSelected = selectedByTarget[target] === ex.exerciseId;
+    const isSelected = selectedSet.has(ex.exerciseId);
 
     const row = document.createElement("div");
     row.className = "exercise-row" + (isSelected ? " selected" : "");
 
     row.innerHTML = `
       <div class="exercise-left">
-        <input type="radio" name="exercise-${target}" value="${ex.exerciseId}" ${isSelected ? "checked" : ""}>
+        <input type="checkbox" name="exercise-${target}" value="${ex.exerciseId}" ${isSelected ? "checked" : ""}>
         <span class="exercise-name">${ex.name}</span>
       </div>
       <button class="info-btn" data-index="${ex.index}" type="button" title="View exercise info">i</button>
     `;
 
-    const radio = row.querySelector("input");
+    const checkbox = row.querySelector("input");
 
     row.onclick = (e) => {
       if (e.target.classList.contains("info-btn")) return;
 
-      selectedByTarget[target] = ex.exerciseId;
+      // Toggle selection
+      if (selectedSet.has(ex.exerciseId)) {
+        selectedSet.delete(ex.exerciseId);
+        checkbox.checked = false;
+        row.classList.remove("selected");
+      } else {
+        selectedSet.add(ex.exerciseId);
+        checkbox.checked = true;
+        row.classList.add("selected");
+      }
 
-      // Deselect all in this group
-      document
-        .querySelectorAll(`input[name="exercise-${target}"]`)
-        .forEach((r) => {
-          r.checked = false;
-          r.closest(".exercise-row").classList.remove("selected");
-        });
-
-      radio.checked = true;
-      row.classList.add("selected");
-
+      // Update the target card
       const card = document.querySelector(`[data-target="${target}"]`);
-      if (card) card.classList.add("active");
+      if (card) updateCardLabel(card, target);
+    };
+
+    // Also handle direct checkbox click without toggling twice
+    checkbox.onclick = (e) => e.stopPropagation();
+    checkbox.onchange = () => {
+      if (checkbox.checked) {
+        selectedSet.add(ex.exerciseId);
+        row.classList.add("selected");
+      } else {
+        selectedSet.delete(ex.exerciseId);
+        row.classList.remove("selected");
+      }
+      const card = document.querySelector(`[data-target="${target}"]`);
+      if (card) updateCardLabel(card, target);
     };
 
     targetExerciseList.appendChild(row);
@@ -118,7 +140,6 @@ function attachInfoButtons() {
 closeTargetModal.onclick = () => targetModal.classList.add("hidden");
 closeModal.onclick = () => modal.classList.add("hidden");
 
-// Close on backdrop click
 targetModal.onclick = (e) => {
   if (e.target === targetModal) targetModal.classList.add("hidden");
 };
@@ -126,7 +147,6 @@ modal.onclick = (e) => {
   if (e.target === modal) modal.classList.add("hidden");
 };
 
-// Close on Escape
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     targetModal.classList.add("hidden");
@@ -138,7 +158,7 @@ document.addEventListener("keydown", (e) => {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const exerciseIds = Object.values(selectedByTarget);
+  const exerciseIds = Array.from(selectedSet);
 
   if (exerciseIds.length === 0) {
     formMessage.textContent = "Please select at least one exercise.";

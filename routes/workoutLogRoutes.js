@@ -38,6 +38,16 @@ router.get("/:id", requireWorkoutPlan, workoutLogController.getMyWorkoutLog);
 //     .route('/:workoutLogId/exercises/:exerciseIndex/sets/:setNumber')
 //     .patch(workoutLogController.updateMyWorkoutSet);
 
+router.post(
+  "/:workoutLogId/exercises/:exerciseIndex/sets",
+  workoutLogController.addSet,
+);
+
+router.delete(
+  "/:workoutLogId/exercises/:exerciseIndex/sets/:setId",
+  workoutLogController.removeSet,
+);
+
 router.patch(
   "/:workoutLogId/sets/bulk",
   workoutLogController.updateMyWorkoutSetsBulk,

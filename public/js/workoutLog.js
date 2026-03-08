@@ -4,6 +4,48 @@ const REST_SECONDS = 180;
 const CIRCUMFERENCE = 2 * Math.PI * 15;
 
 /* ==========================================
+   TOAST
+========================================== */
+function showToast(message, type = "error") {
+  const existing = document.getElementById("gymToast");
+  if (existing) existing.remove();
+
+  const colors = {
+    error: { bg: "#d25353", icon: "✕" },
+    success: { bg: "#22c55e", icon: "✓" },
+    info: { bg: "#3b82f6", icon: "ℹ" },
+    warning: { bg: "#f59e0b", icon: "⚠" },
+  };
+  const { bg, icon } = colors[type] || colors.error;
+
+  const toast = document.createElement("div");
+  toast.id = "gymToast";
+  toast.style.cssText = `
+    position:fixed;bottom:1.5rem;left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:${bg};color:white;
+    padding:0.75rem 1.4rem;border-radius:0.75rem;
+    font-family:Arial,sans-serif;font-size:0.88rem;font-weight:600;
+    display:flex;align-items:center;gap:0.55rem;
+    box-shadow:0 8px 24px rgba(0,0,0,0.18);
+    z-index:9999;max-width:90vw;
+    opacity:0;transition:opacity 0.25s ease,transform 0.25s ease;
+    pointer-events:none;
+  `;
+  toast.innerHTML = `<span style="font-size:1rem;flex-shrink:0">${icon}</span><span>${message}</span>`;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => {
+    toast.style.opacity = "1";
+    toast.style.transform = "translateX(-50%) translateY(0)";
+  });
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(-50%) translateY(10px)";
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
+/* ==========================================
    SPINNER BUILDER
 ========================================== */
 function buildSpinner({ min, max, step, value, setId, field }) {
@@ -37,7 +79,6 @@ function buildSpinner({ min, max, step, value, setId, field }) {
     display.dataset.value = v;
     display.textContent = v;
   }
-
   function dec() {
     if (wrap.dataset.disabled === "true") return;
     let v = parseInt(display.dataset.value) - step;
@@ -46,8 +87,8 @@ function buildSpinner({ min, max, step, value, setId, field }) {
     display.textContent = v;
   }
 
-  let holdTimer = null;
-  let holdInterval = null;
+  let holdTimer = null,
+    holdInterval = null;
   function startHold(fn) {
     fn();
     holdTimer = setTimeout(() => {
@@ -73,7 +114,6 @@ function buildSpinner({ min, max, step, value, setId, field }) {
     up.addEventListener(ev, stopHold);
     down.addEventListener(ev, stopHold);
   });
-
   display.addEventListener(
     "wheel",
     (e) => {
@@ -112,10 +152,8 @@ function buildTimer() {
     <svg viewBox="0 0 36 36">
       <circle class="bg" cx="18" cy="18" r="15"/>
       <circle class="progress" cx="18" cy="18" r="15"
-        stroke-dasharray="${CIRCUMFERENCE}"
-        stroke-dashoffset="0"/>
-    </svg>
-  `;
+        stroke-dasharray="${CIRCUMFERENCE}" stroke-dashoffset="0"/>
+    </svg>`;
 
   const countdown = document.createElement("div");
   countdown.className = "timer-countdown";
@@ -130,23 +168,19 @@ function buildTimer() {
   container.appendChild(countdown);
   container.appendChild(skipBtn);
 
-  let interval = null;
-  let remaining = REST_SECONDS;
+  let interval = null,
+    remaining = REST_SECONDS,
+    onDone = null;
   const progressCircle = ring.querySelector(".progress");
-  let onDone = null;
 
   function formatTime(s) {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m}:${sec.toString().padStart(2, "0")}`;
+    return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
   }
-
   function updateRing() {
-    const frac = remaining / REST_SECONDS;
-    progressCircle.style.strokeDashoffset = CIRCUMFERENCE * (1 - frac);
+    progressCircle.style.strokeDashoffset =
+      CIRCUMFERENCE * (1 - remaining / REST_SECONDS);
     countdown.textContent = formatTime(remaining);
   }
-
   function finish() {
     clearInterval(interval);
     container.classList.remove("active");
@@ -157,7 +191,6 @@ function buildTimer() {
       onDone = null;
     }
   }
-
   function start(callback) {
     onDone = callback || null;
     clearInterval(interval);
@@ -181,20 +214,187 @@ function buildTimer() {
       }
     }, 1000);
   }
-
   skipBtn.addEventListener("click", finish);
-
   return { el: container, start };
 }
 
 /* ==========================================
-   MAIN: wire up each exercise card
+   TRACK SAVED SETS
 ========================================== */
-// Track saved setIds for this session — prevents duplicate saves
 const savedSetIds = new Set();
 
+/* ==========================================
+   HELPERS
+========================================== */
+function renumberRows(tbody) {
+  if (!tbody) return;
+  let count = 0;
+  tbody.querySelectorAll("tr[data-set-id]").forEach((tr) => {
+    const cell = tr.querySelector(".set-num-cell");
+    if (cell) cell.textContent = ++count;
+  });
+}
+
+// ✅ Check if ALL rows in a specific card's tbody are done
+function allRowsDoneInCard(tbody) {
+  const rows = tbody.querySelectorAll("tr[data-set-id]");
+  if (!rows.length) return true;
+  return Array.from(rows).every((tr) => tr.classList.contains("row-done"));
+}
+
+/* ==========================================
+   WIRE A ROW
+========================================== */
+function wireRow({
+  tr,
+  wSpinner,
+  rSpinner,
+  startBtn,
+  saveBtn,
+  removeBtn,
+  timer,
+  setId,
+  alreadySaved,
+  logId,
+}) {
+  if (alreadySaved) return;
+
+  const prevWeight = tr.dataset.prevWeight;
+  const prevReps = tr.dataset.prevReps;
+  const prevUnit = tr.dataset.prevUnit || "LB";
+  const hasPrev = prevWeight !== "" && prevReps !== "";
+
+  startBtn.addEventListener("click", () => {
+    startBtn.disabled = true;
+    startBtn.style.display = "none";
+    setSpinnerDisabled(wSpinner, false);
+    setSpinnerDisabled(rSpinner, false);
+    saveBtn.disabled = false;
+    saveBtn.style.display = "";
+    if (removeBtn) removeBtn.style.display = "none";
+    tr.classList.add("row-active");
+
+    if (hasPrev && !tr.querySelector(".prev-hint-row")) {
+      const hintRow = document.createElement("tr");
+      hintRow.className = "prev-hint-row";
+      const hintTd = document.createElement("td");
+      hintTd.colSpan = 4;
+      hintTd.innerHTML = `<div class="prev-hint"><span class="prev-hint-icon">🏆</span><span>Last time: <strong>${prevWeight} ${prevUnit}</strong> × <strong>${prevReps} reps</strong> — beat it!</span></div>`;
+      hintRow.appendChild(hintTd);
+      tr.before(hintRow);
+    }
+  });
+
+  saveBtn.addEventListener("click", async () => {
+    const weight = parseInt(
+      wSpinner.querySelector(".spin-display").dataset.value,
+    );
+    const reps = parseInt(
+      rSpinner.querySelector(".spin-display").dataset.value,
+    );
+
+    if (weight === 0) {
+      const wDisplay = wSpinner.querySelector(".spin-display");
+      wDisplay.classList.add("spin-error");
+      const wtd = wSpinner.closest("td");
+      if (wtd && !wtd.querySelector(".weight-zero-err")) {
+        const msg = document.createElement("span");
+        msg.className = "weight-zero-err";
+        msg.textContent = "Weight cannot be 0";
+        wtd.appendChild(msg);
+      }
+      setTimeout(() => {
+        wDisplay.classList.remove("spin-error");
+        wtd && wtd.querySelector(".weight-zero-err")?.remove();
+      }, 2500);
+      return;
+    }
+
+    if (savedSetIds.has(setId)) return;
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Saving...";
+
+    try {
+      const res = await fetch(`/api/v1/workout-logs/${logId}/sets/bulk`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ updates: [{ setId, weight, reps }] }),
+      });
+      const data = await res.json();
+
+      if (data.status === "success") {
+        savedSetIds.add(setId);
+        saveBtn.textContent = "✓ Done";
+        saveBtn.classList.add("saved");
+        tr.classList.remove("row-active");
+        tr.classList.add("row-done");
+        setSpinnerDisabled(wSpinner, true);
+        setSpinnerDisabled(rSpinner, true);
+
+        showOverloadTip(tr, weight, reps);
+
+        timer.start(() => {
+          const tbody = tr.closest("tbody");
+          const allRows = Array.from(tbody.querySelectorAll("tr[data-set-id]"));
+          const myIdx = allRows.indexOf(tr);
+          const nextTr = allRows[myIdx + 1];
+          if (nextTr) {
+            const nextStart = nextTr.querySelector(".row-start-btn");
+            if (nextStart) nextStart.disabled = false;
+            nextTr.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        });
+      } else {
+        saveBtn.textContent = "Save Set";
+        saveBtn.disabled = false;
+        showToast(data.message || "Error saving set.", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      saveBtn.textContent = "Save Set";
+      saveBtn.disabled = false;
+      showToast("Network error. Please try again.", "error");
+    }
+  });
+
+  if (removeBtn) {
+    removeBtn.addEventListener("click", async () => {
+      const exIndex = tr.closest(".exercise-card").dataset.exIndex;
+      try {
+        const res = await fetch(
+          `/api/v1/workout-logs/${logId}/exercises/${exIndex}/sets/${setId}`,
+          { method: "DELETE", credentials: "include" },
+        );
+        const data = await res.json();
+        if (data.status === "success") {
+          tr.remove();
+          renumberRows(
+            document.querySelector(
+              `.exercise-card[data-ex-index="${exIndex}"] tbody`,
+            ),
+          );
+          showToast("Set removed.", "info");
+        } else {
+          showToast(data.message || "Cannot remove set.", "error");
+        }
+      } catch (e) {
+        showToast("Network error.", "error");
+      }
+    });
+  }
+}
+
+/* ==========================================
+   MAIN: wire each exercise card
+========================================== */
 document.querySelectorAll(".exercise-card").forEach((card) => {
-  const rows = Array.from(card.querySelectorAll("tr[data-set-id]"));
+  const tbody = card.querySelector("tbody");
+  const logId = document.getElementById("finish-btn")?.dataset.logId || "";
+  if (!tbody) return;
+
+  const rows = Array.from(tbody.querySelectorAll("tr[data-set-id]"));
   if (!rows.length) return;
 
   const rowData = rows.map((tr, idx) => {
@@ -202,15 +402,13 @@ document.querySelectorAll(".exercise-card").forEach((card) => {
     const weightTd = tr.querySelector("td.weight-cell");
     const repsTd = tr.querySelector("td.reps-cell");
     const actionTd = tr.querySelector("td.action-cell");
-
     const unit = weightTd.dataset.unit || "LB";
     const initWeight = parseInt(weightTd.dataset.initWeight) || 0;
     const initReps = Math.min(
-      12,
-      Math.max(8, parseInt(repsTd.dataset.initReps) || 8),
+      100,
+      Math.max(1, parseInt(repsTd.dataset.initReps) || 8),
     );
 
-    // Weight cell: spinner + "LB" beside it
     const weightRow = document.createElement("div");
     weightRow.className = "weight-row";
     const wSpinner = buildSpinner({
@@ -229,10 +427,9 @@ document.querySelectorAll(".exercise-card").forEach((card) => {
     weightTd.innerHTML = "";
     weightTd.appendChild(weightRow);
 
-    // Reps cell
     const rSpinner = buildSpinner({
-      min: 8,
-      max: 12,
+      min: 1,
+      max: 100,
       step: 1,
       value: initReps,
       setId,
@@ -241,7 +438,6 @@ document.querySelectorAll(".exercise-card").forEach((card) => {
     repsTd.innerHTML = "";
     repsTd.appendChild(rSpinner);
 
-    // Action cell: Start → Save Set + Timer
     actionTd.innerHTML = "";
 
     const startBtn = document.createElement("button");
@@ -257,13 +453,23 @@ document.querySelectorAll(".exercise-card").forEach((card) => {
     saveBtn.disabled = true;
     saveBtn.style.display = "none";
 
-    const timer = buildTimer();
+    let removeBtn = null;
+    if (idx > 0) {
+      removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "row-remove-btn";
+      removeBtn.textContent = "✕";
+      removeBtn.title = "Remove set";
+      removeBtn.style.cssText =
+        "font-size:0.75rem;color:#aaa;background:none;border:1px solid #ddd;border-radius:4px;padding:2px 8px;cursor:pointer;margin-left:4px;";
+    }
 
+    const timer = buildTimer();
     actionTd.appendChild(startBtn);
     actionTd.appendChild(saveBtn);
+    if (removeBtn) actionTd.appendChild(removeBtn);
     actionTd.appendChild(timer.el);
 
-    // Restore already-saved rows from DB (survives page refresh)
     const alreadySaved = tr.dataset.saved === "true";
     if (alreadySaved) {
       savedSetIds.add(setId);
@@ -279,153 +485,192 @@ document.querySelectorAll(".exercise-card").forEach((card) => {
       rSpinner,
       startBtn,
       saveBtn,
+      removeBtn,
       timer,
       setId,
-      idx,
       alreadySaved,
     };
   });
 
-  // Enable first unsaved row's Start
+  // Enable first unsaved row only
   const firstUnsaved = rowData.find((r) => !r.alreadySaved);
   if (firstUnsaved) firstUnsaved.startBtn.disabled = false;
 
-  function enableRow(rowObj) {
-    rowObj.startBtn.disabled = false;
-    rowObj.tr.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
+  rowData.forEach((rowObj) => {
+    wireRow({ ...rowObj, logId });
+  });
 
-  rowData.forEach((rowObj, idx) => {
-    const { tr, wSpinner, rSpinner, startBtn, saveBtn, timer } = rowObj;
-
-    // Skip wiring for rows already saved in DB
-    if (rowObj.alreadySaved) return;
-
-    const prevWeight = tr.dataset.prevWeight;
-    const prevReps = tr.dataset.prevReps;
-    const prevUnit = tr.dataset.prevUnit || "LB";
-    const hasPrev = prevWeight !== "" && prevReps !== "";
-
-    startBtn.addEventListener("click", () => {
-      startBtn.disabled = true;
-      startBtn.style.display = "none";
-      setSpinnerDisabled(wSpinner, false);
-      setSpinnerDisabled(rSpinner, false);
-      saveBtn.disabled = false;
-      saveBtn.style.display = "";
-      tr.classList.add("row-active");
-
-      // Show "beat your last" hint
-      if (hasPrev) {
-        const existingHint = tr.querySelector(".prev-hint");
-        if (!existingHint) {
-          const hintRow = document.createElement("tr");
-          hintRow.className = "prev-hint-row";
-          const hintTd = document.createElement("td");
-          hintTd.colSpan = 4;
-          hintTd.innerHTML = `
-            <div class="prev-hint">
-              <span class="prev-hint-icon">🏆</span>
-              <span>Last time: <strong>${prevWeight} ${prevUnit}</strong> × <strong>${prevReps} reps</strong> — beat it!</span>
-            </div>`;
-          hintRow.appendChild(hintTd);
-          tr.before(hintRow);
-        }
-      }
-    });
-
-    saveBtn.addEventListener("click", async () => {
-      const weight = parseInt(
-        wSpinner.querySelector(".spin-display").dataset.value,
-      );
-      const reps = parseInt(
-        rSpinner.querySelector(".spin-display").dataset.value,
-      );
-      const logId = document.getElementById("finish-btn")?.dataset.logId || "";
-
-      if (weight === 0) {
-        const wDisplay = wSpinner.querySelector(".spin-display");
-        wDisplay.classList.add("spin-error");
-        const weightTd = wSpinner.closest("td");
-        if (weightTd && !weightTd.querySelector(".weight-zero-err")) {
-          const msg = document.createElement("span");
-          msg.className = "weight-zero-err";
-          msg.textContent = "Weight cannot be 0";
-          weightTd.appendChild(msg);
-        }
-        setTimeout(() => {
-          wDisplay.classList.remove("spin-error");
-          weightTd && weightTd.querySelector(".weight-zero-err")?.remove();
-        }, 2500);
+  /* ── ADD SET BUTTON ──────────────────────── */
+  const addSetBtn = card.querySelector(".add-set-btn");
+  if (addSetBtn) {
+    addSetBtn.addEventListener("click", async () => {
+      // ✅ GUARD: block if any row in this card is not yet done
+      if (!allRowsDoneInCard(tbody)) {
+        showToast(
+          "Finish all current sets before adding a new one.",
+          "warning",
+        );
         return;
       }
 
-      // Guard: prevent duplicate save for same setId
-      if (savedSetIds.has(rowObj.setId)) return;
-
-      saveBtn.disabled = true;
-      saveBtn.textContent = "Saving...";
+      addSetBtn.disabled = true;
+      addSetBtn.textContent = "Adding...";
+      const exIndex = card.dataset.exIndex;
 
       try {
-        const res = await fetch(`/api/v1/workout-logs/${logId}/sets/bulk`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            updates: [{ setId: rowObj.setId, weight, reps }],
-          }),
-        });
+        const res = await fetch(
+          `/api/v1/workout-logs/${logId}/exercises/${exIndex}/sets`,
+          { method: "POST", credentials: "include" },
+        );
         const data = await res.json();
 
         if (data.status === "success") {
-          savedSetIds.add(rowObj.setId);
-          saveBtn.textContent = "✓ Done";
-          saveBtn.classList.add("saved");
-          tr.classList.remove("row-active");
-          tr.classList.add("row-done");
-          setSpinnerDisabled(wSpinner, true);
-          setSpinnerDisabled(rSpinner, true);
-
-          // Progressive overload tip
-          showOverloadTip(tr, weight, reps, rowObj.setId);
-
-          timer.start(() => {
-            const next = rowData[idx + 1];
-            if (next) enableRow(next);
+          const { setId, setNumber, weight, reps, unit } = data.data;
+          const tr = buildDynamicRow({
+            setId,
+            setNumber,
+            weight,
+            reps,
+            unit: unit || "LB",
+            logId,
           });
+          tbody.appendChild(tr);
+          tr.scrollIntoView({ behavior: "smooth", block: "center" });
+          showToast(`Set ${setNumber} added!`, "success");
         } else {
-          saveBtn.textContent = "Save Set";
-          saveBtn.disabled = false;
-          alert(data.message || "Error saving.");
+          showToast(data.message || "Could not add set.", "error");
         }
-      } catch (err) {
-        console.error(err);
-        saveBtn.textContent = "Save Set";
-        saveBtn.disabled = false;
+      } catch (e) {
+        showToast("Network error.", "error");
+      } finally {
+        addSetBtn.disabled = false;
+        addSetBtn.textContent = "+ Add Set";
       }
     });
-  });
+  }
 });
 
-// Hide global save button (per-row handles saves)
+/* ==========================================
+   BUILD DYNAMIC ROW (newly added sets)
+   ✅ Start button is DISABLED — user must
+   finish previous sets first via the guard above
+========================================== */
+function buildDynamicRow({ setId, setNumber, weight, reps, unit, logId }) {
+  const tr = document.createElement("tr");
+  tr.dataset.setId = setId;
+  tr.dataset.saved = "false";
+  tr.dataset.prevWeight = "";
+  tr.dataset.prevReps = "";
+  tr.dataset.prevUnit = unit;
+
+  const setNumTd = document.createElement("td");
+  setNumTd.className = "set-num-cell";
+  setNumTd.textContent = setNumber;
+
+  const weightTd = document.createElement("td");
+  weightTd.className = "weight-cell";
+  weightTd.dataset.initWeight = weight;
+  weightTd.dataset.unit = unit;
+  const weightRow = document.createElement("div");
+  weightRow.className = "weight-row";
+  const wSpinner = buildSpinner({
+    min: 0,
+    max: 500,
+    step: 5,
+    value: weight,
+    setId,
+    field: "weight",
+  });
+  const unitLabel = document.createElement("span");
+  unitLabel.className = "unit-side-label";
+  unitLabel.textContent = unit;
+  weightRow.appendChild(wSpinner);
+  weightRow.appendChild(unitLabel);
+  weightTd.appendChild(weightRow);
+
+  const repsTd = document.createElement("td");
+  repsTd.className = "reps-cell";
+  repsTd.dataset.initReps = reps;
+  const rSpinner = buildSpinner({
+    min: 1,
+    max: 100,
+    step: 1,
+    value: reps,
+    setId,
+    field: "reps",
+  });
+  repsTd.appendChild(rSpinner);
+
+  const actionTd = document.createElement("td");
+  actionTd.className = "action-cell";
+
+  const startBtn = document.createElement("button");
+  startBtn.type = "button";
+  startBtn.className = "row-start-btn";
+  startBtn.textContent = "Start";
+  // ✅ Since the guard above ensures all previous sets are done,
+  // the new row's Start button is immediately enabled
+  startBtn.disabled = false;
+
+  const saveBtn = document.createElement("button");
+  saveBtn.type = "button";
+  saveBtn.className = "row-save-btn";
+  saveBtn.textContent = "Save Set";
+  saveBtn.disabled = true;
+  saveBtn.style.display = "none";
+
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.className = "row-remove-btn";
+  removeBtn.textContent = "✕";
+  removeBtn.title = "Remove set";
+  removeBtn.style.cssText =
+    "font-size:0.75rem;color:#aaa;background:none;border:1px solid #ddd;border-radius:4px;padding:2px 8px;cursor:pointer;margin-left:4px;";
+
+  const timer = buildTimer();
+  actionTd.appendChild(startBtn);
+  actionTd.appendChild(saveBtn);
+  actionTd.appendChild(removeBtn);
+  actionTd.appendChild(timer.el);
+
+  tr.appendChild(setNumTd);
+  tr.appendChild(weightTd);
+  tr.appendChild(repsTd);
+  tr.appendChild(actionTd);
+
+  wireRow({
+    tr,
+    wSpinner,
+    rSpinner,
+    startBtn,
+    saveBtn,
+    removeBtn,
+    timer,
+    setId,
+    alreadySaved: false,
+    logId,
+  });
+
+  return tr;
+}
+
+// Hide global save button
 const saveSetsBtn = document.getElementById("saveSetsBtn");
 if (saveSetsBtn) saveSetsBtn.style.display = "none";
 
 /* ==========================================
    PROGRESSIVE OVERLOAD TIP
 ========================================== */
-function showOverloadTip(tr, weight, reps, setId) {
-  // Remove any existing tip on this row
-  const existing = tr.querySelector(".overload-tip");
-  if (existing) existing.remove();
+function showOverloadTip(tr, weight, reps) {
+  const existing = tr.nextSibling;
+  if (existing && existing.classList?.contains("overload-tip-row"))
+    existing.remove();
 
   let icon, message, type;
-
   if (reps >= 12) {
     icon = "🔥";
     type = "level-up";
-    const nextWeight = weight + 5;
-    message = `Max reps hit! Next session: add <strong>5 LB → ${nextWeight} LB</strong> and aim for <strong>8 reps</strong>.`;
+    message = `Max reps hit! Next session: add <strong>5 LB → ${weight + 5} LB</strong> and aim for <strong>8 reps</strong>.`;
   } else if (reps >= 10) {
     icon = "💪";
     type = "push";
@@ -433,9 +678,8 @@ function showOverloadTip(tr, weight, reps, setId) {
   } else if (reps === 9) {
     icon = "📈";
     type = "push";
-    message = `Good work! Push for <strong>${reps + 1} reps</strong> next session before increasing weight.`;
+    message = `Good work! Push for <strong>${reps + 1} reps</strong> next session.`;
   } else {
-    // reps === 8
     icon = "🎯";
     type = "steady";
     message = `Solid start! Keep this weight and aim for <strong>more reps</strong> each session until you hit 12.`;
@@ -444,15 +688,12 @@ function showOverloadTip(tr, weight, reps, setId) {
   const tip = document.createElement("div");
   tip.className = `overload-tip overload-${type}`;
   tip.innerHTML = `<span class="overload-icon">${icon}</span><span>${message}</span>`;
-
-  // Insert tip as a new row spanning all columns
   const tipRow = document.createElement("tr");
   tipRow.className = "overload-tip-row";
   const tipTd = document.createElement("td");
   tipTd.colSpan = 4;
   tipTd.appendChild(tip);
   tipRow.appendChild(tipTd);
-
   tr.after(tipRow);
 }
 
@@ -478,48 +719,42 @@ if (finishBtn) {
 
     if (isChallenge) {
       const wantsVideo = confirm("Do you want to upload a video? (Optional)");
-
       if (wantsVideo) {
         const videoInput = document.querySelector(
           `.video-input[data-log-id="${logId}"]`,
         );
         videoInput.click();
-
         videoInput.onchange = async () => {
           if (videoInput.files.length) {
             const file = videoInput.files[0];
-            const MAX_SIZE_MB = 100;
-            const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+            const MAX_SIZE_BYTES = 100 * 1024 * 1024;
             const allowedTypes = [
               "video/mp4",
               "video/quicktime",
               "video/webm",
               "video/x-msvideo",
             ];
-
             if (!allowedTypes.includes(file.type)) {
-              showFinishError(
-                "Invalid file type. Please upload an MP4, MOV, WebM, or AVI video.",
+              showToast(
+                "Invalid file type. Upload MP4, MOV, WebM, or AVI.",
+                "error",
               );
               videoInput.value = "";
               return;
             }
-
             if (file.size > MAX_SIZE_BYTES) {
-              const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
-              showFinishError(
-                `Video too large (${sizeMB} MB). Maximum allowed size is ${MAX_SIZE_MB} MB.`,
+              showToast(
+                `Video too large (${(file.size / 1048576).toFixed(1)} MB). Max 100 MB.`,
+                "error",
               );
               videoInput.value = "";
               return;
             }
-
             formData.append("video", file);
           }
           await submitFinish(logId, formData);
         };
-
-        return; // wait for file selection
+        return;
       }
     }
 
@@ -533,26 +768,23 @@ async function submitFinish(logId, formData) {
       "Are you sure you want to finish this workout? This cannot be undone.",
     )
   )
-    return; // ✅ add here
-
+    return;
   try {
     const res = await fetch(`/api/v1/workout-logs/${logId}/finish`, {
       method: "PATCH",
       credentials: "include",
       body: formData,
     });
-
     const data = await res.json();
-
     if (res.ok) {
-      alert("Workout finished!");
-      location.reload();
+      showToast("Workout finished! Great job 💪", "success");
+      setTimeout(() => location.reload(), 1200);
     } else {
-      alert(data.message || "Failed to finish workout.");
+      showToast(data.message || "Failed to finish workout.", "error");
     }
   } catch (err) {
     console.error(err);
-    alert("Something went wrong while finishing workout.");
+    showToast("Something went wrong while finishing workout.", "error");
   }
 }
 
@@ -573,7 +805,7 @@ if (deloadDismiss) {
 }
 
 /* ==========================================
-   FINISH GUARD — checks all sets are saved
+   HELPERS
 ========================================== */
 function allSetsSaved() {
   const totalRows = document.querySelectorAll("tr[data-set-id]");

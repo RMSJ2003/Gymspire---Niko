@@ -36,7 +36,6 @@ exports.createMyWorkoutPlan = catchAsync(async (req, res, next) => {
 
   // 4️⃣ Validate existence
   const foundIds = exercisesFromDb.map((ex) => ex.exerciseId);
-
   const notFoundIds = exerciseIds.filter((id) => !foundIds.includes(id));
 
   if (notFoundIds.length > 0) {
@@ -45,17 +44,10 @@ exports.createMyWorkoutPlan = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 5️⃣ Validate NO duplicate targets (muscle groups)
-  const targets = exercisesFromDb.map((ex) => ex.target);
-  const uniqueTargets = new Set(targets);
+  // ✅ REMOVED: duplicate target (muscle group) restriction
+  // Users can now add multiple exercises per muscle group.
 
-  if (targets.length !== uniqueTargets.size) {
-    return next(
-      new AppError("Each muscle group can only have ONE exercise.", 400),
-    );
-  }
-
-  // 6️⃣ Guard: one workout plan per user
+  // 5️⃣ Guard: one workout plan per user
   const existingWorkoutPlan = await WorkoutPlan.findOne({
     userId: req.user._id,
   });
@@ -64,10 +56,10 @@ exports.createMyWorkoutPlan = catchAsync(async (req, res, next) => {
     return next(new AppError("You already have a workout plan.", 400));
   }
 
-  // 7️⃣ Create workout plan
+  // 6️⃣ Create workout plan
   const newWorkoutPlan = await WorkoutPlan.create({
     userId: req.user._id,
-    exerciseIds, // 🔥 Store ExerciseDB IDs
+    exerciseIds,
   });
 
   res.status(201).json({
@@ -93,17 +85,16 @@ exports.updateMyWorkoutPlan = catchAsync(async (req, res, next) => {
     return next(new AppError("Please provide an array of exerciseIds", 400));
   }
 
-  // 1) Normalize & dedupe (🔥 important)
+  // 1) Normalize & dedupe
   exerciseIds = [...new Set(exerciseIds.map(String))];
 
-  // 2) Fetch exercises by exerciseId (NOT _id)
+  // 2) Fetch exercises by exerciseId
   const exercisesFromDb = await Exercise.find({
     exerciseId: { $in: exerciseIds },
   });
 
   // 3) Validate existence
   const foundIds = exercisesFromDb.map((ex) => ex.exerciseId);
-
   const notFoundIds = exerciseIds.filter((id) => !foundIds.includes(id));
 
   if (notFoundIds.length > 0) {
@@ -112,31 +103,20 @@ exports.updateMyWorkoutPlan = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 4) Validate NO duplicate targets
-  const targets = exercisesFromDb.map((ex) => ex.target);
-  const uniqueTargets = new Set(targets);
+  // ✅ REMOVED: duplicate target (muscle group) restriction
+  // Users can now add multiple exercises per muscle group.
 
-  if (targets.length !== uniqueTargets.size) {
-    return next(
-      new AppError("Each muscle group can only have ONE exercise.", 400),
-    );
-  }
-
-  // 5) Update workout plan with exerciseIds (strings)
+  // 4) Update workout plan
   const updatedWorkoutPlan = await WorkoutPlan.findOneAndUpdate(
     { userId: req.user._id },
     { exerciseIds },
-    {
-      new: true,
-      runValidators: true,
-    },
+    { new: true, runValidators: true },
   );
 
   if (!updatedWorkoutPlan) {
     return next(new AppError("Workout plan not found.", 404));
   }
 
-  // 6) Send response
   res.status(200).json({
     status: "success",
     data: updatedWorkoutPlan,
@@ -144,9 +124,7 @@ exports.updateMyWorkoutPlan = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteMyWorkoutPlan = catchAsync(async (req, res, next) => {
-  await WorkoutPlan.deleteOne({
-    userId: req.user._id,
-  });
+  await WorkoutPlan.deleteOne({ userId: req.user._id });
 
   res.status(204).json({
     status: "success",
@@ -154,7 +132,6 @@ exports.deleteMyWorkoutPlan = catchAsync(async (req, res, next) => {
   });
 });
 
-// Without sending json
 exports.acquireMyWorkoutPlan = catchAsync(async (req, res, next) => {
   const workoutPlan = await WorkoutPlan.findOne({
     userId: req.user._id,
@@ -167,6 +144,5 @@ exports.acquireMyWorkoutPlan = catchAsync(async (req, res, next) => {
   }
 
   req.workoutPlan = workoutPlan;
-
   next();
 });

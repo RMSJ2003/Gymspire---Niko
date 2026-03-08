@@ -29,9 +29,6 @@ const workoutLogSchema = new mongoose.Schema({
     default: "ongoing",
   },
 
-  // ==========================
-  // 🎥 VIDEO (ALWAYS OPTIONAL)
-  // ==========================
   videoUrl: {
     type: String,
     required: false,
@@ -44,9 +41,6 @@ const workoutLogSchema = new mongoose.Schema({
     },
   },
 
-  // ==========================
-  // 🧑‍⚖️ JUDGING FIELDS (OPTIONAL)
-  // ==========================
   judgeStatus: {
     type: String,
     enum: ["pending", "approved", "rejected"],
@@ -68,30 +62,17 @@ const workoutLogSchema = new mongoose.Schema({
     default: 0,
   },
 
-  // ==========================
-  // 🏋️ EXERCISES
-  // ==========================
   exercises: [
     {
-      name: {
-        type: String,
-        required: true,
-      },
-      target: {
-        type: String,
-        required: true,
-      },
-      gifURL: {
-        type: String,
-        required: true,
-      },
+      name: { type: String, required: true },
+      target: { type: String, required: true },
+      gifURL: { type: String, required: true },
       set: [
         {
           setNumber: {
             type: Number,
             required: true,
             min: 1,
-            max: 6,
           },
 
           type: {
@@ -100,10 +81,7 @@ const workoutLogSchema = new mongoose.Schema({
             required: true,
           },
 
-          weight: {
-            type: Number,
-            required: true,
-          },
+          weight: { type: Number, required: true },
 
           unit: {
             type: String,
@@ -119,56 +97,32 @@ const workoutLogSchema = new mongoose.Schema({
                 validator: Number.isInteger,
                 message: "Reps must be a whole number",
               },
-              {
-                validator: function (v) {
-                  if (v === 0) return true;
-
-                  if (this.type === "warmup") return v === 4;
-                  if (this.type === "working") return v >= 8 && v <= 12;
-
-                  return true;
-                },
-                message: "Working sets must be 8-12 reps",
-              },
             ],
           },
 
-          restSeconds: {
-            type: Number,
-            required: true,
-          },
+          restSeconds: { type: Number, required: true },
         },
       ],
     },
   ],
 });
 
-// ==========================
-// 🔒 VALIDATIONS
-// ==========================
+// ✅ REMOVED: duplicate setNumber validator
+// It fired on every .save() because Mongoose re-validates the entire
+// exercises array before the mutation is fully committed, causing false
+// "Duplicate setNumber" errors on add, remove, and bulk update.
+// Set number integrity is enforced by the controller logic instead.
 
-// Ensure unique set numbers per exercise
-workoutLogSchema.path("exercises").validate(function (exercises) {
-  return exercises.every((ex) => {
-    const setNumbers = ex.set.map((s) => s.setNumber);
-    return setNumbers.length === new Set(setNumbers).size;
-  });
-}, "Duplicate setNumber found per exercise");
-
-// Ensure either solo OR challenge
+// Ensure either solo OR challenge — never both, never neither
 workoutLogSchema.pre("validate", function (next) {
-  if (this.workoutPlanId && this.challengeId) {
+  if (this.workoutPlanId && this.challengeId)
     return next(
       new AppError("WorkoutLog cannot have both workoutPlanId and challengeId"),
     );
-  }
-
-  if (!this.workoutPlanId && !this.challengeId) {
+  if (!this.workoutPlanId && !this.challengeId)
     return next(
       new AppError("WorkoutLog must have either workoutPlanId or challengeId"),
     );
-  }
-
   next();
 });
 
@@ -185,9 +139,6 @@ workoutLogSchema.pre("validate", function (next) {
   next();
 });
 
-// ==========================
-// 🧠 INSTANCE METHODS
-// ==========================
 workoutLogSchema.methods.isSolo = function () {
   return !!this.workoutPlanId && !this.challengeId;
 };
@@ -196,7 +147,6 @@ workoutLogSchema.methods.isChallenge = function () {
   return !!this.challengeId;
 };
 
-// ==========================
 const WorkoutLog = mongoose.model("WorkoutLog", workoutLogSchema);
 module.exports = WorkoutLog;
 // Write to Richard M. Sahagun

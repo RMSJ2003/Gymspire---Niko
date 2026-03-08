@@ -26,16 +26,18 @@ block content
           .submission-header
             .submission-user
               .user-avatar
-                | #{log.userId && log.userId.username ? log.userId.username[0].toUpperCase() : '?'}
+                if log.userId && log.userId.pfpUrl
+                  img(src=log.userId.pfpUrl alt="Profile Picture" style="width:48px;height:48px;border-radius:50%;object-fit:cover;display:block;")
+                else
+                  | #{log.userId && log.userId.username ? log.userId.username[0].toUpperCase() : '?'}
               .user-info
                 h3= log.userId && log.userId.username ? log.userId.username : 'Unknown User'
                 if log.judgeStatus === "approved"
-                  span.status-badge status-approved ✔ Approved
+                  span.status-badge.status-approved ✔ Approved
                 else if log.judgeStatus === "rejected"
-                  span.status-badge status-rejected ✘ Rejected
+                  span.status-badge.status-rejected ✘ Rejected
                 else
-                  span.status-badge status-pending ⏳ Pending Review
-
+                  span.status-badge.status-pending ⏳ Pending Review
           .submission-body
             .exercises-col
               h4.section-label 📊 Exercises & Sets

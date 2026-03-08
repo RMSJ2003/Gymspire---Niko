@@ -141,7 +141,7 @@ h2 {
 .target-card {
   background: var(--card-bg);
   color: var(--text);
-  padding: 1.4rem 1rem;
+  padding: 1.4rem 1rem 1rem;
   border-radius: var(--radius);
   text-align: center;
   font-weight: 700;
@@ -157,6 +157,10 @@ h2 {
   position: relative;
   overflow: hidden;
   text-transform: capitalize;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .target-card::before {
@@ -191,21 +195,17 @@ h2 {
   box-shadow: 0 6px 20px rgba(210, 83, 83, 0.35);
 }
 
-.target-card.active::after {
-  content: "✓";
-  position: absolute;
-  top: 0.4rem;
-  right: 0.5rem;
-  font-size: 0.7rem;
+/* ── COUNT BADGE (replaces the old ✓ ::after) ── */
+.muscle-count {
+  font-size: 0.68rem;
+  font-weight: 700;
   background: var(--yellow);
-  color: var(--text);
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
+  color: #1a1a1a;
+  padding: 0.15rem 0.55rem;
+  border-radius: 2rem;
+  letter-spacing: 0.03em;
+  position: relative;
+  z-index: 1;
 }
 
 /* MODAL BACKDROP */
@@ -347,7 +347,8 @@ h2 {
   gap: 0.75rem;
 }
 
-.exercise-left input[type="radio"] {
+/* Checkbox (was radio) */
+.exercise-left input[type="checkbox"] {
   width: 18px;
   height: 18px;
   accent-color: var(--red);
@@ -490,7 +491,7 @@ h2 {
   }
 
   .target-card {
-    padding: 1.1rem 0.75rem;
+    padding: 1.1rem 0.75rem 0.75rem;
     font-size: 0.88rem;
   }
 
