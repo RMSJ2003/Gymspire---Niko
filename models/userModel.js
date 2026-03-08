@@ -56,6 +56,7 @@ const userSchema = new mongoose.Schema({
   },
   pfpUrl: {
     type: String,
+    default: "/img/default-user.png",
   },
   // quote: {
   //     type: String,

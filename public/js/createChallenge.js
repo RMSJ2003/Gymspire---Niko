@@ -1,127 +1,215 @@
+// ==================================================
+// CREATE CHALLENGE JS
+// Split-panel modal: left = live GIF preview
+// Right = one exercise per muscle (radio) with inline accordion
+// ==================================================
+
 const exercises = window.exercises || [];
-const exerciseIds = [];
+const selectedByTarget = {};
 
 const targetGrid = document.getElementById("targetGrid");
 const targetModal = document.getElementById("targetModal");
 const closeTargetModal = document.getElementById("closeTargetModal");
 const targetTitle = document.getElementById("targetTitle");
 const targetExerciseList = document.getElementById("targetExerciseList");
+const selectedCountBadge = document.getElementById("selectedCountBadge");
+
+// Left preview
+const previewGif = document.getElementById("previewGif");
+const previewPlaceholder = document.getElementById("previewPlaceholder");
+const previewName = document.getElementById("previewName");
+const previewBadge = document.getElementById("previewBadge");
 
 const form = document.querySelector("#createChallengeForm");
 const formMessage = document.querySelector("#formMessage");
 
-const modal = document.getElementById("exerciseModal");
-const closeModal = document.getElementById("closeModal");
-const modalGif = document.getElementById("modalGif");
-const modalInstructions = document.getElementById("modalInstructions");
-
-// GROUP BY MUSCLE
+/* ── GROUP BY TARGET ── */
 const grouped = {};
-
 exercises.forEach((ex, index) => {
   if (!grouped[ex.target]) grouped[ex.target] = [];
   grouped[ex.target].push({ ...ex, index });
 });
 
-// CREATE MUSCLE CARDS
+/* ── BUILD TARGET CARDS ── */
 Object.keys(grouped).forEach((target) => {
   const card = document.createElement("div");
   card.className = "target-card";
-  card.textContent = target;
   card.dataset.target = target;
-
+  card.dataset.count = "0";
+  card.innerHTML = `<span>${target}</span>`;
   card.addEventListener("click", () => openTargetModal(target));
-
   targetGrid.appendChild(card);
 });
 
-// OPEN EXERCISE MODAL
+/* ── UPDATE LEFT PREVIEW ── */
+function updatePreview(ex) {
+  if (!ex) {
+    previewGif.classList.remove("loaded");
+    previewGif.src = "";
+    previewPlaceholder.style.opacity = "1";
+    previewName.textContent = "";
+    return;
+  }
+  previewName.textContent = ex.name || "";
+  previewBadge.textContent = ex.target || "";
+  if (ex.gifURL) {
+    previewPlaceholder.style.opacity = "0";
+    previewGif.classList.remove("loaded");
+    previewGif.src = ex.gifURL;
+    previewGif.onload = () => previewGif.classList.add("loaded");
+  } else {
+    previewGif.classList.remove("loaded");
+    previewPlaceholder.style.opacity = "1";
+  }
+}
+
+/* ── UPDATE TARGET CARD BADGE ── */
+function updateTargetCard(target) {
+  const card = document.querySelector(`[data-target="${target}"]`);
+  if (!card) return;
+  const hasSelection = !!selectedByTarget[target];
+  card.dataset.count = hasSelection ? "1" : "0";
+  card.classList.toggle("has-selection", hasSelection);
+}
+
+/* ── UPDATE SELECTED COUNT BADGE IN MODAL ── */
+function updateCountBadge(target) {
+  const has = !!selectedByTarget[target];
+  selectedCountBadge.textContent = has ? "1 selected" : "0 selected";
+  selectedCountBadge.classList.toggle("has-items", has);
+}
+
+/* ── OPEN TARGET MODAL ── */
 function openTargetModal(target) {
   targetTitle.textContent = target;
   targetExerciseList.innerHTML = "";
+  previewBadge.textContent = target;
+  updatePreview(null);
+  updateCountBadge(target);
 
-  grouped[target].forEach((exercise) => {
+  const selEx = exercises.find(
+    (e) => e.exerciseId === selectedByTarget[target],
+  );
+  if (selEx) updatePreview(selEx);
+
+  grouped[target].forEach((ex) => {
+    const isSelected = selectedByTarget[target] === ex.exerciseId;
     const row = document.createElement("div");
-    row.className = "exercise-row";
+    row.className = "exercise-row" + (isSelected ? " checked" : "");
+
+    const stepsHtml = ex.instructions?.length
+      ? `<ul class="accordion-steps">${ex.instructions.map((s) => `<li>${s}</li>`).join("")}</ul>`
+      : `<p style="font-size:.85rem;color:var(--text-muted)">No instructions available.</p>`;
 
     row.innerHTML = `
-      <label class="checkbox-container">
-        <input type="checkbox" value="${exercise.exerciseId}">
-        <span class="exercise-name">${exercise.name}</span>
-      </label>
-
-      <button class="info-btn" data-index="${exercise.index}">i</button>
+      <div class="exercise-row-main">
+        <div class="exercise-left">
+          <input type="radio" name="exercise-${target}" value="${ex.exerciseId}" ${isSelected ? "checked" : ""}>
+          <span class="exercise-name">${ex.name}</span>
+        </div>
+        <button class="instructions-toggle" type="button" aria-expanded="false">
+          Instructions <span class="toggle-chevron">▾</span>
+        </button>
+      </div>
+      <div class="exercise-accordion">
+        <p class="accordion-label">How to perform</p>
+        ${stepsHtml}
+      </div>
     `;
 
-    const checkbox = row.querySelector("input");
+    const radio = row.querySelector("input");
+    const rowMain = row.querySelector(".exercise-row-main");
+    const toggleBtn = row.querySelector(".instructions-toggle");
+    const accordion = row.querySelector(".exercise-accordion");
 
-    checkbox.addEventListener("change", (e) => {
-      const id = exercise.exerciseId;
+    rowMain.addEventListener("mouseenter", () => updatePreview(ex));
 
-      if (e.target.checked) exerciseIds.push(id);
-      else exerciseIds.splice(exerciseIds.indexOf(id), 1);
+    rowMain.addEventListener("click", (e) => {
+      if (e.target === toggleBtn || toggleBtn.contains(e.target)) return;
+
+      selectedByTarget[target] = ex.exerciseId;
+
+      document
+        .querySelectorAll(`input[name="exercise-${target}"]`)
+        .forEach((r) => {
+          r.checked = false;
+          r.closest(".exercise-row").classList.remove("checked");
+        });
+
+      radio.checked = true;
+      row.classList.add("checked");
+      updatePreview(ex);
+      updateTargetCard(target);
+      updateCountBadge(target);
+    });
+
+    toggleBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = accordion.classList.toggle("open");
+      toggleBtn.classList.toggle("open", isOpen);
+      toggleBtn.setAttribute("aria-expanded", isOpen);
     });
 
     targetExerciseList.appendChild(row);
   });
 
-  attachInfoButtons();
   targetModal.classList.remove("hidden");
 }
 
+/* ── CLOSE ── */
 closeTargetModal.onclick = () => targetModal.classList.add("hidden");
+targetModal.addEventListener("click", (e) => {
+  if (e.target === targetModal) targetModal.classList.add("hidden");
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") targetModal.classList.add("hidden");
+});
 
-// CREATE CHALLENGE
+/* ── SUBMIT ── */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const name = document.getElementById("name").value;
+  const name = document.getElementById("name").value.trim();
   const startTime = document.getElementById("startTime").value;
   const endTime = document.getElementById("endTime").value;
 
+  // Build exerciseIds from selectedByTarget
+  const exerciseIds = Object.values(selectedByTarget);
+
+  if (!name) {
+    formMessage.textContent = "Please enter a challenge name.";
+    return;
+  }
   if (exerciseIds.length === 0) {
     formMessage.textContent = "Select at least one exercise.";
     return;
   }
+  if (new Date(endTime) <= new Date(startTime)) {
+    formMessage.textContent = "End time must be after start time.";
+    return;
+  }
 
-  const res = await fetch("/api/v1/challenges", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      name,
-      startTime,
-      endTime,
-      exerciseIds,
-    }),
-  });
+  formMessage.textContent = "";
 
-  const data = await res.json();
+  try {
+    const res = await fetch("/api/v1/challenges", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, startTime, endTime, exerciseIds }),
+    });
 
-  if (data.status === "success") {
-    formMessage.textContent = "Challenge created!";
-    setTimeout(() => (location.href = "/challenges"), 600);
-  } else {
-    formMessage.textContent = data.message;
+    const data = await res.json();
+
+    if (data.status === "success") {
+      formMessage.style.color = "#3a9e6a";
+      formMessage.textContent = "Challenge created!";
+      setTimeout(() => (location.href = "/challenges"), 700);
+    } else {
+      formMessage.style.color = "var(--red)";
+      formMessage.textContent = data.message || "Something went wrong.";
+    }
+  } catch {
+    formMessage.style.color = "var(--red)";
+    formMessage.textContent = "Network error. Please try again.";
   }
 });
-
-// INFO BUTTONS
-function attachInfoButtons() {
-  document.querySelectorAll(".info-btn").forEach((btn) => {
-    btn.onclick = () => {
-      const ex = exercises[btn.dataset.index];
-
-      modalGif.src = ex.gifURL || "";
-      modalGif.style.display = ex.gifURL ? "block" : "none";
-
-      modalInstructions.innerHTML =
-        "<h4>Instructions</h4><ul>" +
-        ex.instructions.map((s) => `<li>${s}</li>`).join("") +
-        "</ul>";
-
-      modal.classList.remove("hidden");
-    };
-  });
-}
-
-closeModal.onclick = () => modal.classList.add("hidden");
