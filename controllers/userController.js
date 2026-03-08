@@ -85,6 +85,20 @@ const closeAttendance = async (userId) => {
 // Export so other controllers can use it
 exports.closeAttendance = closeAttendance;
 
+// Add this helper function near the top of userController.js
+function getDistanceMeters(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 exports.getUserAttendance = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
@@ -102,13 +116,34 @@ exports.getUserAttendance = catchAsync(async (req, res, next) => {
 // ── ROUTE HANDLER: manual "Leave gym" button ─────────────────
 // PATCH /api/v1/users/gymCheckin  body: { status: "offline" }
 exports.gymCheckin = catchAsync(async (req, res, next) => {
-  const { status } = req.body;
+  const { status, latitude, longitude } = req.body;
 
   if (!["atGym", "offline"].includes(status)) {
     return next(new AppError('Status must be "atGym" or "offline"', 400));
   }
 
   if (status === "atGym") {
+    // ── GPS VERIFICATION ──
+    if (!latitude || !longitude) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Location is required to check in at the gym.",
+      });
+    }
+
+    const gymLat = parseFloat(process.env.GYM_LAT);
+    const gymLng = parseFloat(process.env.GYM_LNG);
+    const radius = parseFloat(process.env.GYM_RADIUS_METERS) || 150;
+
+    const distance = getDistanceMeters(latitude, longitude, gymLat, gymLng);
+
+    if (distance > radius) {
+      return res.status(400).json({
+        status: "fail",
+        message: `You must be at the gym to check in. You are ${Math.round(distance)}m away.`,
+      });
+    }
+
     const now = new Date();
 
     await User.findByIdAndUpdate(req.user.id, {
@@ -123,8 +158,27 @@ exports.gymCheckin = catchAsync(async (req, res, next) => {
       source: "manual",
     });
   } else {
-    // Manual checkout via "Leave gym" button
-    await closeAttendance(req.user.id);
+    // CHECKOUT — no location needed
+    const now = new Date();
+
+    await User.findByIdAndUpdate(req.user.id, {
+      isAtGym: false,
+      gymStatus: "offline",
+      gymCheckinTime: null,
+    });
+
+    const openRecord = await GymAttendance.findOne({
+      user: req.user.id,
+      checkoutTime: null,
+    }).sort({ checkinTime: -1 });
+
+    if (openRecord) {
+      openRecord.checkoutTime = now;
+      openRecord.durationMinutes = Math.round(
+        (now - openRecord.checkinTime) / 60000,
+      );
+      await openRecord.save();
+    }
   }
 
   res.status(200).json({ status: "success" });
@@ -214,22 +268,6 @@ exports.permanentDeleteMe = catchAsync(async (req, res) => {
 //   gymStatus:      String   enum ["atGym", "logging", "offline"]
 //   gymCheckinTime: Date
 // ============================================================
-exports.gymCheckin = catchAsync(async (req, res, next) => {
-  const { status } = req.body;
-
-  if (!["atGym", "offline"].includes(status)) {
-    return next(new AppError('Status must be "atGym" or "offline"', 400));
-  }
-
-  const updates =
-    status === "atGym"
-      ? { isAtGym: true, gymStatus: "atGym", gymCheckinTime: new Date() }
-      : { isAtGym: false, gymStatus: "offline", gymCheckinTime: null };
-
-  await User.findByIdAndUpdate(req.user.id, updates);
-
-  res.status(200).json({ status: "success" });
-});
 
 // ============================================================
 // UPDATE USER ROLE (admin only)
