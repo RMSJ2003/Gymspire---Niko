@@ -10,7 +10,14 @@ html
     link(rel="stylesheet" href="/css/main.css")
     link(rel="stylesheet" href="/css/quote.css")
 
-    block styles
+    link(rel="manifest" href="/manifest.json")
+    meta(name="apple-mobile-web-app-capable" content="yes")
+    meta(name="apple-mobile-web-app-status-bar-style" content="black-translucent")
+    meta(name="apple-mobile-web-app-title" content="GymSpire")
+    meta(name="theme-color" content="#d25353")
+    link(rel="apple-touch-icon" href="/img/gymspirelogo.png")
+
+  block styles
 
   body
     //- include ./partials/navbar
@@ -23,3 +30,4 @@ html
 
     // ✅ add this to allow pages to inject JS
     block scripts
+      script(src='/js/pwa.js')

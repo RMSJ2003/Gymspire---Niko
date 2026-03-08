@@ -18,6 +18,10 @@
   },
   "homepage": "https://github.com/RMSJ2003/GymSpire#readme",
   "dependencies": {
+    "@capacitor/android": "^8.2.0",
+    "@capacitor/cli": "^8.2.0",
+    "@capacitor/core": "^8.2.0",
+    "@capacitor/ios": "^8.2.0",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^1.41.3",

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">GymSpire</string>
+    <string name="title_activity_main">GymSpire</string>
+    <string name="package_name">com.gymspire.app</string>
+    <string name="custom_url_scheme">com.gymspire.app</string>
+</resources>

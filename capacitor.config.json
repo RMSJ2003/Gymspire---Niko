@@ -1,0 +1,16 @@
+{
+  "appId": "com.gymspire.app",
+  "appName": "GymSpire",
+  "webDir": "public",
+  "server": {
+    "url": "https://gymspire.onrender.com",
+    "cleartext": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#d25353",
+      "showSpinner": false
+    }
+  }
+}

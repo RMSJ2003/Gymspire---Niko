@@ -1,0 +1,21 @@
+{
+    "name": "GymSpire",
+    "short_name": "GymSpire",
+    "description": "Your fitness companion",
+    "start_url": "/dashboard",
+    "display": "standalone",
+    "background_color": "#1a1a1a",
+    "theme_color": "#d25353",
+    "icons": [
+        {
+            "src": "/img/gymspirelogo.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/img/gymspirelogo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
