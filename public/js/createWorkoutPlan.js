@@ -1,9 +1,8 @@
 // ===== DATA =====
 const exercises = window.exercises || [];
-const exerciseIds = [];
 
-// track selected exercise per muscle
-const selectedByTarget = {};
+// ✅ Multi-select: Set of selected exerciseIds
+let selectedSet = new Set();
 
 // DOM elements
 const targetGrid = document.getElementById("targetGrid");
@@ -19,9 +18,8 @@ const closeModal = document.getElementById("closeModal");
 const modalGif = document.getElementById("modalGif");
 const modalInstructions = document.getElementById("modalInstructions");
 
-// ===== GROUP EXERCISES =====
+// ===== GROUP EXERCISES BY TARGET =====
 const grouped = {};
-
 exercises.forEach((ex, index) => {
   if (!grouped[ex.target]) grouped[ex.target] = [];
   grouped[ex.target].push({ ...ex, index });
@@ -30,79 +28,96 @@ exercises.forEach((ex, index) => {
 // ===== CREATE TARGET CARDS =====
 Object.keys(grouped).forEach((target) => {
   const card = document.createElement("div");
-
   card.className = "target-card";
-  card.textContent = target;
   card.dataset.target = target;
-
+  card.innerHTML = `<span>${target}</span>`;
   card.onclick = () => openTargetModal(target);
-
   targetGrid.appendChild(card);
 });
 
-// ===== OPEN MODAL =====
+function updateCardLabel(card, target) {
+  const count = grouped[target].filter((ex) =>
+    selectedSet.has(ex.exerciseId),
+  ).length;
+  card.innerHTML =
+    `<span>${target}</span>` +
+    (count > 0 ? `<span class="muscle-count">${count} selected</span>` : "");
+  if (count > 0) card.classList.add("active");
+  else card.classList.remove("active");
+}
+
+// ===== OPEN TARGET MODAL =====
 function openTargetModal(target) {
   targetTitle.textContent = target;
   targetExerciseList.innerHTML = "";
 
   grouped[target].forEach((ex) => {
-    const checked = selectedByTarget[target] === ex.exerciseId ? "checked" : "";
+    const isSelected = selectedSet.has(ex.exerciseId);
 
     const row = document.createElement("div");
-    row.className = "exercise-row";
-
-    if (checked) row.classList.add("selected");
+    row.className = "exercise-row" + (isSelected ? " selected" : "");
 
     row.innerHTML = `
       <div class="exercise-left">
-        <input type="radio" name="exercise-${target}" value="${ex.exerciseId}" ${checked}>
+        <input type="checkbox" name="exercise-${target}" value="${ex.exerciseId}" ${isSelected ? "checked" : ""}>
         <span class="exercise-name">${ex.name}</span>
       </div>
       <button class="info-btn" data-index="${ex.index}" type="button">i</button>
     `;
 
-    const radio = row.querySelector("input");
+    const checkbox = row.querySelector("input");
 
     row.onclick = (e) => {
       if (e.target.classList.contains("info-btn")) return;
 
-      selectedByTarget[target] = ex.exerciseId;
-
-      // remove previous exercise from same muscle
-      for (let i = exerciseIds.length - 1; i >= 0; i--) {
-        const existing = exercises.find((e) => e.exerciseId === exerciseIds[i]);
-
-        if (existing && existing.target === target) {
-          exerciseIds.splice(i, 1);
-        }
+      if (selectedSet.has(ex.exerciseId)) {
+        selectedSet.delete(ex.exerciseId);
+        checkbox.checked = false;
+        row.classList.remove("selected");
+      } else {
+        selectedSet.add(ex.exerciseId);
+        checkbox.checked = true;
+        row.classList.add("selected");
       }
 
-      exerciseIds.push(ex.exerciseId);
-
-      document
-        .querySelectorAll(`input[name="exercise-${target}"]`)
-        .forEach((r) => {
-          r.checked = false;
-          r.closest(".exercise-row").classList.remove("selected");
-        });
-
-      radio.checked = true;
-      row.classList.add("selected");
-
       const card = document.querySelector(`[data-target="${target}"]`);
-      if (card) card.classList.add("active");
+      if (card) updateCardLabel(card, target);
+    };
+
+    checkbox.onclick = (e) => e.stopPropagation();
+    checkbox.onchange = () => {
+      if (checkbox.checked) {
+        selectedSet.add(ex.exerciseId);
+        row.classList.add("selected");
+      } else {
+        selectedSet.delete(ex.exerciseId);
+        row.classList.remove("selected");
+      }
+      const card = document.querySelector(`[data-target="${target}"]`);
+      if (card) updateCardLabel(card, target);
     };
 
     targetExerciseList.appendChild(row);
   });
 
   attachInfoButtons();
-
   targetModal.classList.remove("hidden");
 }
 
-// ===== CLOSE TARGET MODAL =====
+// ===== CLOSE MODALS =====
 closeTargetModal.onclick = () => targetModal.classList.add("hidden");
+closeModal.onclick = () => modal.classList.add("hidden");
+
+modal.onclick = (e) => {
+  if (e.target === modal) modal.classList.add("hidden");
+};
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    targetModal.classList.add("hidden");
+    modal.classList.add("hidden");
+  }
+});
 
 // ===== INFO BUTTON =====
 function attachInfoButtons() {
@@ -111,6 +126,7 @@ function attachInfoButtons() {
       e.stopPropagation();
 
       const ex = exercises[btn.dataset.index];
+      if (!ex) return;
 
       modalGif.src = ex.gifURL || "";
       modalGif.style.display = ex.gifURL ? "block" : "none";
@@ -125,16 +141,11 @@ function attachInfoButtons() {
   });
 }
 
-// ===== CLOSE MODAL =====
-closeModal.onclick = () => modal.classList.add("hidden");
-
-modal.onclick = (e) => {
-  if (e.target === modal) modal.classList.add("hidden");
-};
-
 // ===== FORM SUBMIT =====
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+
+  const exerciseIds = Array.from(selectedSet);
 
   if (exerciseIds.length === 0) {
     formMessage.textContent = "Please select at least one exercise.";
@@ -154,7 +165,6 @@ form.addEventListener("submit", async (e) => {
     if (data.status === "success") {
       formMessage.textContent = "Workout plan created!";
       formMessage.style.color = "green";
-
       setTimeout(() => {
         window.location.href = "/workoutPlan";
       }, 600);

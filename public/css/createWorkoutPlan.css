@@ -111,7 +111,7 @@ body {
   color: #111;
   font-weight: bold;
   font-size: 0.88rem;
-  padding: 1.2rem 0.8rem;
+  padding: 1.2rem 0.8rem 0.9rem;
   text-align: center;
   border-radius: 0.7rem;
   cursor: pointer;
@@ -119,6 +119,14 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
   transition: all 0.2s;
   user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.target-card span {
+  text-transform: capitalize;
 }
 
 .target-card:hover {
@@ -135,8 +143,15 @@ body {
   box-shadow: 0 4px 12px rgba(210, 83, 83, 0.3);
 }
 
-.target-card.active::after {
-  content: " ✓";
+/* ── COUNT BADGE ── */
+.muscle-count {
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: #ebd31b;
+  color: #1a1a1a;
+  padding: 0.15rem 0.55rem;
+  border-radius: 2rem;
+  letter-spacing: 0.03em;
 }
 
 /* ── UPDATE SECTION ── */
@@ -190,7 +205,7 @@ body {
   display: none;
 }
 
-/* ── TARGET MODAL (large) ── */
+/* ── TARGET MODAL ── */
 .modal-content.large {
   background: white;
   border-radius: 0.8rem;
@@ -282,7 +297,8 @@ body {
   min-width: 0;
 }
 
-.exercise-left input[type="radio"] {
+/* ── Checkbox (was radio) ── */
+.exercise-left input[type="checkbox"] {
   width: 16px;
   height: 16px;
   accent-color: #d25353;
@@ -315,7 +331,7 @@ body {
   color: white;
 }
 
-/* ── INFO MODAL (small) ── */
+/* ── INFO MODAL ── */
 .modal-content:not(.large) {
   background: white;
   border-radius: 0.8rem;
@@ -395,7 +411,7 @@ body {
   }
 
   .target-card {
-    padding: 1rem 0.6rem;
+    padding: 1rem 0.6rem 0.7rem;
     font-size: 0.82rem;
   }
 
