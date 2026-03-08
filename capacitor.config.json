@@ -3,7 +3,7 @@
   "appName": "GymSpire",
   "webDir": "public",
   "server": {
-    "url": "https://gymspire.onrender.com",
+    "url": "https://gymspire.onrender.com/login",
     "cleartext": false
   },
   "plugins": {
