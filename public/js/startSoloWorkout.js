@@ -26,14 +26,14 @@ function showToast(message, type = "warning") {
     background: ${bg};
     color: white;
     padding: 0.75rem 1.4rem;
-    border-radius: 0.75rem;
-    font-family: Arial, sans-serif;
+    border-radius: 10px;
+    font-family: 'DM Sans', Arial, sans-serif;
     font-size: 0.88rem;
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: 0.55rem;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.22);
     z-index: 9999;
     max-width: 90vw;
     text-align: center;
@@ -78,12 +78,12 @@ async function checkGymStatus() {
   }
 }
 
-// Run on page load
 checkGymStatus();
 
 // ── FORM SUBMIT ───────────────────────────────────────────
 const form = document.querySelector("#startSoloWorkoutForm");
 const message = document.querySelector("#startMessage");
+const startBtn = document.querySelector(".start-btn");
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -93,11 +93,17 @@ form.addEventListener("submit", async (e) => {
   ];
   const targets = checked.map((cb) => cb.value);
 
+  // Reset message
+  message.textContent = "";
+  message.className = "start-message";
+
   if (targets.length === 0) {
-    message.textContent = "Please select at least one muscle group.";
-    message.style.color = "#d25353";
+    message.textContent = "⚠ Please select at least one muscle group.";
     return;
   }
+
+  startBtn.disabled = true;
+  startBtn.querySelector("span").textContent = "Starting...";
 
   try {
     const res = await fetch("/api/v1/workout-logs/solo", {
@@ -105,22 +111,23 @@ form.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ targets }),
     });
-
     const data = await res.json();
 
     if (data.status === "success") {
-      message.textContent = "Workout started!";
-      message.style.color = "#22c55e";
+      message.textContent = "✓ Workout started!";
+      message.classList.add("success");
       setTimeout(() => {
         window.location.href = `/workoutLogs/${data.data._id}`;
       }, 500);
     } else {
       message.textContent = data.message || "Failed to start workout.";
-      message.style.color = "#d25353";
+      startBtn.disabled = false;
+      startBtn.querySelector("span").textContent = "Start Workout";
     }
   } catch (err) {
     console.error(err);
-    message.textContent = "Something went wrong while starting workout.";
-    message.style.color = "#d25353";
+    message.textContent = "Something went wrong. Please try again.";
+    startBtn.disabled = false;
+    startBtn.querySelector("span").textContent = "Start Workout";
   }
 });

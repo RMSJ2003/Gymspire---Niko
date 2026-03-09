@@ -1,178 +1,482 @@
-* {
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700;800&display=swap");
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
-  font-family: Arial, sans-serif;
-  color: white;
-  background: white;
+  font-family: "DM Sans", sans-serif;
+  background: #f4f4f5;
+  color: #1a1a1a;
   min-height: 100vh;
-  padding: 5rem 1rem 2rem 1rem;
+  padding-bottom: 3rem;
 }
 
-/* TOP BAR */
+/* =========================
+   TOP BAR
+========================= */
 .top-bar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
+  height: 60px;
+  background: linear-gradient(135deg, #d25353, #b11226);
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  padding: 0 1.2rem;
+  z-index: 1000;
+  box-shadow: 0 2px 16px rgba(177, 18, 38, 0.35);
+}
+
+.top-bar__btn {
+  display: inline-flex;
   align-items: center;
-  padding: 0.8rem 1rem;
-  z-index: 999;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.top-bar a {
-  padding: 0.5rem 1.2rem;
-  border: 2px solid #d25353;
-  background: #d25353;
-  color: whitesmoke;
-  font-weight: bold;
-  border-radius: 0.5rem;
-  text-decoration: none;
-  transition: 0.3s ease;
-}
-
-.top-bar a:hover {
-  color: #f4c430;
-  border: 2px solid #d25353;
-}
-
-/* HEADINGS */
-h1,
-h2,
-h3 {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-h1 {
-  font-size: 2rem;
+  gap: 6px;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  font-family: "DM Sans", sans-serif;
   font-weight: 700;
-  color: black;
-}
-h2 {
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: black;
-}
-h3 {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: black;
+  font-size: 0.82rem;
+  text-decoration: none;
+  transition: 0.18s;
+  cursor: pointer;
+  border: none;
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
-/* PROFILE PIC */
-.profile-pic {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid #ebd31b;
-  display: block;
-  margin: 0 auto 1rem auto;
+.top-bar__btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: white;
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
 }
 
-/* MUSCLE LIST */
-.muscle-list {
-  max-height: 260px;
-  overflow-y: auto;
-  width: 100%;
-  max-width: 420px;
+.top-bar__btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  color: #f4c430;
+}
+.top-bar__btn:hover svg {
+  stroke: #f4c430;
+}
+
+.top-bar__btn--ghost {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* =========================
+   PAGE WRAP
+========================= */
+.page-wrap {
+  max-width: 540px;
   margin: 0 auto;
-  padding: 0.5rem;
-  border-radius: 0.8rem;
-  border: 2px solid #d25353;
-  background: rgba(210, 83, 83, 0.08);
+  padding: 76px 1rem 2rem;
 }
 
-.muscle-list::-webkit-scrollbar {
-  width: 8px;
-}
-.muscle-list::-webkit-scrollbar-thumb {
-  background: #d25353;
-  border-radius: 10px;
+/* =========================
+   HERO
+========================= */
+.hero {
+  text-align: center;
+  padding: 1.5rem 0 1.2rem;
 }
 
-/* MUSCLE ROW */
-.muscle-row {
-  display: flex;
-  justify-content: flex-start;
+.logo-wrapper {
+  display: inline-flex;
   align-items: center;
-  margin: 0.5rem 0;
-  font-size: 1rem;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-.muscle-row input[type="checkbox"] {
-  margin-right: 0.5rem;
-  width: 18px;
-  height: 18px;
-  accent-color: #f4c430;
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #d25353, #b11226);
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(210, 83, 83, 0.4);
 }
 
-/* 🔥 THIS IS THE COLOR YOU WANTED */
-.muscle-row strong {
+.logo-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: white;
+}
+
+.logo-text {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.85rem;
+  letter-spacing: 0.06em;
+  color: #111;
+  line-height: 1;
+}
+
+.logo-text span {
+  color: #d25353;
+}
+
+.logo-divider {
+  width: 44px;
+  height: 3px;
+  background: linear-gradient(90deg, #d25353, #f4c430);
+  border-radius: 2px;
+  margin: 8px auto 14px;
+}
+
+.hero__title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2.4rem;
+  letter-spacing: 0.04em;
+  color: #1a1a1a;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.hero__sub {
+  font-size: 0.9rem;
+  color: #777;
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+
+.hero__sub strong {
   color: #d25353;
   font-weight: 700;
 }
 
-.exercise-name {
-  margin-left: 10px;
-  color: black;
+/* Avatar */
+.avatar-wrap {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto;
+  border: 3px solid #d25353;
+  box-shadow: 0 0 0 4px rgba(210, 83, 83, 0.15);
 }
 
-/* BUTTON */
-.btn {
+.avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
-  width: max-content;
-  margin: 1rem auto;
-  padding: 0.6rem 1.2rem;
+}
+
+/* =========================
+   CARD
+========================= */
+.card {
+  background: white;
+  border-radius: 18px;
+  padding: 1.6rem 1.5rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(210, 83, 83, 0.1);
+  margin-top: 1.4rem;
+  animation: slideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.1s;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Section label */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.section-label svg {
+  width: 14px;
+  height: 14px;
+  stroke: #d25353;
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+/* =========================
+   MUSCLE LIST
+========================= */
+.muscle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-bottom: 1.2rem;
+}
+
+.muscle-list::-webkit-scrollbar {
+  width: 5px;
+}
+.muscle-list::-webkit-scrollbar-track {
+  background: #f4f4f5;
+  border-radius: 10px;
+}
+.muscle-list::-webkit-scrollbar-thumb {
+  background: rgba(210, 83, 83, 0.3);
+  border-radius: 10px;
+}
+.muscle-list::-webkit-scrollbar-thumb:hover {
   background: #d25353;
-  color: whitesmoke;
-  font-weight: bold;
-  border-radius: 0.5rem;
-  border: 1px solid #d25353;
-  cursor: pointer;
-  transition: 0.3s ease;
 }
 
-.btn:hover {
-  color: #f4c430;
-}
-
-/* MESSAGE */
-#startMessage {
-  text-align: center;
-  font-weight: bold;
-  margin-top: 1rem;
-  color: #f87171;
-}
-
-/* MOBILE */
-@media (max-width: 600px) {
-  h1 {
-    font-size: 1.5rem;
-  }
-  h2,
-  h3 {
-    font-size: 1.2rem;
-  }
-
-  .muscle-row {
-    flex-direction: row; /* ✅ keep them side-by-side */
-    justify-content: flex-start; /* ✅ align left */
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .btn {
-    width: 100%;
-  }
-}
-
+/* Each row */
 .muscle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+  user-select: none;
+}
+
+.muscle-row:hover {
+  background: rgba(210, 83, 83, 0.04);
+  border-color: rgba(210, 83, 83, 0.15);
+}
+
+/* Hide real checkbox */
+.muscle-cb {
+  display: none;
+}
+
+/* Custom checkbox */
+.muscle-custom-cb {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+  background: white;
+}
+
+.muscle-custom-cb svg {
+  width: 11px;
+  height: 11px;
+  stroke: white;
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+/* Checked state */
+.muscle-cb:checked ~ .muscle-custom-cb {
+  background: #d25353;
+  border-color: #d25353;
+}
+
+.muscle-cb:checked ~ .muscle-custom-cb svg {
+  opacity: 1;
+}
+
+.muscle-cb:checked ~ .muscle-info .muscle-name {
+  color: #d25353;
+}
+
+.muscle-row:has(.muscle-cb:checked) {
+  background: rgba(210, 83, 83, 0.06);
+  border-color: rgba(210, 83, 83, 0.25);
+}
+
+/* GIF thumbnail */
+.gif-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f0f0f0;
+  border: 1.5px solid rgba(210, 83, 83, 0.15);
+  transition: border-color 0.15s;
+}
+
+.gif-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.muscle-row:has(.muscle-cb:checked) .gif-thumb {
+  border-color: rgba(210, 83, 83, 0.5);
+}
+
+/* Muscle info */
+.muscle-info {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.muscle-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #1a1a1a;
+  text-transform: capitalize;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+
+.exercise-name {
+  font-size: 0.8rem;
+  color: #999;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================
+   START MESSAGE
+========================= */
+.start-message {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-height: 20px;
+  margin-bottom: 10px;
+  color: #d25353;
+}
+
+.start-message.success {
+  color: #16a34a;
+}
+
+/* =========================
+   START BUTTON
+========================= */
+.start-btn {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #d25353, #b11226);
+  color: white;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: 0.03em;
+  box-shadow: 0 4px 16px rgba(177, 18, 38, 0.3);
+  transition:
+    filter 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.start-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: white;
+  stroke: none;
+  flex-shrink: 0;
+}
+
+.start-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(177, 18, 38, 0.4);
+}
+
+.start-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Empty state */
+.empty-muscles {
+  text-align: center;
+  padding: 2rem;
+  color: #bbb;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 480px) {
+  .page-wrap {
+    padding-top: 72px;
+  }
+  .hero__title {
+    font-size: 2rem;
+  }
+  .card {
+    padding: 1.2rem 1rem;
+    border-radius: 14px;
+  }
+  .muscle-list {
+    max-height: 260px;
+  }
+  .exercise-name {
+    display: none;
+  } /* too cramped on tiny screens */
+  .gif-thumb {
+    display: none;
+  }
+  .top-bar__btn span {
+    display: none;
+  }
+  .top-bar__btn {
+    padding: 0.45rem 0.55rem;
+  }
+  .top-bar__btn svg {
+    width: 16px;
+    height: 16px;
+  }
 }

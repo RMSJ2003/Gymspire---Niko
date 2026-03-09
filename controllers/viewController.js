@@ -134,6 +134,7 @@ exports.startSoloWorkout = catchAsync(async (req, res, next) => {
   const muscles = workoutPlan.exerciseDetails.map((ex) => ({
     name: ex.target,
     exerciseName: ex.name,
+    gifURL: ex.gifURL,
   }));
 
   res.status(200).render("startSoloWorkout", {
