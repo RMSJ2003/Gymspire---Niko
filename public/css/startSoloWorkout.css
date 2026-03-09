@@ -465,9 +465,12 @@ body {
   }
   .exercise-name {
     display: none;
-  } /* too cramped on tiny screens */
+  }
   .gif-thumb {
-    display: none;
+    display: block !important;
+    width: 44px !important;
+    height: 44px !important;
+    flex-shrink: 0;
   }
   .top-bar__btn span {
     display: none;
