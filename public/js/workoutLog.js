@@ -570,9 +570,9 @@ document.querySelectorAll(".exercise-card").forEach((card) => {
     if (alreadySaved) {
       savedSetIds.add(setId);
       tr.classList.add("row-done");
-      weightTd.innerHTML = `<div class="weight-row"><span style="color:white;font-weight:700;">${initWeight}</span><span class="unit-side-label">${unit}</span></div>`;
-      repsTd.innerHTML = `<span style="color:white;font-weight:700;">${initReps}</span>`;
-      actionTd.innerHTML = `<span style="color:white;font-weight:700;">✓</span>`;
+      weightTd.innerHTML = `<div class="weight-row"><span style="color:#166534;font-weight:700;">${initWeight}</span><span class="unit-side-label" style="color:#16a34a;">${unit}</span></div>`;
+      repsTd.innerHTML = `<span style="color:#166534;font-weight:700;">${initReps}</span>`;
+      actionTd.innerHTML = `<span style="color:#16a34a;font-weight:800;">✓</span>`;
     }
 
     return {

@@ -1,11 +1,11 @@
 // ==================================================
 // CREATE CHALLENGE JS
 // Split-panel modal: left = live GIF preview
-// Right = one exercise per muscle (radio) with inline accordion
+// Right = MULTIPLE exercises per muscle (checkbox)
 // ==================================================
 
 const exercises = window.exercises || [];
-const selectedByTarget = {};
+const selectedByTarget = {}; // target -> Set of exerciseIds
 
 const targetGrid = document.getElementById("targetGrid");
 const targetModal = document.getElementById("targetModal");
@@ -32,6 +32,7 @@ exercises.forEach((ex, index) => {
 
 /* ── BUILD TARGET CARDS ── */
 Object.keys(grouped).forEach((target) => {
+  selectedByTarget[target] = new Set();
   const card = document.createElement("div");
   card.className = "target-card";
   card.dataset.target = target;
@@ -67,16 +68,17 @@ function updatePreview(ex) {
 function updateTargetCard(target) {
   const card = document.querySelector(`[data-target="${target}"]`);
   if (!card) return;
-  const hasSelection = !!selectedByTarget[target];
-  card.dataset.count = hasSelection ? "1" : "0";
-  card.classList.toggle("has-selection", hasSelection);
+  const count = selectedByTarget[target].size;
+  card.dataset.count = count;
+  card.classList.toggle("has-selection", count > 0);
 }
 
 /* ── UPDATE SELECTED COUNT BADGE IN MODAL ── */
 function updateCountBadge(target) {
-  const has = !!selectedByTarget[target];
-  selectedCountBadge.textContent = has ? "1 selected" : "0 selected";
-  selectedCountBadge.classList.toggle("has-items", has);
+  const count = selectedByTarget[target].size;
+  selectedCountBadge.textContent =
+    count === 0 ? "0 selected" : `${count} selected`;
+  selectedCountBadge.classList.toggle("has-items", count > 0);
 }
 
 /* ── OPEN TARGET MODAL ── */
@@ -87,13 +89,15 @@ function openTargetModal(target) {
   updatePreview(null);
   updateCountBadge(target);
 
-  const selEx = exercises.find(
-    (e) => e.exerciseId === selectedByTarget[target],
-  );
-  if (selEx) updatePreview(selEx);
+  // Show preview of first selected if any
+  const firstSelectedId = [...selectedByTarget[target]][0];
+  if (firstSelectedId) {
+    const selEx = exercises.find((e) => e.exerciseId === firstSelectedId);
+    if (selEx) updatePreview(selEx);
+  }
 
   grouped[target].forEach((ex) => {
-    const isSelected = selectedByTarget[target] === ex.exerciseId;
+    const isSelected = selectedByTarget[target].has(ex.exerciseId);
     const row = document.createElement("div");
     row.className = "exercise-row" + (isSelected ? " checked" : "");
 
@@ -104,7 +108,7 @@ function openTargetModal(target) {
     row.innerHTML = `
       <div class="exercise-row-main">
         <div class="exercise-left">
-          <input type="radio" name="exercise-${target}" value="${ex.exerciseId}" ${isSelected ? "checked" : ""}>
+          <input type="checkbox" name="exercise-${target}" value="${ex.exerciseId}" ${isSelected ? "checked" : ""}>
           <span class="exercise-name">${ex.name}</span>
         </div>
         <button class="instructions-toggle" type="button" aria-expanded="false">
@@ -117,7 +121,7 @@ function openTargetModal(target) {
       </div>
     `;
 
-    const radio = row.querySelector("input");
+    const checkbox = row.querySelector("input");
     const rowMain = row.querySelector(".exercise-row-main");
     const toggleBtn = row.querySelector(".instructions-toggle");
     const accordion = row.querySelector(".exercise-accordion");
@@ -127,17 +131,17 @@ function openTargetModal(target) {
     rowMain.addEventListener("click", (e) => {
       if (e.target === toggleBtn || toggleBtn.contains(e.target)) return;
 
-      selectedByTarget[target] = ex.exerciseId;
+      // Toggle selection
+      if (selectedByTarget[target].has(ex.exerciseId)) {
+        selectedByTarget[target].delete(ex.exerciseId);
+        checkbox.checked = false;
+        row.classList.remove("checked");
+      } else {
+        selectedByTarget[target].add(ex.exerciseId);
+        checkbox.checked = true;
+        row.classList.add("checked");
+      }
 
-      document
-        .querySelectorAll(`input[name="exercise-${target}"]`)
-        .forEach((r) => {
-          r.checked = false;
-          r.closest(".exercise-row").classList.remove("checked");
-        });
-
-      radio.checked = true;
-      row.classList.add("checked");
       updatePreview(ex);
       updateTargetCard(target);
       updateCountBadge(target);
@@ -173,8 +177,10 @@ form.addEventListener("submit", async (e) => {
   const startTime = document.getElementById("startTime").value;
   const endTime = document.getElementById("endTime").value;
 
-  // Build exerciseIds from selectedByTarget
-  const exerciseIds = Object.values(selectedByTarget);
+  // Collect all selected exercise IDs across all targets
+  const exerciseIds = Object.values(selectedByTarget).flatMap((set) => [
+    ...set,
+  ]);
 
   if (!name) {
     formMessage.textContent = "Please enter a challenge name.";

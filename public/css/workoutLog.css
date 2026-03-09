@@ -836,3 +836,95 @@ tr.row-done td {
     font-size: 0.78rem !important;
   }
 }
+
+/* =========================
+   READABILITY FIXES
+   — spin displays, unit labels, set numbers
+   visible on all row states
+========================= */
+
+/* Default (unsaved) row — dark text */
+.spin-display {
+  color: #1a1a1a !important;
+  background: #fafafa !important;
+  border: 1.5px solid #e0e0e0 !important;
+}
+
+.unit-side-label {
+  color: #888 !important;
+  font-weight: 700 !important;
+  font-size: 0.78rem !important;
+}
+
+.set-num-cell {
+  color: #1a1a1a !important;
+  font-weight: 700 !important;
+}
+
+/* Active row — slightly warm tint, still dark text */
+tr.row-active .spin-display {
+  color: #1a1a1a !important;
+  background: white !important;
+  border-color: #d25353 !important;
+}
+tr.row-active .set-num-cell {
+  color: #d25353 !important;
+}
+tr.row-active .unit-side-label {
+  color: #d25353 !important;
+}
+
+/* Done row — green bg, keep text dark/readable */
+tr.row-done td {
+  color: #14532d !important;
+}
+tr.row-done .spin-display {
+  color: #14532d !important;
+  background: rgba(240, 253, 244, 0.8) !important;
+  border-color: rgba(22, 163, 74, 0.3) !important;
+}
+tr.row-done .unit-side-label {
+  color: #16a34a !important;
+}
+tr.row-done .set-num-cell {
+  color: #16a34a !important;
+  font-weight: 800 !important;
+}
+tr.row-done .spin-btn {
+  border-color: rgba(22, 163, 74, 0.25) !important;
+  color: #16a34a !important;
+  background: white !important;
+}
+
+/* Table header always readable */
+.exercise-card thead th {
+  color: #999 !important;
+  background: #fafafa !important;
+}
+
+/* Table body default cell color */
+.exercise-card tbody td {
+  color: #1a1a1a !important;
+}
+
+/* =========================
+   DONE ROW — color override fix
+========================= */
+tr.row-done {
+  background: #f0fdf4 !important;
+}
+tr.row-done td,
+tr.row-done .set-num-cell,
+tr.row-done .spin-display,
+tr.row-done .unit-side-label {
+  color: #166534 !important;
+}
+tr.row-done .spin-display {
+  background: white !important;
+  border-color: rgba(22, 163, 74, 0.25) !important;
+}
+tr.row-done .spin-btn {
+  background: white !important;
+  color: #16a34a !important;
+  border-color: rgba(22, 163, 74, 0.3) !important;
+}
