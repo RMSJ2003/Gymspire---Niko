@@ -117,14 +117,20 @@ exports.getUserAttendance = catchAsync(async (req, res, next) => {
 // PATCH /api/v1/users/gymCheckin  body: { status: "offline" }
 exports.gymCheckin = catchAsync(async (req, res, next) => {
   const { status, latitude, longitude } = req.body;
+  console.log("gym checkin start");
 
   if (!["atGym", "offline"].includes(status)) {
+    console.log("first if");
+
     return next(new AppError('Status must be "atGym" or "offline"', 400));
   }
 
   if (status === "atGym") {
+    console.log("2nd if");
+
     // ── GPS VERIFICATION ──
     if (!latitude || !longitude) {
+      console.log("2nd.1st if");
       return res.status(400).json({
         status: "fail",
         message: "Location is required to check in at the gym.",
@@ -138,6 +144,7 @@ exports.gymCheckin = catchAsync(async (req, res, next) => {
     const distance = getDistanceMeters(latitude, longitude, gymLat, gymLng);
 
     if (distance > radius) {
+      console.log("3rd if");
       return res.status(400).json({
         status: "fail",
         message: `You must be at the gym to check in. You are ${Math.round(distance)}m away.`,

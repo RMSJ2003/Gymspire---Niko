@@ -51,19 +51,15 @@
       transition: opacity 0.25s ease, transform 0.25s ease;
       pointer-events: none;
     `;
-
     toast.innerHTML = `
       <span style="font-size:1rem;flex-shrink:0">${icon}</span>
       <span>${message}</span>
     `;
-
     document.body.appendChild(toast);
-
     requestAnimationFrame(() => {
       toast.style.opacity = "1";
       toast.style.transform = "translateX(-50%) translateY(0)";
     });
-
     setTimeout(() => {
       toast.style.opacity = "0";
       toast.style.transform = "translateX(-50%) translateY(10px)";
@@ -71,8 +67,37 @@
     }, 3500);
   }
 
+  // ── RESTORE CHECKED-IN STATE ──────────────────────────────
+  function setCheckedInUI(checkinTime) {
+    checkinBtn.disabled = true;
+    checkinBtn.classList.add("checked-in");
+    checkinBtnText.textContent = "Checked in ✓";
+    workoutPrompt.classList.add("show");
+    checkoutRow.classList.add("show");
+
+    if (checkinTime) {
+      const d = new Date(checkinTime);
+      checkinTimeEl.textContent = d.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      attendanceEl.classList.add("show");
+    }
+  }
+
+  // ── ON PAGE LOAD: check backend status ───────────────────
+  const gymStatus = checkinBtn.dataset.gymStatus; // "atGym" | "logging" | "offline"
+  const checkinTime = checkinBtn.dataset.checkinTime; // ISO string or ""
+
+  if (gymStatus === "atGym" || gymStatus === "logging") {
+    setCheckedInUI(checkinTime);
+  }
+
   // ── CHECK IN ──────────────────────────────────────────────
   checkinBtn.addEventListener("click", async () => {
+    // Already checked in — do nothing
+    if (checkinBtn.classList.contains("checked-in")) return;
+
     if (!navigator.geolocation) {
       showToast("Your browser does not support location.", "error");
       return;
@@ -95,16 +120,7 @@
           const data = await res.json();
 
           if (data.status === "success") {
-            checkinBtn.classList.add("checked-in");
-            checkinBtnText.textContent = "Checked in ✓";
-            workoutPrompt.classList.add("show");
-            checkoutRow.classList.add("show");
-            const now = new Date();
-            checkinTimeEl.textContent = now.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            });
-            attendanceEl.classList.add("show");
+            setCheckedInUI(new Date().toISOString());
             showToast("You're checked in at the gym!", "success");
           } else {
             checkinBtn.disabled = false;
@@ -121,7 +137,7 @@
         checkinBtn.disabled = false;
         checkinBtnText.textContent = "I'm at the gym";
         showToast(
-          "Location access denied. Please enable location to check in at the gym.",
+          "Location access denied. Please enable location to check in.",
           "error",
         );
       },
