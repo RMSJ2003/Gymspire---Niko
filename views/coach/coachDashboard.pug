@@ -2,24 +2,14 @@ extends ../base
 
 block styles
   link(rel="stylesheet" href="/css/dashboard.css")
+  link(rel="stylesheet" href="/css/coachDashboard.css")
 
 block content
 
-  // =========================
-  // NAVBAR
-  // =========================
   nav.navbar
     .nav-logo
-      if user.userType === "user"
-        a.dashboard-btn(href='/dashboard') GymSpire
-      if user.userType === "coach"
-        a.dashboard-btn(href='/coachDashboard') GymSpire
-      if user.userType === "admin"
-        a.dashboard-btn(href='/adminDashboard') GymSpire
-
-    // Centered time
+      a.dashboard-btn(href='/coachDashboard') GymSpire
     .nav-center
-
     .nav-right
       button.hamburger ☰
       .panel
@@ -27,78 +17,94 @@ block content
         form(action="/api/v1/auth/logout" method="GET")
           button(type="submit") Logout
 
-  // =========================
-  // WELCOME SECTION
-  // =========================
   .welcome-section
     img.app-logo(src="/img/gymspirelogo.png" alt="GymSpire Logo")
     h2 Welcome, #{user.username}
 
-  // =========================
-  // STATUS + EXERCISE LOG CONTAINERS
-  // =========================
-  .status-exercise-grid
-    // Recommended to workout now
-    .status-card
-      p
-        if recommended
-          strong Recommended to workout now
+  //- =====================================================
+  //- COACH MAIN GRID
+  //- Left: Challenges card + compact status cards
+  //- Right: Member progress / fatigue table
+  //- NOTE: No check-in — coaches are not gym members
+  //- =====================================================
+  .coach-main-grid
+
+    //- ── LEFT COLUMN ───────────────────────────────────
+    .coach-left
+
+      //- Challenges card
+      .coach-card
+        h3.coach-card__title Challenges
+        .coach-card__actions
+          a.card-link(href='/challenges') Challenges
+          button.info-btn(data-index='0' title='More Info') i
+
+      //- Gym status card
+      .status-card.compact
+        p
+          if recommended
+            strong.status-good ✓ Good time to train
+          else
+            strong.status-bad ✗ Gym is busy
+        p.status-msg #{message}
+        p Active sessions: #[strong #{currentLoad}]
+
+      //- Currently Working Out card
+      .status-card.compact
+        h3 Currently Working Out
+        if onlineUsers.length === 0
+          p.empty-state No active sessions right now.
         else
-          strong Not recommended to workout now
-      p #{message}
-      p
-        | Active GymSpire Sessions: 
-        data(value=currentLoad) #{currentLoad}
+          .online-users
+            each u in onlineUsers
+              .online-user
+                if u.pfpUrl
+                  img(src=u.pfpUrl alt=u.username)
+                else
+                  img(src='/img/default-user.png' alt=u.username)
+                span= u.username
+                if u.gymStatus === 'logging' && u.isAtGym
+                  span.user-badge.badge-workout Logging
+                  span.user-badge.badge-atgym At Gym
+                else if u.gymStatus === 'logging'
+                  span.user-badge.badge-workout Logging
+                else if u.gymStatus === 'atGym'
+                  span.user-badge.badge-atgym At Gym
 
-    // Currently Working Out
-    .status-card
-      h3 Currently Working Out
-      if onlineUsers.length === 0
-        p No users are currently working out.
-      else
-        .online-users
-          each u in onlineUsers
-            .online-user
-              if u.pfpUrl
-                img(
-                  src=u.pfpUrl
-                  alt=u.username
-                  width="40"
-                  height="40"
-                  style="border-radius:50%;"
-                )
-              else
-                img(
-                  src="/img/default-user.png"
-                  alt=u.username
-                  width="40"
-                  height="40"
-                  style="border-radius:50%;"
-                )
-              span= u.username
+    //- ── RIGHT COLUMN — Fatigue Table ─────────────────
+    .coach-right
+      .coach-fatigue-section
+        .fatigue-header
+          h3.fatigue-title
+            svg(xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24')
+              path(d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2')
+              circle(cx='9' cy='7' r='4')
+              path(d='M23 21v-2a4 4 0 0 0-3-3.87')
+              path(d='M16 3.13a4 4 0 0 1 0 7.75')
+            span Member Progress Overview
+          p.fatigue-sub Live snapshot of all members' activity &amp; fatigue trends
 
-  // =========================
-  // DASHBOARD GRID
-  // =========================
-  .dashboard(data-type="coach")
-    - const cards = ["Challenges"];
-    each item, index in cards
-      .card
-        h3 #{item}
-        .card-actions
-          - let url = '/' + item.toLowerCase().replaceAll(' ', '-');
-          a.card-link(href=url) #{item}
-          button.info-btn(data-index=index title="More Info") i
+        .fatigue-table-wrap
+          table.fatigue-table
+            thead
+              tr
+                th Member
+                th Last Session
+                th Trend
+                th Status
+            tbody#fatigueTbody
+              tr.fatigue-loading
+                td(colspan='4')
+                  span.fatigue-spinner
+                  | &nbsp;Loading…
 
-  // =========================
-  // MODAL (TEXT ONLY)
-  // =========================
+  //- Hidden .dashboard div needed for dashboard.js to detect type="coach"
+  .dashboard(data-type='coach' style='display:none')
+
   .modal.hidden#modal
     .modal-content
       button#closeModal ×
       p#modalText
 
-  // =========================
-  // DASHBOARD JS
-  // =========================
-  script(src="/js/dashboard.js")
+  script(src='/js/dashboard.js')
+  script(src='/js/coachFatigue.js')

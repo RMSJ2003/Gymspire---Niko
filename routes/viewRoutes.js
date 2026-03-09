@@ -76,6 +76,8 @@ router.get(
   viewController.clinicDashboard,
 );
 
+router.get("/congestion", authController.protect, viewController.congestion);
+
 router.get("/profile", authController.protect, viewController.profile);
 
 router.get(

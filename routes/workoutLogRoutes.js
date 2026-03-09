@@ -32,6 +32,8 @@ router
   )
   .get(workoutLogController.getMyWorkoutLogs);
 
+router.get("/members", workoutLogController.getMembersWorkoutSummary);
+
 router.get("/:id", requireWorkoutPlan, workoutLogController.getMyWorkoutLog);
 
 // router

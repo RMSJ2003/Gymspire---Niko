@@ -1,28 +1,125 @@
 document.addEventListener("DOMContentLoaded", () => {
   // ─────────────────────────────────────────────
+  // TOAST
+  // ─────────────────────────────────────────────
+  function showToast(message, type = "info") {
+    const existing = document.getElementById("adminToast");
+    if (existing) existing.remove();
+    const colors = {
+      error: { bg: "#d25353", icon: "✕" },
+      success: { bg: "#22c55e", icon: "✓" },
+      info: { bg: "#3b82f6", icon: "ℹ" },
+      warning: { bg: "#f59e0b", icon: "⚠" },
+    };
+    const { bg, icon } = colors[type] || colors.info;
+    const toast = document.createElement("div");
+    toast.id = "adminToast";
+    toast.style.cssText = `
+      position:fixed;bottom:1.5rem;left:50%;
+      transform:translateX(-50%) translateY(20px);
+      background:${bg};color:white;
+      padding:0.75rem 1.4rem;border-radius:10px;
+      font-family:'DM Sans',Arial,sans-serif;font-size:0.88rem;font-weight:600;
+      display:flex;align-items:center;gap:0.55rem;
+      box-shadow:0 8px 28px rgba(0,0,0,0.22);z-index:9999;
+      max-width:90vw;opacity:0;
+      transition:opacity 0.25s ease,transform 0.25s ease;
+      pointer-events:none;
+    `;
+    toast.innerHTML = `<span style="font-size:1rem;flex-shrink:0">${icon}</span><span>${message}</span>`;
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => {
+      toast.style.opacity = "1";
+      toast.style.transform = "translateX(-50%) translateY(0)";
+    });
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      toast.style.transform = "translateX(-50%) translateY(10px)";
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+  }
+
+  // ─────────────────────────────────────────────
+  // CONFIRM MODAL (replaces confirm())
+  // ─────────────────────────────────────────────
+  function showConfirm(message, onConfirm) {
+    const existing = document.getElementById("confirmModal");
+    if (existing) existing.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "confirmModal";
+    overlay.style.cssText = `
+      position:fixed;inset:0;background:rgba(0,0,0,0.5);
+      display:flex;align-items:center;justify-content:center;
+      z-index:9998;padding:1rem;
+    `;
+
+    overlay.innerHTML = `
+      <div style="
+        background:white;border-radius:16px;padding:1.5rem;
+        max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);
+        font-family:'DM Sans',Arial,sans-serif;
+      ">
+        <p style="margin:0 0 1.2rem;font-size:0.95rem;color:#1a1a1a;line-height:1.5;">${message}</p>
+        <div style="display:flex;gap:0.6rem;justify-content:flex-end;">
+          <button id="confirmCancel" style="
+            padding:0.5rem 1.1rem;border-radius:8px;border:1.5px solid #ddd;
+            background:white;color:#555;font-weight:700;font-size:0.85rem;cursor:pointer;
+            font-family:'DM Sans',Arial,sans-serif;
+          ">Cancel</button>
+          <button id="confirmOk" style="
+            padding:0.5rem 1.1rem;border-radius:8px;border:none;
+            background:linear-gradient(135deg,#d25353,#b11226);color:white;
+            font-weight:700;font-size:0.85rem;cursor:pointer;
+            font-family:'DM Sans',Arial,sans-serif;
+          ">Confirm</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    overlay.querySelector("#confirmOk").addEventListener("click", () => {
+      overlay.remove();
+      onConfirm();
+    });
+    overlay
+      .querySelector("#confirmCancel")
+      .addEventListener("click", () => overlay.remove());
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) overlay.remove();
+    });
+  }
+
+  // ─────────────────────────────────────────────
   // DELETE USER
   // ─────────────────────────────────────────────
   document.querySelectorAll(".delete-user-btn").forEach((btn) => {
-    btn.addEventListener("click", async () => {
+    btn.addEventListener("click", () => {
       const userId = btn.dataset.userId;
-      if (!confirm("Are you sure you want to deactivate this user?")) return;
 
-      try {
-        const res = await fetch(`/api/v1/users/${userId}`, {
-          method: "DELETE",
-          credentials: "include",
-        });
-        const data = await res.json();
+      showConfirm(
+        "Are you sure you want to deactivate this user?",
+        async () => {
+          try {
+            const res = await fetch(`/api/v1/users/${userId}`, {
+              method: "DELETE",
+              credentials: "include",
+            });
+            const data = await res.json();
 
-        if (!res.ok) {
-          alert(data.message || "Failed to delete user.");
-          return;
-        }
-        window.location.reload();
-      } catch (err) {
-        console.error(err);
-        alert("Network error.");
-      }
+            if (!res.ok) {
+              showToast(data.message || "Failed to deactivate user.", "error");
+              return;
+            }
+            showToast("User deactivated.", "success");
+            setTimeout(() => window.location.reload(), 1000);
+          } catch (err) {
+            console.error(err);
+            showToast("Network error.", "error");
+          }
+        },
+      );
     });
   });
 
@@ -58,7 +155,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const drawerUsername = document.getElementById("drawerUsername");
   const drawerBody = document.getElementById("drawerBody");
 
-  // stat spans
   const drawerTotalVisits = document.getElementById("drawerTotalVisits");
   const drawerThisMonth = document.getElementById("drawerThisMonth");
   const drawerAvgDuration = document.getElementById("drawerAvgDuration");
@@ -81,24 +177,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Escape") closeDrawer();
   });
 
-  // ── Load attendance for a user ────────────────
   async function loadAttendance(userId, username, pfp) {
-    // Set header info
     drawerPfp.src = pfp;
     drawerUsername.textContent = username;
-
-    // Reset stats
     drawerTotalVisits.textContent = "—";
     drawerThisMonth.textContent = "—";
     drawerAvgDuration.textContent = "—";
-
-    // Show loading state
     drawerBody.innerHTML = `
       <div class="drawer-loading">
         <div class="spinner"></div>
         <p>Loading attendance...</p>
       </div>`;
-
     openDrawer();
 
     try {
@@ -106,22 +195,15 @@ document.addEventListener("DOMContentLoaded", () => {
         credentials: "include",
       });
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.message || "Failed to load attendance");
-
-      const records = data.data || [];
-      renderAttendance(records);
+      renderAttendance(data.data || []);
     } catch (err) {
       console.error(err);
-      drawerBody.innerHTML = `
-        <div class="no-attendance">
-          <p>⚠️ Could not load attendance data.</p>
-        </div>`;
+      drawerBody.innerHTML = `<div class="no-attendance"><p>⚠️ Could not load attendance data.</p></div>`;
     }
   }
 
   function renderAttendance(records) {
-    // ── Compute stats ──────────────────────────
     const now = new Date();
     const thisMonth = records.filter((r) => {
       const d = new Date(r.checkinTime);
@@ -129,7 +211,6 @@ document.addEventListener("DOMContentLoaded", () => {
         d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
       );
     });
-
     const withDuration = records.filter(
       (r) => r.durationMinutes != null && r.durationMinutes > 0,
     );
@@ -145,33 +226,26 @@ document.addEventListener("DOMContentLoaded", () => {
     drawerAvgDuration.textContent =
       avgDuration != null ? `${avgDuration}` : "—";
 
-    // ── Render list ────────────────────────────
-    if (records.length === 0) {
-      drawerBody.innerHTML = `
-        <div class="no-attendance">
-          <p>No gym visits recorded yet.</p>
-        </div>`;
+    if (!records.length) {
+      drawerBody.innerHTML = `<div class="no-attendance"><p>No gym visits recorded yet.</p></div>`;
       return;
     }
 
-    const html = records
+    drawerBody.innerHTML = records
       .map((r) => {
         const checkin = new Date(r.checkinTime);
         const checkout = r.checkoutTime ? new Date(r.checkoutTime) : null;
-
         const dateStr = checkin.toLocaleDateString("en-US", {
           weekday: "short",
           month: "short",
           day: "numeric",
           year: "numeric",
         });
-
         const checkinTimeStr = checkin.toLocaleTimeString("en-US", {
           hour: "numeric",
           minute: "2-digit",
           hour12: true,
         });
-
         const checkoutTimeStr = checkout
           ? checkout.toLocaleTimeString("en-US", {
               hour: "numeric",
@@ -179,7 +253,6 @@ document.addEventListener("DOMContentLoaded", () => {
               hour12: true,
             })
           : "Still at gym";
-
         const icon = r.source === "workout" ? "🏋️" : "📍";
         const durText =
           r.durationMinutes != null
@@ -202,11 +275,8 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>`;
       })
       .join("");
-
-    drawerBody.innerHTML = html;
   }
 
-  // ── Attach click handlers to all attendance buttons ──
   document.querySelectorAll(".attendance-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const { userId, username, pfp } = btn.dataset;

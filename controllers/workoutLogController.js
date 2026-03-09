@@ -5,6 +5,7 @@ dayjs.extend(isoWeek);
 
 const WorkoutLog = require("../models/workoutLogModel");
 const WorkoutPlan = require("../models/workoutPlanModel");
+const User = require("../models/userModel");
 const Challenge = require("../models/challengeModel");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
@@ -37,34 +38,59 @@ exports.createMySoloWorkoutLog = catchAsync(async (req, res, next) => {
     return next(new AppError("Please select at least one muscle group", 400));
   }
 
+  // ── Validate shape: each target must be { muscle, exercise } ──
+  const isValid = targets.every(
+    (t) => t && typeof t.muscle === "string" && typeof t.exercise === "string",
+  );
+  if (!isValid) {
+    return next(
+      new AppError("Each target must have a muscle and exercise.", 400),
+    );
+  }
+
   const lastWorkoutLog = await WorkoutLog.findOne({
     userId: req.user._id,
   }).sort({ date: -1 });
 
+  // enforceMuscleRest expects an array of muscle name strings
+  const muscleNames = targets.map((t) => t.muscle);
+
   try {
-    enforceMuscleRest({ lastWorkoutLog, targets });
+    enforceMuscleRest({ lastWorkoutLog, targets: muscleNames });
   } catch (err) {
     return next(new AppError(err.message, 409));
   }
 
   const planExercises = req.workoutPlan.exerciseDetails;
-  const validTargets = planExercises.map((ex) => ex.target);
+  const validMuscles = planExercises.map((ex) => ex.target);
 
-  const invalidTargets = targets.filter((t) => !validTargets.includes(t));
-  if (invalidTargets.length) {
+  // Validate each requested muscle exists in the plan
+  const invalidMuscles = muscleNames.filter((m) => !validMuscles.includes(m));
+  if (invalidMuscles.length) {
     return next(
-      new AppError(`Invalid muscle targets: ${invalidTargets.join(", ")}`, 400),
+      new AppError(`Invalid muscle targets: ${invalidMuscles.join(", ")}`, 400),
     );
   }
 
-  const selectedExercises = planExercises
-    .filter((ex) => targets.includes(ex.target))
-    .map((ex) => ({
-      name: ex.name,
-      target: ex.target,
-      gifURL: ex.gifURL,
+  // Build exercises — use the user-selected exercise name, fall back to plan default
+  const selectedExercises = targets.map((t) => {
+    // Find the matching exercise in the plan by name (user's choice)
+    const match =
+      planExercises.find(
+        (ex) =>
+          ex.target === t.muscle &&
+          ex.name.toLowerCase() === t.exercise.toLowerCase(),
+      ) ||
+      // fallback: any exercise for that muscle (safety net)
+      planExercises.find((ex) => ex.target === t.muscle);
+
+    return {
+      name: match ? match.name : t.exercise,
+      target: match ? match.target : t.muscle,
+      gifURL: match ? match.gifURL : "",
       set: createDefaultSets(),
-    }));
+    };
+  });
 
   if (!selectedExercises.length) {
     return next(new AppError("No matching exercises found", 400));
@@ -79,7 +105,6 @@ exports.createMySoloWorkoutLog = catchAsync(async (req, res, next) => {
 
   res.status(201).json({ status: "success", data: newWorkoutLog });
 });
-
 exports.createMyChallengeWorkoutLog = catchAsync(async (req, res, next) => {
   const challenge = req.challenge;
 
@@ -498,3 +523,73 @@ exports.acquireMyWeeklyWorkoutCount = async (req, res, next) => {
   req.weeklyWorkoutCount = workoutCount;
   next();
 };
+
+// ==================================================
+// COACH: Get all members' latest workout summary
+// GET /api/v1/workout-logs/members
+// Returns each member with their last 5 logs (for trend + fatigue table)
+// ==================================================
+exports.getMembersWorkoutSummary = catchAsync(async (req, res, next) => {
+  // Step 1: Get all users of type "user"
+  const members = await User.find({ userType: "user" }).select(
+    "username pfpUrl",
+  );
+
+  // Step 2: For each member, get their last 5 completed logs
+  const summaries = await Promise.all(
+    members.map(async (member) => {
+      const logs = await WorkoutLog.find({
+        userId: member._id,
+        status: "done",
+      })
+        .sort({ date: -1 })
+        .limit(5)
+        .select("date exercises totalVolume");
+
+      return {
+        _id: member._id,
+        username: member.username,
+        pfpUrl: member.pfpUrl || null,
+        logs,
+      };
+    }),
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: summaries,
+  });
+});
+
+exports.autoCheckin = catchAsync(async (req, res, next) => {
+  const now = new Date();
+
+  // Check if user already has an open attendance record
+  const alreadyCheckedIn = await GymAttendance.findOne({
+    user: req.user.id,
+    checkoutTime: null,
+  });
+
+  if (!alreadyCheckedIn) {
+    // Not checked in at all — create attendance record automatically
+    await GymAttendance.create({
+      user: req.user.id,
+      checkinTime: now,
+      source: "workout", // auto, not manual tap
+    });
+
+    await User.findByIdAndUpdate(req.user.id, {
+      isAtGym: true,
+      gymStatus: "logging",
+      gymCheckinTime: now,
+    });
+  } else {
+    // Already manually checked in (atGym) — upgrade status to "logging"
+    // but DO NOT create a duplicate attendance record
+    await User.findByIdAndUpdate(req.user.id, {
+      gymStatus: "logging",
+    });
+  }
+
+  next(); // continue to actual workout creation
+});

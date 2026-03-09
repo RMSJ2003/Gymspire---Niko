@@ -4,21 +4,20 @@ block styles
   link(rel="stylesheet" href="/css/profile.css")
 
 block content
-  // 🔹 TOP BAR
+
   .top-bar
     if user.userType === "user"
-      a.dashboard-btn(href='/dashboard') Dashboard
+      a(href='/dashboard') Dashboard
     if user.userType === "coach"
-      a.dashboard-btn(href='/coachDashboard') Dashboard
+      a(href='/coachDashboard') Dashboard
     if user.userType === "admin"
-      a.dashboard-btn(href='/adminDashboard') Dashboard
-    a.back-btn(href='javascript:history.back()') Back
+      a(href='/adminDashboard') Dashboard
+    a(href='javascript:history.back()') Back
 
   .profile-page
     .profile-card
       h1 #{title}
 
-      // Profile Picture
       if user.pfpUrl
         img.profile-pic(src=user.pfpUrl alt="Profile Picture")
       else
@@ -26,25 +25,21 @@ block content
 
       hr.profile-divider
 
-      // User Details
       .profile-details
         h2 #{user.username}
         h2 #{user.email}
 
-      // Buttons
       .profile-actions
         a(href='/editProfile') Edit Profile
+
         form(id="deleteForm")
           p.form-message#formMessage
 
           button(type="submit" id="deleteBtn") Deactivate Account
-          br
-          br
 
-          p.warning-message
-            | ⚠️ This action is permanent and cannot be undone.
+          p.warning-message ⚠️ This action cannot be undone.
 
-          button(type="button" id="permanentDeleteBtn") Delete Account
+          button(type="button" id="permanentDeleteBtn") Delete Account Permanently
 
-block scripts 
+block scripts
   script(src='/js/profile.js')

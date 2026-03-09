@@ -168,6 +168,14 @@ exports.gymCheckin = catchAsync(async (req, res, next) => {
     // CHECKOUT — no location needed
     const now = new Date();
 
+    // Guard: if already offline, do nothing (prevents double-close)
+    const currentUser = await User.findById(req.user.id).select("gymStatus");
+    if (currentUser.gymStatus === "offline") {
+      return res
+        .status(200)
+        .json({ status: "success", message: "Already checked out." });
+    }
+
     await User.findByIdAndUpdate(req.user.id, {
       isAtGym: false,
       gymStatus: "offline",

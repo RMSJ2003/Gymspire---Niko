@@ -1,7 +1,99 @@
 extends base
 
 block styles
-  link(rel="stylesheet" href="/css/editWorkoutPlan.css")
+  style.
+    @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap");
+
+    :root {
+      --red: #d25353; --red-dark: #b83e3e; --red-light: #ea7b7b;
+      --yellow: #ebda1b; --yellow-dark: #c9b900;
+      --bg: #f7f5f2; --card-bg: #fff; --text: #1a1a1a; --text-muted: #777;
+      --radius: 1rem;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --shadow-hover: 0 8px 30px rgba(210,83,83,0.25);
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: "DM Sans", sans-serif; background: var(--bg);
+      padding: 5.5rem 1.5rem 3rem; min-height: 100vh;
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(210,83,83,0.04) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(235,218,27,0.05) 0%, transparent 50%);
+    }
+    .top-bar {
+      position: fixed; top:0; left:0; right:0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+      z-index: 100;
+    }
+    .top-bar a {
+      background: var(--red); color: white; padding: 0.5rem 1.3rem;
+      border-radius: 0.6rem; font-weight: 600; font-size: 0.875rem;
+      text-decoration: none; letter-spacing: 0.02em;
+      transition: background 0.2s, transform 0.15s;
+      box-shadow: 0 2px 8px rgba(210,83,83,0.3);
+    }
+    .top-bar a:hover { background: var(--red-dark); transform: translateY(-1px); }
+    .page-header { text-align: center; margin-bottom: 1.5rem; }
+    h1 { font-family: "Bebas Neue", sans-serif; font-size: 2.8rem; letter-spacing: 0.04em; color: var(--text); line-height: 1; margin-bottom: 0.25rem; }
+    h2 { font-size: 1rem; font-weight: 500; color: var(--text-muted); letter-spacing: 0.05em; text-transform: uppercase; text-align: center; }
+    .profile-pic { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid var(--yellow); display: block; margin: 0 auto 2rem; box-shadow: 0 0 0 6px rgba(235,218,27,0.15), var(--shadow); }
+    .section-label { text-align: center; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; }
+    .target-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 0.75rem; max-width: 860px; margin: 0 auto 2.5rem; }
+    .target-card { background: var(--card-bg); color: var(--text); padding: 1.4rem 1rem 1rem; border-radius: var(--radius); text-align: center; font-weight: 700; font-size: 0.95rem; cursor: pointer; border: 2px solid transparent; box-shadow: var(--shadow); position: relative; overflow: hidden; text-transform: capitalize; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s; }
+    .target-card::before { content: ""; position: absolute; inset: 0; background: var(--red); opacity: 0; transition: opacity 0.18s; z-index: 0; }
+    .target-card span { position: relative; z-index: 1; }
+    .target-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: var(--red-light); }
+    .target-card:hover::before { opacity: 0.06; }
+    .target-card.active { background: var(--red); color: white; border-color: var(--red); box-shadow: 0 6px 20px rgba(210,83,83,0.35); }
+    .muscle-count { font-size: 0.68rem; font-weight: 700; background: var(--yellow); color: #1a1a1a; padding: 0.15rem 0.55rem; border-radius: 2rem; position: relative; z-index: 1; }
+    .update-section { text-align: center; margin-top: 0.5rem; padding-bottom: 1rem; }
+    .update-section button { background: var(--yellow); color: var(--text); padding: 0.9rem 2.5rem; border: none; border-radius: 0.75rem; font-weight: 700; font-size: 1rem; font-family: "DM Sans", sans-serif; cursor: pointer; box-shadow: 0 4px 16px rgba(235,218,27,0.4); transition: background 0.2s, transform 0.15s; }
+    .update-section button:hover { background: var(--yellow-dark); transform: translateY(-2px); }
+    .form-message { font-size: 0.88rem; color: var(--red); font-weight: 600; min-height: 1.4em; margin-bottom: 0.75rem; }
+    .modal { position: fixed; inset: 0; background: rgba(15,10,5,0.65); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 200; padding: 1rem; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    .modal.hidden { display: none; }
+    .modal-content { background: white; border-radius: 1.2rem; width: 100%; max-width: 660px; position: relative; box-shadow: 0 24px 60px rgba(0,0,0,0.2); animation: slideUp 0.25s ease; }
+    @keyframes slideUp { from { transform: translateY(20px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+    .modal-content.large { max-height: 82vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--red-light) transparent; }
+    .modal-content.ex-info-modal { max-width: 480px; }
+    .modal-header { padding: 1.2rem 1.4rem 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.07); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: white; z-index: 1; border-radius: 1.2rem 1.2rem 0 0; }
+    .modal-body { padding: 1rem 1.2rem 1.4rem; }
+    #targetTitle { font-family: "Bebas Neue", sans-serif; font-size: 1.6rem; letter-spacing: 0.05em; color: var(--text); text-transform: uppercase; }
+    .ex-modal-name { font-family: "Bebas Neue", sans-serif; font-size: 1.35rem; letter-spacing: 0.05em; color: var(--text); text-transform: capitalize; line-height: 1.2; flex: 1; padding-right: 0.75rem; }
+    #closeModal, #closeTargetModal { border: none; background: rgba(0,0,0,0.06); color: var(--text); width: 32px; height: 32px; border-radius: 50%; font-size: 1.1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; flex-shrink: 0; }
+    #closeModal:hover, #closeTargetModal:hover { background: rgba(0,0,0,0.12); }
+    .exercise-row { display: flex; align-items: center; justify-content: space-between; background: #fafafa; border: 1.5px solid #eee; padding: 0.85rem 1rem; border-radius: 0.75rem; margin-bottom: 0.5rem; cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.12s; }
+    .exercise-row:hover { border-color: var(--red-light); background: rgba(210,83,83,0.03); transform: translateX(2px); }
+    .exercise-row.selected { background: rgba(210,83,83,0.06); border-color: var(--red); }
+    .exercise-left { display: flex; align-items: center; gap: 0.75rem; }
+    .exercise-info { display: flex; flex-direction: column; gap: 0.35rem; }
+    .exercise-gif { width: 80px; height: 80px; object-fit: cover; border-radius: 0.5rem; background: #f0f0f0; display: block; flex-shrink: 0; }
+    .exercise-left input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--red); cursor: pointer; flex-shrink: 0; }
+    .exercise-name { font-weight: 500; font-size: 0.95rem; color: var(--text); line-height: 1.3; }
+    .info-btn { border: 1.5px solid #ddd; background: transparent; color: var(--text-muted); font-weight: 700; font-size: 0.8rem; font-style: italic; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: border-color 0.15s, color 0.15s, background 0.15s; }
+    .info-btn:hover { border-color: var(--red); color: var(--red); background: rgba(210,83,83,0.06); }
+    #modalGif { width: 100%; max-height: 240px; object-fit: contain; border-radius: 0.75rem; background: #f5f5f5; display: block; margin-bottom: 1rem; }
+    #toggleInstructions { display: flex; align-items: center; gap: 0.45rem; width: 100%; padding: 0.65rem 1rem; background: #f7f5f2; border: 1.5px solid #e8e4df; border-radius: 0.6rem; font-family: "DM Sans", sans-serif; font-size: 0.88rem; font-weight: 700; color: var(--text-muted); cursor: pointer; margin-bottom: 0.75rem; transition: background 0.15s, border-color 0.15s, color 0.15s; }
+    #toggleInstructions::before { content: "▶"; font-size: 0.6rem; transition: transform 0.2s; display: inline-block; }
+    #toggleInstructions.open { background: rgba(210,83,83,0.06); border-color: var(--red-light); color: var(--red); }
+    #toggleInstructions.open::before { transform: rotate(90deg); }
+    #toggleInstructions:hover { background: rgba(210,83,83,0.06); border-color: var(--red-light); color: var(--red); }
+    #modalInstructions { padding: 0 0.1rem; }
+    #modalInstructions.hidden { display: none; }
+    #modalInstructions ul { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; }
+    #modalInstructions ul li { padding: 0.6rem 0.9rem; background: #f7f5f2; border-radius: 0.5rem; font-size: 0.88rem; line-height: 1.5; color: var(--text); border-left: 3px solid var(--red); }
+    #modalInstructions p { color: #aaa; font-size: 0.85rem; padding: 0.5rem 0; }
+    @media (max-width: 600px) {
+      body { padding: 5rem 1rem 3rem; }
+      h1 { font-size: 2.2rem; }
+      .target-grid { grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap: 0.6rem; }
+      .target-card { padding: 1.1rem 0.75rem 0.75rem; font-size: 0.88rem; }
+      .exercise-row { padding: 0.75rem 0.85rem; }
+    }
 
 block content
   .top-bar
@@ -32,7 +124,6 @@ block content
     p.form-message#formMessage
     button(type="submit" form="editWorkoutPlanForm") Update Workout Plan
 
-  //- Target / exercise picker modal
   .modal.hidden#targetModal
     .modal-content.large
       .modal-header
@@ -41,21 +132,21 @@ block content
       .modal-body
         .exercise-list#targetExerciseList
 
-  //- Exercise info / GIF modal
   .modal.hidden#exerciseModal
-    .modal-content
+    .modal-content.ex-info-modal
       .modal-header
-        span Info
+        span.ex-modal-name#modalExName Exercise
         button#closeModal(type="button" aria-label="Close") ×
       .modal-body
-        img#modalGif(alt="Exercise demonstration")
-        div#modalInstructions
+        img#modalGif(alt="Exercise demonstration" loading="lazy")
+        button#toggleInstructions(type="button") Show Instructions
+        div#modalInstructions.hidden
 
   script#exercisesData(type="application/json").
     !{JSON.stringify(exercises)}
 
   script.
-    window.exercises = JSON.parse(document.getElementById("exercisesData").textContent)
+    window.exercises   = JSON.parse(document.getElementById("exercisesData").textContent)
     window.selectedIds = !{JSON.stringify(selectedIds)}
 
 block scripts

@@ -1,13 +1,12 @@
 // =========================
 // START SOLO WORKOUT — 2-step flow
-// Step 1: Pick muscles | Step 2: Choose one exercise per muscle
+// Step 1: Pick muscles | Step 2: Choose exercises per muscle (multi-select)
 // =========================
 
 // ── TOAST ─────────────────────────────────────────────────
 function showToast(message, type = "warning") {
   const existing = document.getElementById("gymToast");
   if (existing) existing.remove();
-
   const colors = {
     error: { bg: "#d25353", icon: "✕" },
     success: { bg: "#22c55e", icon: "✓" },
@@ -15,24 +14,22 @@ function showToast(message, type = "warning") {
     warning: { bg: "#f59e0b", icon: "⚠" },
   };
   const { bg, icon } = colors[type] || colors.warning;
-
   const toast = document.createElement("div");
   toast.id = "gymToast";
   toast.style.cssText = `
-    position:fixed; bottom:1.5rem; left:50%;
+    position:fixed;bottom:1.5rem;left:50%;
     transform:translateX(-50%) translateY(20px);
-    background:${bg}; color:white;
-    padding:0.75rem 1.4rem; border-radius:10px;
-    font-family:'DM Sans',Arial,sans-serif; font-size:0.88rem; font-weight:600;
-    display:flex; align-items:center; gap:0.55rem;
-    box-shadow:0 8px 28px rgba(0,0,0,0.22); z-index:9999;
-    max-width:90vw; opacity:0;
+    background:${bg};color:white;
+    padding:0.75rem 1.4rem;border-radius:10px;
+    font-family:'DM Sans',Arial,sans-serif;font-size:0.88rem;font-weight:600;
+    display:flex;align-items:center;gap:0.55rem;
+    box-shadow:0 8px 28px rgba(0,0,0,0.22);z-index:9999;
+    max-width:90vw;opacity:0;
     transition:opacity 0.25s ease,transform 0.25s ease;
     pointer-events:none;
   `;
   toast.innerHTML = `<span style="font-size:1rem;flex-shrink:0">${icon}</span><span>${message}</span>`;
   document.body.appendChild(toast);
-
   requestAnimationFrame(() => {
     toast.style.opacity = "1";
     toast.style.transform = "translateX(-50%) translateY(0)";
@@ -63,19 +60,18 @@ async function checkGymStatus() {
 checkGymStatus();
 
 // ── DATA ──────────────────────────────────────────────────
-// muscles = [{ name, exerciseName, gifURL }, ...]
-// Group into { muscleName: [{ exerciseName, gifURL }, ...] }
 const rawMuscles = JSON.parse(
   document.getElementById("musclesData").textContent || "[]",
 );
 
+// grouped = { muscleName: [{ exerciseName, gifURL }, ...] }
 const grouped = {};
 rawMuscles.forEach((m) => {
   if (!grouped[m.name]) grouped[m.name] = [];
   grouped[m.name].push({ exerciseName: m.exerciseName, gifURL: m.gifURL });
 });
 
-const muscleNames = Object.keys(grouped); // unique muscle names
+const muscleNames = Object.keys(grouped);
 
 // ── DOM REFS ──────────────────────────────────────────────
 const muscleGrid = document.getElementById("muscleGrid");
@@ -139,7 +135,6 @@ nextBtn.addEventListener("click", () => {
   const selected = getSelectedMuscles();
   if (selected.length === 0) return;
 
-  // Build exercise pickers for each selected muscle
   exercisePickers.innerHTML = "";
 
   selected.forEach((muscleName, idx) => {
@@ -161,12 +156,15 @@ nextBtn.addEventListener("click", () => {
       const label = document.createElement("label");
       label.className = "exercise-option";
 
+      // ── CHECKBOX instead of radio ──────────────────────
       label.innerHTML = `
-        <input class="exercise-radio" type="radio"
+        <input class="exercise-checkbox" type="checkbox"
           name="exercise_${muscleName.replace(/\s+/g, "_")}"
           value="${ex.exerciseName}"
           ${i === 0 ? "checked" : ""} />
-        <span class="exercise-custom-radio"></span>
+        <span class="exercise-custom-checkbox">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </span>
         <div class="exercise-gif">
           <img src="${ex.gifURL || "/img/placeholder.gif"}" alt="${ex.exerciseName}" loading="lazy"/>
         </div>
@@ -184,7 +182,7 @@ nextBtn.addEventListener("click", () => {
   step1Card.classList.add("hidden");
   step2Card.classList.remove("hidden");
   step2Card.style.animation = "none";
-  step2Card.offsetHeight; // reflow
+  step2Card.offsetHeight;
   step2Card.style.animation = "";
 
   stepDot1.classList.remove("active");
@@ -214,18 +212,20 @@ startBtn.addEventListener("click", async () => {
   step2Message.textContent = "";
   step2Message.className = "step-message";
 
-  // Collect one selected exercise per muscle
+  // Collect ALL checked exercises per muscle
   const selected = getSelectedMuscles();
   const targets = [];
 
   for (const muscleName of selected) {
-    const radioName = `exercise_${muscleName.replace(/\s+/g, "_")}`;
-    const checked = document.querySelector(
-      `input[name="${radioName}"]:checked`,
-    );
-    if (checked) {
-      targets.push({ muscle: muscleName, exercise: checked.value });
-    }
+    const checkboxName = `exercise_${muscleName.replace(/\s+/g, "_")}`;
+    const checked = [
+      ...document.querySelectorAll(`input[name="${checkboxName}"]:checked`),
+    ];
+
+    // Push one target entry per checked exercise (muscles with nothing checked are simply skipped)
+    checked.forEach((cb) => {
+      targets.push({ muscle: muscleName, exercise: cb.value });
+    });
   }
 
   if (targets.length === 0) {

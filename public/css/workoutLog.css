@@ -1,233 +1,173 @@
-/* =========================
-   GLOBAL RESET
-========================= */
-* {
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700;800&display=swap");
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background: #f0f0f0;
-  color: black;
+  font-family: "DM Sans", Arial, sans-serif;
+  background: #f4f4f5;
+  color: #1a1a1a;
   min-height: 100vh;
-  padding: 0 0 3rem 0;
+  padding-bottom: 4rem;
 }
 
-/* =========================
-   TOP BAR
-========================= */
+/* ── TOP BAR ── */
 .top-bar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
+  height: 56px;
+  background: linear-gradient(135deg, #d25353, #b11226);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.8rem 1rem;
-  background: white;
-  z-index: 999;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  gap: 0.6rem;
+  padding: 0 1.2rem;
+  z-index: 1000;
+  box-shadow: 0 2px 16px rgba(177, 18, 38, 0.35);
 }
-
 .top-bar a {
-  padding: 0.45rem 1.1rem;
-  border: 2px solid #d25353;
-  background: #d25353;
-  color: whitesmoke;
-  font-weight: bold;
-  border-radius: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.38rem 0.9rem;
+  border-radius: 7px;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
   text-decoration: none;
-  font-size: 0.9rem;
-  transition: 0.2s ease;
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  transition: 0.18s;
 }
-
 .top-bar a:hover {
+  background: rgba(255, 255, 255, 0.28);
   color: #f4c430;
 }
 
-/* =========================
-   HERO HEADER
-========================= */
+/* ── HERO ── */
 .workout-hero {
   position: relative;
-  margin-top: 56px; /* top-bar height */
-  background: #1a1a1a;
   overflow: hidden;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d1a1a 100%);
+  margin-top: 56px;
   padding: 2rem 1.5rem 1.8rem;
 }
-
-/* Animated background texture */
 .workout-hero-bg {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(
-      ellipse at 10% 50%,
-      rgba(210, 83, 83, 0.35) 0%,
-      transparent 55%
-    ),
-    radial-gradient(
-      ellipse at 90% 20%,
-      rgba(235, 211, 27, 0.12) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      ellipse at 60% 90%,
-      rgba(210, 83, 83, 0.15) 0%,
-      transparent 45%
-    );
+  opacity: 0.06;
+  background: radial-gradient(circle at 70% 50%, #d25353 0%, transparent 60%);
   pointer-events: none;
 }
-
-/* Subtle grid overlay */
-.workout-hero-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 32px 32px;
-}
-
 .workout-hero-inner {
-  position: relative;
-  z-index: 1;
-  max-width: 700px;
+  max-width: 900px;
   margin: 0 auto;
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   gap: 1.5rem;
   flex-wrap: wrap;
 }
-
-/* ── Identity (left) ── */
 .hero-identity {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
-
 .hero-avatar-wrap {
   position: relative;
   flex-shrink: 0;
 }
-
 .hero-avatar {
-  width: 72px;
-  height: 72px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #ebd31b;
-  display: block;
+  border: 3px solid rgba(210, 83, 83, 0.6);
+  box-shadow: 0 0 0 4px rgba(210, 83, 83, 0.15);
 }
-
 .hero-status-dot {
   position: absolute;
-  bottom: 3px;
-  right: 3px;
+  bottom: 2px;
+  right: 2px;
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 2px solid #1a1a1a;
+  border: 2.5px solid #1a1a1a;
 }
-
 .dot-live {
   background: #22c55e;
   box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
-  animation: pulse-dot 2s infinite;
+  animation: pulse-dot 1.6s ease-in-out infinite;
 }
-
 .dot-done {
-  background: #888;
+  background: #aaa;
 }
-
 @keyframes pulse-dot {
   0%,
   100% {
-    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+    opacity: 1;
+    transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.1);
+    opacity: 0.6;
+    transform: scale(1.3);
   }
 }
 
 .hero-user-info {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 3px;
 }
-
 .hero-username {
-  font-size: 1.4rem;
-  font-weight: 800;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.5rem;
   color: white;
-  letter-spacing: -0.5px;
-  line-height: 1;
+  letter-spacing: 0.05em;
 }
-
 .hero-date {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.5);
   font-weight: 500;
-  letter-spacing: 0.3px;
 }
 
-/* ── Stat pills (right) ── */
 .hero-stats {
   display: flex;
+  gap: 0.6rem;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: flex-end;
 }
-
 .hero-stat-pill {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 2px;
   background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 0.6rem;
-  padding: 0.45rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 0.5rem 0.9rem;
   min-width: 72px;
-  backdrop-filter: blur(4px);
 }
-
 .pill-label {
   font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.4);
+  font-weight: 800;
   text-transform: uppercase;
-  margin-bottom: 0.2rem;
+  letter-spacing: 0.7px;
+  color: rgba(255, 255, 255, 0.35);
 }
-
 .pill-value {
   font-size: 0.82rem;
   font-weight: 700;
   color: white;
-  white-space: nowrap;
 }
-
 .pill-live {
   color: #4ade80;
-  animation: blink 1.8s ease-in-out infinite;
 }
-
-@keyframes blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
 .pill-done {
   color: #94a3b8;
 }
@@ -241,726 +181,658 @@ body {
   color: #fbbf24;
 }
 
-/* =========================
-   CHALLENGE DETAIL CARD
-========================= */
+/* ── CHALLENGE DETAIL CARD ── */
 .challenge-detail-card {
-  max-width: 700px;
-  margin: 1rem auto 0;
-  background: white;
-  border-radius: 0.9rem;
-  border-left: 4px solid #d25353;
-  padding: 1rem 1.3rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  max-width: 900px;
+  margin: 1.2rem auto;
+  padding: 0 1.5rem;
 }
-
 .detail-row {
   display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-  padding: 0.35rem 0;
-  border-bottom: 1px solid #f0f0f0;
+  align-items: flex-start;
+  gap: 1rem;
+  background: white;
+  border-radius: 12px;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid rgba(210, 83, 83, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 0.6rem;
 }
-
-.detail-row:last-child {
-  border-bottom: none;
-}
-
 .detail-label {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  color: #888;
+  color: #d25353;
   white-space: nowrap;
-  min-width: 110px;
+  min-width: 120px;
 }
-
 .detail-value {
   font-size: 0.85rem;
-  font-weight: 600;
-  color: #222;
+  color: #333;
+  flex: 1;
 }
-
 .detail-value.muted {
   color: #bbb;
-  font-weight: 400;
   font-style: italic;
 }
+.detail-row-video video {
+  width: 100%;
+  max-width: 480px;
+  border-radius: 8px;
+  margin-top: 0.4rem;
+}
 
-.detail-row-video {
-  flex-direction: column;
+/* ── DELOAD BANNER ── */
+.deload-banner {
+  max-width: 900px;
+  margin: 1rem auto;
+  padding: 0 1.5rem;
+}
+.deload-banner > * {
+  /* inner */
+}
+.deload-banner {
+  background: linear-gradient(135deg, #fff7ed, #fff3e0);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-left: 4px solid #f59e0b;
+  border-radius: 14px;
+  padding: 1.1rem 1.3rem;
+  display: flex;
+  gap: 1rem;
   align-items: flex-start;
-  gap: 0.4rem;
+  box-shadow: 0 3px 12px rgba(245, 158, 11, 0.12);
 }
-
-.challenge-detail-card video {
+.deload-banner-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.deload-banner-body {
+  flex: 1;
+}
+.deload-banner-body strong {
   display: block;
-  width: 280px;
-  max-width: 100%;
-  border-radius: 0.6rem;
-  margin-top: 0.5rem;
-  border: 1px solid #eee;
-  background: #000;
+  font-size: 0.95rem;
+  color: #92400e;
+  margin-bottom: 0.4rem;
 }
-
-/* =========================
-   EXERCISES SECTION LABEL
-========================= */
-.exercises-label {
-  max-width: 700px;
-  margin: 1.5rem auto 0.5rem;
-  padding: 0 1rem;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #888;
+.deload-banner-body p {
+  font-size: 0.83rem;
+  color: #78350f;
+  line-height: 1.5;
+  margin-bottom: 0.6rem;
 }
-
-/* =========================
-   HEADINGS
-========================= */
-h4 {
-  text-align: center;
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
+.deload-tips {
+  padding-left: 1.2rem;
+}
+.deload-tips li {
+  font-size: 0.8rem;
+  color: #78350f;
+  margin-bottom: 0.3rem;
+  line-height: 1.4;
+}
+.deload-dismiss {
+  margin-top: 0.8rem;
+  padding: 0.35rem 0.85rem;
+  border: 1.5px solid rgba(245, 158, 11, 0.4);
+  border-radius: 7px;
+  background: white;
+  color: #92400e;
+  font-family: "DM Sans", sans-serif;
   font-weight: 700;
-}
-
-/* =========================
-   BUTTONS (global)
-========================= */
-button,
-.btn {
-  display: block;
-  width: max-content;
-  margin: 1rem auto;
-  padding: 0.6rem 1.2rem;
-  background: #d25353;
-  color: whitesmoke;
-  font-weight: bold;
-  border-radius: 0.5rem;
-  border: none;
+  font-size: 0.78rem;
   cursor: pointer;
-  transition: 0.3s;
-  text-align: center;
-  text-decoration: none;
+  transition: 0.18s;
 }
-button:hover,
-.btn:hover {
-  color: #f4c430;
-}
-button:disabled {
-  opacity: 0.38;
-  cursor: not-allowed;
-  color: whitesmoke;
+.deload-dismiss:hover {
+  background: #fef3c7;
 }
 
-/* =========================
-   EXERCISE CARD
-========================= */
+/* ── EXERCISES SECTION ── */
+.exercises-label {
+  max-width: 900px;
+  margin: 1.4rem auto 0.6rem;
+  padding: 0 1.5rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #d25353;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.exercises-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(210, 83, 83, 0.15);
+}
+
+/* ── EXERCISE CARD ── */
 .exercise-card {
-  background: #d25353;
-  border-radius: 1rem;
-  padding: 1rem;
-  margin: 1rem auto;
-  max-width: 680px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  max-width: 900px;
+  margin: 0 auto 1rem;
+  padding: 0 1.5rem;
 }
+.exercise-card > * {
+  /* reset */
+}
+
+/* reuse class but now it's a wrapper */
+.exercise-card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0 1.5rem;
+}
+
+.exercise-card > h4,
+.exercise-card > p,
+.exercise-card > img,
+.exercise-card > table,
+.exercise-card > .add-set-row {
+  /* all inner elements are inside the white card below */
+}
+
+/* Wrap the card visually */
+.exercise-card {
+  max-width: 900px;
+  margin: 0 auto 1rem;
+  padding: 0 1.5rem;
+}
+/* The actual white box: apply to the inner card via a wrapper */
+/* Since Pug wraps everything, style exercise-card directly */
+.exercise-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.3rem 1.5rem !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+  border: 1px solid rgba(210, 83, 83, 0.1);
+  max-width: 900px;
+  margin: 0 auto 1rem !important;
+}
+
 .exercise-card h4 {
-  margin-bottom: 0.5rem;
-  color: white;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.4rem;
+  color: #1a1a1a;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
 }
-.exercise-card p {
-  color: rgba(255, 255, 255, 0.75);
-  margin-bottom: 0.5rem;
-  text-align: center;
-  font-weight: 500;
+.exercise-card > p {
+  font-size: 0.78rem;
+  color: #d25353;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.9rem;
 }
 .exercise-card img {
-  display: block;
-  margin: 0.5rem auto;
-  max-width: 100%;
-  border-radius: 0.5rem;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(210, 83, 83, 0.15);
 }
 
-/* =========================
-   ADD SET ROW
-========================= */
-.add-set-row {
-  display: flex;
-  justify-content: center;
-  margin-top: 0.5rem;
-}
-
-.add-set-btn {
-  background: rgba(255, 255, 255, 0.15) !important;
-  border: 1px dashed rgba(255, 255, 255, 0.5) !important;
-  color: white !important;
-  font-size: 0.82rem !important;
-  padding: 0.35rem 1.1rem !important;
-  border-radius: 0.4rem !important;
-  margin: 0 !important;
-  width: auto !important;
-  transition: background 0.2s !important;
-}
-
-.add-set-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.25) !important;
-  color: #f4c430 !important;
-}
-
-/* =========================
-   TABLE
-========================= */
-table {
+/* ── TABLE ── */
+.exercise-card table {
   width: 100%;
   border-collapse: collapse;
-  margin: 0.5rem 0 1rem 0;
-  text-align: center;
+  font-size: 0.84rem;
+  margin-bottom: 0.8rem;
 }
-th,
-td {
-  border: 1px solid black;
-  padding: 8px 4px;
+.exercise-card thead th {
+  background: #fafafa;
+  color: #bbb;
+  font-size: 0.67rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
 }
-th {
-  background: white;
-  color: black;
+.exercise-card tbody tr {
+  border-bottom: 1px solid #f5f5f5;
+  transition: background 0.15s;
+}
+.exercise-card tbody tr:last-child {
+  border-bottom: none;
+}
+.exercise-card tbody td {
+  padding: 0.65rem 0.8rem;
+  vertical-align: middle;
 }
 
-/* =========================
-   ROW STATES
-========================= */
-tr.row-active td {
-  background: rgba(255, 255, 255, 0.12);
+/* ── ROW STATES ── */
+tr.row-active {
+  background: rgba(210, 83, 83, 0.04);
+}
+tr.row-done {
+  background: #f0fdf4;
 }
 tr.row-done td {
-  background: rgba(0, 0, 0, 0.12);
+  color: #16a34a;
 }
 
-/* =========================
-   WEIGHT ROW
-========================= */
-.weight-row {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  justify-content: center;
-}
-
-.unit-side-label {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: white;
-  letter-spacing: 0.5px;
-}
-
-/* =========================
-   SPINNER
-========================= */
+/* ── SPINNERS ── */
 .set-input-wrap {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 1px;
 }
-
 .spin-btn {
-  width: 44px;
-  height: 26px;
-  background: rgba(255, 255, 255, 0.22);
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  border-radius: 6px;
-  color: white;
-  font-size: 1rem;
-  font-weight: bold;
+  width: 26px;
+  height: 20px;
+  border: 1px solid #e5e5e5;
+  border-radius: 5px;
+  background: white;
+  color: #555;
+  font-size: 0.6rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.15s;
   line-height: 1;
   padding: 0;
-  transition: background 0.15s;
-  margin: 0;
-  display: block;
 }
-.spin-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.4);
-  color: #f4c430;
-}
-.spin-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.spin-display {
-  width: 60px;
-  height: 46px;
-  background: white;
-  border-radius: 8px;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #d25353;
-  text-align: center;
-  line-height: 46px;
-  user-select: none;
-  transition: opacity 0.2s;
-}
-
-.spinner-disabled .spin-display {
-  opacity: 0.45;
-  color: #a04040;
-}
-
-/* =========================
-   ACTION CELL
-========================= */
-td.action-cell {
-  min-width: 120px;
-  vertical-align: middle;
-}
-
-.row-start-btn {
-  margin: 0 auto;
-  padding: 0.45rem 1.1rem;
-  background: #22c55e;
+.spin-btn:hover {
+  background: #d25353;
   color: white;
-  font-weight: bold;
-  border-radius: 0.5rem;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: 0.2s;
-  display: block;
-  width: max-content;
+  border-color: #d25353;
 }
-.row-start-btn:hover:not(:disabled) {
-  background: #16a34a;
+.spin-display {
+  width: 46px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 3px 0;
+  color: #1a1a1a;
+  background: #fafafa;
+  border: 1px solid #e5e5e5;
+  border-radius: 5px;
 }
-.row-start-btn:disabled {
+.spin-display.spin-error {
+  background: rgba(210, 83, 83, 0.1);
+  border-color: #d25353;
+  color: #d25353;
+}
+.spinner-disabled .spin-btn {
   opacity: 0.35;
   cursor: not-allowed;
 }
-
-.row-save-btn {
-  margin: 0 auto;
-  padding: 0.45rem 1rem;
-  background: #ebd31b;
-  color: #1a1a1a;
-  font-weight: bold;
-  border-radius: 0.5rem;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: 0.2s;
-  display: block;
-  width: max-content;
+.spinner-disabled .spin-display {
+  opacity: 0.5;
 }
-.row-save-btn:hover:not(:disabled) {
-  background: #d4be10;
-}
-.row-save-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-.row-save-btn.saved {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  cursor: default;
-}
-
-/* =========================
-   REST TIMER
-========================= */
-.rest-timer {
-  display: none;
-  flex-direction: column;
+.weight-row {
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  margin-top: 6px;
+  gap: 5px;
 }
-.rest-timer.active {
-  display: flex;
-}
-
-.timer-ring {
-  position: relative;
-  width: 40px;
-  height: 40px;
-}
-.timer-ring svg {
-  transform: rotate(-90deg);
-  width: 40px;
-  height: 40px;
-}
-.timer-ring circle {
-  fill: none;
-  stroke-width: 3;
-}
-.timer-ring .bg {
-  stroke: rgba(255, 255, 255, 0.2);
-}
-.timer-ring .progress {
-  stroke: #f4c430;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 1s linear;
-}
-
-.timer-countdown {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: white;
-}
-
-.timer-skip {
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: white;
-  border-radius: 6px;
-  padding: 2px 8px;
+.unit-side-label {
   font-size: 0.72rem;
-  cursor: pointer;
-  transition: 0.2s;
-  margin: 0;
+  color: #aaa;
+  font-weight: 600;
+}
+.weight-zero-err {
   display: block;
-  width: max-content;
-}
-.timer-skip:hover {
-  background: rgba(255, 255, 255, 0.32);
-  color: #f4c430;
-}
-
-/* =========================
-   DELOAD BANNER
-========================= */
-.deload-banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  max-width: 700px;
-  margin: 1rem auto 0;
-  padding: 1rem 1.2rem;
-  background: linear-gradient(135deg, #1e3a5f 0%, #1a2f4a 100%);
-  border: 1px solid #3b82f6;
-  border-left: 5px solid #3b82f6;
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
-  animation: tipFadeIn 0.5s ease;
-}
-
-.deload-banner-icon {
-  font-size: 2rem;
-  flex-shrink: 0;
+  font-size: 0.72rem;
+  color: #d25353;
   margin-top: 2px;
 }
 
-.deload-banner-body {
-  flex: 1;
-}
-
-.deload-banner-body strong {
-  display: block;
-  font-size: 1rem;
+/* ── ROW BUTTONS ── */
+.row-start-btn,
+.row-save-btn {
+  padding: 0.35rem 0.8rem;
+  border: none;
+  border-radius: 7px;
+  font-family: "DM Sans", sans-serif;
   font-weight: 700;
-  color: #93c5fd;
-  margin-bottom: 0.35rem;
-}
-
-.deload-banner-body p {
-  font-size: 0.85rem;
-  color: #bfdbfe;
-  margin-bottom: 0.5rem;
-  text-align: left;
-}
-
-.deload-banner-body p strong {
-  display: inline;
-  color: #fbbf24;
-  font-size: inherit;
-}
-
-.deload-tips {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 0.75rem 0;
-}
-
-.deload-tips li {
-  font-size: 0.82rem;
-  color: #bfdbfe;
-  padding: 0.2rem 0;
-  padding-left: 1.2rem;
-  position: relative;
-  text-align: left;
-}
-
-.deload-tips li::before {
-  content: "✓";
-  position: absolute;
-  left: 0;
-  color: #34d399;
-  font-weight: 700;
-}
-
-.deload-tips li strong {
-  display: inline;
-  color: #fde68a;
-  font-size: inherit;
-}
-
-.deload-dismiss {
-  background: rgba(59, 130, 246, 0.2);
-  border: 1px solid rgba(59, 130, 246, 0.5);
-  color: #93c5fd;
-  border-radius: 6px;
-  padding: 0.3rem 0.9rem;
   font-size: 0.78rem;
-  font-weight: 600;
   cursor: pointer;
-  transition: 0.2s;
-  margin: 0;
-  width: max-content;
-  display: block;
+  transition: 0.18s;
 }
-
-.deload-dismiss:hover {
-  background: rgba(59, 130, 246, 0.35);
+.row-start-btn {
+  background: rgba(210, 83, 83, 0.1);
+  color: #d25353;
+}
+.row-start-btn:hover:not(:disabled) {
+  background: #d25353;
   color: white;
 }
-
-/* =========================
-   PREVIOUS PERFORMANCE HINT
-========================= */
-.prev-hint-row td {
-  border: none !important;
-  padding: 4px 8px 2px 8px !important;
-  background: transparent !important;
+.row-start-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.row-save-btn {
+  background: linear-gradient(135deg, #d25353, #b11226);
+  color: white;
+  box-shadow: 0 2px 8px rgba(177, 18, 38, 0.25);
+}
+.row-save-btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+.row-save-btn.saved {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25);
+}
+.row-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.action-cell {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
 }
 
+/* ── PREV HINT ── */
+.prev-hint-row td {
+  padding: 0 0.8rem 0.5rem;
+}
 .prev-hint {
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 0.4rem 0.75rem;
+  background: rgba(244, 196, 48, 0.1);
+  border: 1px solid rgba(244, 196, 48, 0.3);
   border-radius: 8px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  background: rgba(235, 211, 27, 0.15);
-  border: 1px solid rgba(235, 211, 27, 0.45);
-  color: #fff9c4;
-  animation: tipFadeIn 0.35s ease;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.78rem;
+  color: #92400e;
 }
-
-.prev-hint strong {
-  font-weight: 700;
-  color: #fde68a;
-}
-
 .prev-hint-icon {
-  font-size: 1rem;
-  flex-shrink: 0;
+  font-size: 0.95rem;
 }
 
-/* =========================
-   PROGRESSIVE OVERLOAD TIP
-========================= */
+/* ── OVERLOAD TIP ── */
 .overload-tip-row td {
-  border: none !important;
-  padding: 4px 8px 8px 8px !important;
-  background: transparent !important;
+  padding: 0 0.8rem 0.5rem;
 }
-
 .overload-tip {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  padding: 0.55rem 0.8rem;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 500;
+  border-radius: 10px;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.8rem;
   line-height: 1.4;
-  animation: tipFadeIn 0.4s ease;
 }
-
-.overload-tip strong {
-  font-weight: 700;
-}
-
-.overload-level-up {
-  background: rgba(251, 191, 36, 0.22);
-  border: 1px solid rgba(251, 191, 36, 0.6);
-  color: #fff8e1;
-}
-
-.overload-push {
-  background: rgba(34, 197, 94, 0.18);
-  border: 1px solid rgba(34, 197, 94, 0.5);
-  color: #d1fae5;
-}
-
-.overload-steady {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: rgba(255, 255, 255, 0.88);
-}
-
-.overload-icon {
-  font-size: 1.1rem;
+.overload-tip .overload-icon {
+  font-size: 1rem;
   flex-shrink: 0;
   margin-top: 1px;
 }
-
-@keyframes tipFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.overload-level-up {
+  background: rgba(210, 83, 83, 0.08);
+  border: 1px solid rgba(210, 83, 83, 0.2);
+  color: #7f1d1d;
+}
+.overload-push {
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  color: #14532d;
+}
+.overload-steady {
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: #1e3a5f;
 }
 
-#setMessage {
-  text-align: center;
-  font-weight: bold;
-  margin-top: 0.5rem;
+/* ── REST TIMER ── */
+.rest-timer {
+  display: none;
+  align-items: center;
+  gap: 8px;
 }
-
-/* =========================
-   FINISH BUTTON AREA
-========================= */
-#finish-btn {
-  background: #22c55e;
-  color: white;
-  font-size: 1rem;
-  padding: 0.75rem 2.5rem;
-  border-radius: 0.6rem;
-  margin: 1.5rem auto 2rem;
-  border: none;
-  cursor: pointer;
+.rest-timer.active {
+  display: inline-flex;
+}
+.timer-ring {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+.timer-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.timer-ring .bg {
+  fill: none;
+  stroke: #f0f0f0;
+  stroke-width: 3;
+}
+.timer-ring .progress {
+  fill: none;
+  stroke: #d25353;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.9s linear;
+}
+.timer-countdown {
+  font-size: 0.78rem;
   font-weight: 800;
-  letter-spacing: 0.02em;
-  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
-  transition: 0.2s;
-  display: block;
-  width: max-content;
+  color: #d25353;
+  min-width: 28px;
 }
-
-#finish-btn:hover {
-  background: #16a34a;
-  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+.timer-skip {
+  padding: 0.2rem 0.55rem;
+  border: 1.5px solid rgba(210, 83, 83, 0.3);
+  border-radius: 6px;
+  background: white;
+  color: #d25353;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: 0.15s;
 }
-
-/* =========================
-   MOBILE
-========================= */
-@media (max-width: 600px) {
-  .workout-hero {
-    padding: 1.5rem 1rem 1.3rem;
-  }
-
-  .hero-avatar {
-    width: 56px;
-    height: 56px;
-  }
-
-  .hero-username {
-    font-size: 1.15rem;
-  }
-
-  .hero-stats {
-    justify-content: flex-start;
-    margin-top: 0.75rem;
-    width: 100%;
-  }
-
-  .workout-hero-inner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-
-  .exercise-card {
-    margin: 1rem 0.5rem;
-    padding: 0.7rem;
-  }
-
-  button,
-  .btn {
-    width: 100%;
-  }
-
-  table {
-    font-size: 0.8rem;
-  }
-
-  .spin-display {
-    font-size: 1.15rem;
-    height: 40px;
-    line-height: 40px;
-    width: 50px;
-  }
-
-  .spin-btn {
-    width: 38px;
-  }
-
-  td.action-cell {
-    min-width: 90px;
-  }
-
-  #finish-btn {
-    width: calc(100% - 2rem);
-    margin: 1.5rem 1rem 2rem;
-  }
-}
-
-/* =========================
-   VALIDATION ERRORS
-========================= */
-.spin-display.spin-error {
+.timer-skip:hover {
   background: #d25353;
   color: white;
-  animation: shake 0.35s ease;
+  border-color: #d25353;
 }
 
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-5px);
-  }
-  75% {
-    transform: translateX(5px);
-  }
+/* ── ADD SET ── */
+.add-set-row {
+  margin-top: 0.6rem;
 }
-
-.weight-zero-err {
-  display: block;
-  font-size: 0.78rem;
-  color: white;
-  background: #b83f3f;
+.add-set-btn {
+  width: 100%;
+  padding: 0.55rem;
+  border: 1.5px dashed rgba(210, 83, 83, 0.3);
+  border-radius: 9px;
+  background: transparent;
+  color: #d25353;
+  font-family: "DM Sans", sans-serif;
   font-weight: 700;
-  margin-top: 0.4rem;
-  padding: 0.2rem 0.55rem;
-  border-radius: 5px;
-  text-align: center;
-  white-space: nowrap;
-  animation: tipFadeIn 0.2s ease;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: 0.18s;
+}
+.add-set-btn:hover {
+  background: rgba(210, 83, 83, 0.05);
+  border-color: #d25353;
+}
+
+/* ── FINISH BUTTON ── */
+#finish-btn {
+  display: block;
+  width: calc(100% - 3rem);
+  max-width: 900px;
+  margin: 1.2rem auto 0;
+  padding: 0.95rem;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #d25353, #b11226);
+  color: white;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(177, 18, 38, 0.3);
+  transition:
+    filter 0.2s,
+    transform 0.2s;
+}
+#finish-btn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
 }
 
 .finish-error-msg {
-  display: none;
+  max-width: 900px;
+  margin: 0.5rem auto 0;
+  padding: 0 1.5rem;
+  font-size: 0.82rem;
+  color: #d25353;
+  font-weight: 600;
   text-align: center;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: white;
-  background: #b83f3f;
-  padding: 0.4rem 1rem;
-  border-radius: 6px;
-  margin: 0.5rem auto;
-  width: max-content;
-  max-width: 90%;
-  animation: tipFadeIn 0.2s ease;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .workout-hero-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .exercise-card {
+    padding: 1rem !important;
+  }
+  .exercise-card h4 {
+    font-size: 1.1rem;
+  }
+  #finish-btn {
+    width: calc(100% - 2rem);
+  }
+  .hero-stats {
+    gap: 0.4rem;
+  }
+  .hero-stat-pill {
+    padding: 0.4rem 0.6rem;
+    min-width: 60px;
+  }
+}
+
+/* =========================
+   BIGGER BUTTONS — UX IMPROVEMENT
+   (spinners, add set, start/save)
+========================= */
+
+/* ── SPINNER BUTTONS (▲ ▼) ── */
+.spin-btn {
+  width: 36px !important;
+  height: 28px !important;
+  font-size: 0.75rem !important;
+  border-radius: 7px !important;
+  border: 1.5px solid #e0e0e0 !important;
+  touch-action: manipulation;
+}
+.spin-btn:hover {
+  background: #d25353 !important;
+  color: white !important;
+  border-color: #d25353 !important;
+}
+.spin-btn:active {
+  transform: scale(0.95);
+}
+
+.spin-display {
+  width: 54px !important;
+  font-size: 0.95rem !important;
+  padding: 5px 0 !important;
+  border-radius: 7px !important;
+}
+
+/* ── START BUTTON ── */
+.row-start-btn {
+  padding: 0.5rem 1.1rem !important;
+  font-size: 0.85rem !important;
+  border-radius: 9px !important;
+  min-width: 72px;
+  touch-action: manipulation;
+}
+
+/* ── SAVE SET BUTTON ── */
+.row-save-btn {
+  padding: 0.5rem 1.1rem !important;
+  font-size: 0.85rem !important;
+  border-radius: 9px !important;
+  min-width: 80px;
+  touch-action: manipulation;
+}
+
+/* ── ADD SET BUTTON ── */
+.add-set-btn {
+  padding: 0.75rem !important;
+  font-size: 0.9rem !important;
+  border-radius: 12px !important;
+  border-width: 2px !important;
+  touch-action: manipulation;
+}
+.add-set-btn:active {
+  background: rgba(210, 83, 83, 0.08) !important;
+}
+
+/* ── MOBILE — even bigger tap targets ── */
+@media (max-width: 600px) {
+  .spin-btn {
+    width: 44px !important;
+    height: 34px !important;
+    font-size: 0.88rem !important;
+    border-radius: 8px !important;
+  }
+
+  .spin-display {
+    width: 58px !important;
+    font-size: 1rem !important;
+    padding: 6px 0 !important;
+  }
+
+  .set-input-wrap {
+    gap: 2px;
+  }
+
+  .row-start-btn,
+  .row-save-btn {
+    padding: 0.6rem 1rem !important;
+    font-size: 0.88rem !important;
+    min-width: 80px;
+    border-radius: 10px !important;
+  }
+
+  .add-set-btn {
+    padding: 0.9rem !important;
+    font-size: 0.95rem !important;
+    border-radius: 14px !important;
+  }
+
+  /* Give action cells more breathing room */
+  .action-cell {
+    gap: 6px !important;
+    flex-wrap: wrap;
+  }
+
+  /* Table cells — more padding on mobile */
+  .exercise-card tbody td {
+    padding: 0.8rem 0.5rem !important;
+  }
+
+  .exercise-card thead th {
+    padding: 0.6rem 0.5rem !important;
+    font-size: 0.62rem !important;
+  }
+
+  /* Skip timer button */
+  .timer-skip {
+    padding: 0.35rem 0.75rem !important;
+    font-size: 0.78rem !important;
+  }
 }

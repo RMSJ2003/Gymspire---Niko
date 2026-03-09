@@ -95,6 +95,12 @@ exports.workoutPlan = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.congestion = catchAsync(async (req, res, next) => {
+  res.status(200).render("congestion", {
+    title: "Gym Congestion",
+    user: req.user,
+  });
+});
 exports.challenges = catchAsync(async (req, res, next) => {
   const challenges = req.challenges || [];
   console.log(req.challenges);

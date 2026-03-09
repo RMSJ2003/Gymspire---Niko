@@ -1,56 +1,60 @@
 extends base
 
-block content
-  style.
-    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:Arial,sans-serif;background-color:#dddddd;padding-top:4rem;color:whitesmoke}
-    .edit-profile-page{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:3rem 1rem;flex-direction:column;text-align:center}
-    .top-bar{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:.8rem 1rem;z-index:999;background-color:white;backdrop-filter:blur(8px);box-shadow:0 2px 8px rgba(0,0,0,.4)}
-    .top-bar a{padding:.5rem 1rem;border:2px solid #d25353;background-color:#d25353;color:whitesmoke;font-weight:bold;border-radius:.5rem;text-decoration:none;transition:all .3s ease}
-    .top-bar a:hover{color:#f4c430;border:2px solid transparent}
-    .edit-card{background:white;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid #d25353;border-radius:1rem;padding:2rem;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,.3);display:flex;flex-direction:column;align-items:center;gap:1.2rem}
-    .edit-card h1{text-align:center;margin-bottom:1rem;font-size:2rem;font-weight:700;color:black}
-    .edit-profile-pic{width:160px;height:160px;border-radius:50%;object-fit:cover;border:4px solid #ebd31b;box-shadow:0 8px 20px rgba(0,0,0,.4);margin-bottom:1.5rem}
-    form{display:flex;flex-direction:column;gap:1rem;width:100%}
-    label{font-weight:600;font-size:.95rem;margin-bottom:.3rem;display:block;color:#d25353}
-    input[type="text"],input[type="file"]{width:100%;padding:.6rem;border-radius:.5rem;border:none;background-color:whitesmoke;color:black;display:block}
-    input::placeholder{color:#9ca3af;opacity:1}
-    button{margin-top:.5rem;padding:.7rem;border-radius:.6rem;border:none;background:#d25353;color:whitesmoke;font-weight:600;cursor:pointer;width:100%;box-shadow:0 4px 10px rgba(0,0,0,.3);transition:all .3s ease}
-    button:hover{color:#f4c430}
-    .form-message{text-align:center;font-size:.9rem;min-height:1.2rem;color:#11de0e}
-    @media(max-width:900px){.edit-card{padding:1.5rem}.edit-profile-pic{width:140px;height:140px}button{padding:.6rem}input[type="text"],input[type="file"]{padding:.5rem}}
+block styles
+  link(rel="stylesheet" href="/css/editProfile.css")
 
-  // 🔹 TOP BAR
+block content
+
   .top-bar
     if user.userType === "user"
-      a.dashboard-btn(href='/dashboard') Dashboard
+      a(href='/dashboard') Dashboard
     if user.userType === "coach"
-      a.dashboard-btn(href='/coachDashboard') Dashboard
+      a(href='/coachDashboard') Dashboard
     if user.userType === "admin"
-      a.dashboard-btn(href='/adminDashboard') Dashboard
-    a.back-btn(href='javascript:history.back()') Back
+      a(href='/adminDashboard') Dashboard
+    a(href='javascript:history.back()') Back
 
   .edit-profile-page
     .edit-card
-      h1 #{title}
 
-      if currentUser.pfpUrl
-        img.edit-profile-pic(src=currentUser.pfpUrl alt="Profile Picture")
-      else
-        img.edit-profile-pic(src="/img/default-user.png" alt="Default Profile")
+      .edit-card__header
+        h1 #{title}
+
+      .edit-avatar-wrap
+        if currentUser.pfpUrl
+          img.edit-profile-pic#previewImg(src=currentUser.pfpUrl alt="Profile Picture")
+        else
+          img.edit-profile-pic#previewImg(src="/img/default-user.png" alt="Default Profile")
+        label.avatar-change-btn(for="pfp")
+          svg(xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24')
+            path(d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z')
+            circle(cx='12' cy='13' r='4')
+          span Change Photo
 
       form#editProfileForm(enctype="multipart/form-data")
         p.form-message#formMessage
-        label(for="username") Username
-        input(
-          type="text"
-          name="username"
-          id="username"
-          value=currentUser.username
-        )
-        label(for="pfp") Profile Picture
-        input(type="file" name="pfp" id="pfp" accept="image/*")
-        button(type="submit") Save Changes
+
+        .form-group
+          label(for="username") Username
+          input(
+            type="text"
+            name="username"
+            id="username"
+            value=currentUser.username
+            placeholder="Enter new username"
+          )
+
+        .form-group.file-group
+          label(for="pfp") Profile Picture
+          input(type="file" name="pfp" id="pfp" accept="image/*")
+          .file-hint Select an image file (JPG, PNG, GIF)
+
+        button(type="submit")
+          svg(xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24')
+            path(d='M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z')
+            polyline(points='17 21 17 13 7 13 7 21')
+            polyline(points='7 3 7 8 15 8')
+          span Save Changes
 
 block scripts
   script(src='/js/editProfile.js')

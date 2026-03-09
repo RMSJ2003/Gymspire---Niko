@@ -82,7 +82,6 @@ const User = require("../models/userModel");
 exports.autoCheckin = catchAsync(async (req, res, next) => {
   const now = new Date();
 
-  // Only create a new attendance record if not already checked in
   const alreadyCheckedIn = await GymAttendance.findOne({
     user: req.user.id,
     checkoutTime: null,
@@ -92,7 +91,7 @@ exports.autoCheckin = catchAsync(async (req, res, next) => {
     await GymAttendance.create({
       user: req.user.id,
       checkinTime: now,
-      source: "workout", // came from starting a workout, not manual tap
+      source: "workout",
     });
 
     await User.findByIdAndUpdate(req.user.id, {
@@ -101,11 +100,11 @@ exports.autoCheckin = catchAsync(async (req, res, next) => {
       gymCheckinTime: now,
     });
   } else {
-    // Already checked in manually — just upgrade their status to "logging"
+    // Already manually checked in — upgrade to "logging"
     await User.findByIdAndUpdate(req.user.id, {
       gymStatus: "logging",
     });
   }
 
-  next(); // continue to the actual workout creation
+  next();
 });

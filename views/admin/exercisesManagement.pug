@@ -5,68 +5,67 @@ block styles
 
 block content
 
-  // =========================
-  // BACK BUTTON
-  // =========================
-  a.back-btn(href='/adminDashboard') Back
+  a.back-btn(href='/adminDashboard') ← Back
 
-  // =========================
-  // USER INFO
-  // =========================
-  h1.page-title #{title}
-  h2 #{user.username}
+  .ex-container
 
-  if user.pfpUrl
-    img.profile-big(src=user.pfpUrl alt="Profile Picture")
-  else
-    img.profile-big(src="/img/default-user.png" alt="Default Profile")
+    //- Hero header
+    .ex-hero
+      if user.pfpUrl
+        img.ex-hero-avatar(src=user.pfpUrl alt=user.username)
+      else
+        img.ex-hero-avatar(src="/img/default-user.png" alt="Default")
+      .ex-hero-text
+        h1 #{title}
+        p Logged in as #{user.username}
 
-  // =========================
-  // IMPORT EXERCISES
-  // =========================
-  .import-zone
-    h3 📥 Import Exercises (ExerciseDB)
-    p
-      | This will fetch dumbbell exercises from ExerciseDB API.
-      br
-      | ⚠️ This process is slow and rate-limited (≈1 minute per muscle group).
-    button#importExercisesBtn Import Exercises
-    p#importMessage
+    //- Import section
+    .ex-section-card
+      .ex-section-label
+        svg(xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24')
+          path(d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4')
+          polyline(points='17 8 12 3 7 8')
+          line(x1='12' y1='3' x2='12' y2='15')
+        span Import Exercises
+      p
+        | Fetches dumbbell exercises from the ExerciseDB API.
+        br
+        | ⚠️ This process is slow and rate-limited (≈1 min per muscle group).
+      button#importExercisesBtn Import Exercises
+      p#importMessage
 
-  // =========================
-  // DANGER ZONE
-  // =========================
-  .danger-zone
-    h3 ⚠️ Danger Zone
-    p This will permanently delete ALL exercises. This action cannot be undone.
-    button#deleteAllExercisesBtn Delete ALL Exercises
-    p#deleteMessage
+    //- Danger zone
+    .ex-section-card
+      .ex-section-label
+        svg(xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24')
+          path(d='M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6')
+        span Danger Zone
+      p Permanently deletes ALL exercises from the database. This cannot be undone.
+      button#deleteAllExercisesBtn Delete ALL Exercises
+      p#deleteMessage
 
-  hr
+    //- Exercise list
+    if exercises.length === 0
+      p.ex-empty No exercises in the database yet.
+    else
+      p.ex-list-header #{exercises.length} exercises
 
-  // =========================
-  // SCROLLABLE EXERCISE LIST
-  // =========================
-  if exercises.length === 0
-    p No exercises available.
-  else
-    .exercise-list-container
-      each exercise in exercises
-        .exercise-card
-          .exercise-content
-            h3 #{exercise.name}
-            p
-              strong Target:
-              |  #{exercise.target}
+      .exercise-list-container
+        each exercise in exercises
+          .exercise-card
+            .exercise-content
+              if exercise.gifURL
+                img.exercise-gif(src=exercise.gifURL alt=exercise.name)
 
-            if exercise.gifURL
-              img.exercise-gif(src=exercise.gifURL alt=exercise.name)
+              .exercise-info
+                h3 #{exercise.name}
+                p #{exercise.target}
 
-            if exercise.instructions && exercise.instructions.length
-              h4 Instructions
-              ul
-                each step in exercise.instructions
-                  li #{step}
+                if exercise.instructions && exercise.instructions.length
+                  h4 Instructions
+                  ul
+                    each step in exercise.instructions
+                      li #{step}
 
 block scripts
   script(src="/js/exercisesManagement.js")

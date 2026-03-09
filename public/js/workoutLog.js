@@ -9,7 +9,6 @@ const CIRCUMFERENCE = 2 * Math.PI * 15;
 function showToast(message, type = "error") {
   const existing = document.getElementById("gymToast");
   if (existing) existing.remove();
-
   const colors = {
     error: { bg: "#d25353", icon: "✕" },
     success: { bg: "#22c55e", icon: "✓" },
@@ -17,7 +16,6 @@ function showToast(message, type = "error") {
     warning: { bg: "#f59e0b", icon: "⚠" },
   };
   const { bg, icon } = colors[type] || colors.error;
-
   const toast = document.createElement("div");
   toast.id = "gymToast";
   toast.style.cssText = `
@@ -43,6 +41,104 @@ function showToast(message, type = "error") {
     toast.style.transform = "translateX(-50%) translateY(10px)";
     setTimeout(() => toast.remove(), 300);
   }, 3500);
+}
+
+/* ==========================================
+   CONFIRM MODAL (replaces confirm())
+========================================== */
+function showConfirm(message, onConfirm, onCancel) {
+  const existing = document.getElementById("workoutConfirmModal");
+  if (existing) existing.remove();
+
+  const overlay = document.createElement("div");
+  overlay.id = "workoutConfirmModal";
+  overlay.style.cssText = `
+    position:fixed;inset:0;background:rgba(0,0,0,0.55);
+    display:flex;align-items:center;justify-content:center;
+    z-index:9998;padding:1rem;
+  `;
+  overlay.innerHTML = `
+    <div style="
+      background:white;border-radius:16px;padding:1.5rem;
+      max-width:380px;width:100%;
+      box-shadow:0 20px 60px rgba(0,0,0,0.3);
+      font-family:Arial,sans-serif;
+    ">
+      <p style="margin:0 0 1.2rem;font-size:0.92rem;color:#1a1a1a;line-height:1.5;">${message}</p>
+      <div style="display:flex;gap:0.6rem;justify-content:flex-end;">
+        <button id="wlConfirmCancel" style="
+          padding:0.5rem 1.1rem;border-radius:8px;border:1.5px solid #ddd;
+          background:white;color:#555;font-weight:700;font-size:0.85rem;cursor:pointer;
+        ">Cancel</button>
+        <button id="wlConfirmOk" style="
+          padding:0.5rem 1.1rem;border-radius:8px;border:none;
+          background:linear-gradient(135deg,#d25353,#b11226);color:white;
+          font-weight:700;font-size:0.85rem;cursor:pointer;
+        ">Confirm</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.querySelector("#wlConfirmOk").addEventListener("click", () => {
+    overlay.remove();
+    onConfirm();
+  });
+  overlay.querySelector("#wlConfirmCancel").addEventListener("click", () => {
+    overlay.remove();
+    if (onCancel) onCancel();
+  });
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) {
+      overlay.remove();
+      if (onCancel) onCancel();
+    }
+  });
+}
+
+/* ==========================================
+   CHOICE MODAL (replaces confirm() for yes/no optional actions)
+========================================== */
+function showChoice(message, yesLabel, noLabel, onYes, onNo) {
+  const existing = document.getElementById("workoutChoiceModal");
+  if (existing) existing.remove();
+
+  const overlay = document.createElement("div");
+  overlay.id = "workoutChoiceModal";
+  overlay.style.cssText = `
+    position:fixed;inset:0;background:rgba(0,0,0,0.55);
+    display:flex;align-items:center;justify-content:center;
+    z-index:9998;padding:1rem;
+  `;
+  overlay.innerHTML = `
+    <div style="
+      background:white;border-radius:16px;padding:1.5rem;
+      max-width:380px;width:100%;
+      box-shadow:0 20px 60px rgba(0,0,0,0.3);
+      font-family:Arial,sans-serif;
+    ">
+      <p style="margin:0 0 1.2rem;font-size:0.92rem;color:#1a1a1a;line-height:1.5;">${message}</p>
+      <div style="display:flex;gap:0.6rem;justify-content:flex-end;">
+        <button id="wlChoiceNo" style="
+          padding:0.5rem 1.1rem;border-radius:8px;border:1.5px solid #ddd;
+          background:white;color:#555;font-weight:700;font-size:0.85rem;cursor:pointer;
+        ">${noLabel}</button>
+        <button id="wlChoiceYes" style="
+          padding:0.5rem 1.1rem;border-radius:8px;border:none;
+          background:linear-gradient(135deg,#d25353,#b11226);color:white;
+          font-weight:700;font-size:0.85rem;cursor:pointer;
+        ">${yesLabel}</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.querySelector("#wlChoiceYes").addEventListener("click", () => {
+    overlay.remove();
+    onYes();
+  });
+  overlay.querySelector("#wlChoiceNo").addEventListener("click", () => {
+    overlay.remove();
+    onNo();
+  });
 }
 
 /* ==========================================
@@ -235,7 +331,6 @@ function renumberRows(tbody) {
   });
 }
 
-// ✅ Check if ALL rows in a specific card's tbody are done
 function allRowsDoneInCard(tbody) {
   const rows = tbody.querySelectorAll("tr[data-set-id]");
   if (!rows.length) return true;
@@ -332,9 +427,7 @@ function wireRow({
         tr.classList.add("row-done");
         setSpinnerDisabled(wSpinner, true);
         setSpinnerDisabled(rSpinner, true);
-
         showOverloadTip(tr, weight, reps);
-
         timer.start(() => {
           const tbody = tr.closest("tbody");
           const allRows = Array.from(tbody.querySelectorAll("tr[data-set-id]"));
@@ -365,7 +458,10 @@ function wireRow({
       try {
         const res = await fetch(
           `/api/v1/workout-logs/${logId}/exercises/${exIndex}/sets/${setId}`,
-          { method: "DELETE", credentials: "include" },
+          {
+            method: "DELETE",
+            credentials: "include",
+          },
         );
         const data = await res.json();
         if (data.status === "success") {
@@ -492,7 +588,6 @@ document.querySelectorAll(".exercise-card").forEach((card) => {
     };
   });
 
-  // Enable first unsaved row only
   const firstUnsaved = rowData.find((r) => !r.alreadySaved);
   if (firstUnsaved) firstUnsaved.startBtn.disabled = false;
 
@@ -500,11 +595,10 @@ document.querySelectorAll(".exercise-card").forEach((card) => {
     wireRow({ ...rowObj, logId });
   });
 
-  /* ── ADD SET BUTTON ──────────────────────── */
+  /* ── ADD SET BUTTON ── */
   const addSetBtn = card.querySelector(".add-set-btn");
   if (addSetBtn) {
     addSetBtn.addEventListener("click", async () => {
-      // ✅ GUARD: block if any row in this card is not yet done
       if (!allRowsDoneInCard(tbody)) {
         showToast(
           "Finish all current sets before adding a new one.",
@@ -512,18 +606,15 @@ document.querySelectorAll(".exercise-card").forEach((card) => {
         );
         return;
       }
-
       addSetBtn.disabled = true;
       addSetBtn.textContent = "Adding...";
       const exIndex = card.dataset.exIndex;
-
       try {
         const res = await fetch(
           `/api/v1/workout-logs/${logId}/exercises/${exIndex}/sets`,
           { method: "POST", credentials: "include" },
         );
         const data = await res.json();
-
         if (data.status === "success") {
           const { setId, setNumber, weight, reps, unit } = data.data;
           const tr = buildDynamicRow({
@@ -551,9 +642,7 @@ document.querySelectorAll(".exercise-card").forEach((card) => {
 });
 
 /* ==========================================
-   BUILD DYNAMIC ROW (newly added sets)
-   ✅ Start button is DISABLED — user must
-   finish previous sets first via the guard above
+   BUILD DYNAMIC ROW
 ========================================== */
 function buildDynamicRow({ setId, setNumber, weight, reps, unit, logId }) {
   const tr = document.createElement("tr");
@@ -608,8 +697,6 @@ function buildDynamicRow({ setId, setNumber, weight, reps, unit, logId }) {
   startBtn.type = "button";
   startBtn.className = "row-start-btn";
   startBtn.textContent = "Start";
-  // ✅ Since the guard above ensures all previous sets are done,
-  // the new row's Start button is immediately enabled
   startBtn.disabled = false;
 
   const saveBtn = document.createElement("button");
@@ -650,11 +737,9 @@ function buildDynamicRow({ setId, setNumber, weight, reps, unit, logId }) {
     alreadySaved: false,
     logId,
   });
-
   return tr;
 }
 
-// Hide global save button
 const saveSetsBtn = document.getElementById("saveSetsBtn");
 if (saveSetsBtn) saveSetsBtn.style.display = "none";
 
@@ -702,7 +787,7 @@ function showOverloadTip(tr, weight, reps) {
 ========================================== */
 const finishBtn = document.getElementById("finish-btn");
 if (finishBtn) {
-  finishBtn.addEventListener("click", async () => {
+  finishBtn.addEventListener("click", () => {
     const logId = finishBtn.dataset.logId;
 
     if (!allSetsSaved()) {
@@ -715,60 +800,69 @@ if (finishBtn) {
     }
 
     const isChallenge = finishBtn.dataset.isChallenge === "true";
-    const formData = new FormData();
 
     if (isChallenge) {
-      const wantsVideo = confirm("Do you want to upload a video? (Optional)");
-      if (wantsVideo) {
-        const videoInput = document.querySelector(
-          `.video-input[data-log-id="${logId}"]`,
-        );
-        videoInput.click();
-        videoInput.onchange = async () => {
-          if (videoInput.files.length) {
-            const file = videoInput.files[0];
-            const MAX_SIZE_BYTES = 100 * 1024 * 1024;
-            const allowedTypes = [
-              "video/mp4",
-              "video/quicktime",
-              "video/webm",
-              "video/x-msvideo",
-            ];
-            if (!allowedTypes.includes(file.type)) {
-              showToast(
-                "Invalid file type. Upload MP4, MOV, WebM, or AVI.",
-                "error",
+      // Ask about video upload first, then confirm finish
+      showChoice(
+        "Do you want to upload a workout video? (Optional)",
+        "Upload Video",
+        "Skip & Finish",
+        () => {
+          // User wants to upload video
+          const videoInput = document.querySelector(
+            `.video-input[data-log-id="${logId}"]`,
+          );
+          videoInput.click();
+          videoInput.onchange = () => {
+            if (videoInput.files.length) {
+              const file = videoInput.files[0];
+              const MAX_SIZE_BYTES = 100 * 1024 * 1024;
+              const allowedTypes = [
+                "video/mp4",
+                "video/quicktime",
+                "video/webm",
+                "video/x-msvideo",
+              ];
+              if (!allowedTypes.includes(file.type)) {
+                showToast(
+                  "Invalid file type. Upload MP4, MOV, WebM, or AVI.",
+                  "error",
+                );
+                videoInput.value = "";
+                return;
+              }
+              if (file.size > MAX_SIZE_BYTES) {
+                showToast(
+                  `Video too large (${(file.size / 1048576).toFixed(1)} MB). Max 100 MB.`,
+                  "error",
+                );
+                videoInput.value = "";
+                return;
+              }
+              const formData = new FormData();
+              formData.append("video", file);
+              showConfirm("Finish this workout? This cannot be undone.", () =>
+                submitFinish(logId, formData),
               );
-              videoInput.value = "";
-              return;
             }
-            if (file.size > MAX_SIZE_BYTES) {
-              showToast(
-                `Video too large (${(file.size / 1048576).toFixed(1)} MB). Max 100 MB.`,
-                "error",
-              );
-              videoInput.value = "";
-              return;
-            }
-            formData.append("video", file);
-          }
-          await submitFinish(logId, formData);
-        };
-        return;
-      }
+          };
+        },
+        () => {
+          // Skip video — just confirm finish
+          showConfirm("Finish this workout? This cannot be undone.", () =>
+            submitFinish(logId, new FormData()),
+          );
+        },
+      );
+    } else {
+      showConfirm("Finish this workout? This cannot be undone.", () =>
+        submitFinish(logId, new FormData()),
+      );
     }
-
-    await submitFinish(logId, formData);
   });
 }
 
 async function submitFinish(logId, formData) {
-  if (
-    !confirm(
-      "Are you sure you want to finish this workout? This cannot be undone.",
-    )
-  )
-    return;
   try {
     const res = await fetch(`/api/v1/workout-logs/${logId}/finish`, {
       method: "PATCH",

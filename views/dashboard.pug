@@ -57,15 +57,14 @@ block content
         | Active GymSpire Sessions: 
         data(value=currentLoad) #{currentLoad}
 
-    //- ──────────────────────────────────────────────────
-    //- Card 2 — Currently Working Out  ← CHECK-IN IS HERE
-    //- ──────────────────────────────────────────────────
+    //- Card 2 — Currently Working Out
     .status-card.checkin-card
       h3 Currently Working Out
 
       button.checkin-btn#checkinBtn(
         data-gym-status=user.gymStatus
-        data-checkin-time=user.gymCheckinTime ? user.gymCheckinTime.toISOString() : ""
+        data-checkin-time=user.gymCheckinTime ? user.gymCheckinTime.toISOString() : ''
+        data-is-at-gym=user.isAtGym ? 'true' : 'false'
       )
         svg(xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24')
           path(d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z')
@@ -80,22 +79,31 @@ block content
 
       .card-divider
 
-      //- Online users list
+      //- Online users list with pagination
       if onlineUsers.length === 0
         p.empty-state No one is currently working out.
       else
-        .online-users
-          each u in onlineUsers
-            .online-user
-              if u.pfpUrl
-                img(src=u.pfpUrl alt=u.username width='32' height='32')
-              else
-                img(src='/img/default-user.png' alt=u.username width='32' height='32')
-              span= u.username
-              if u.gymStatus === 'logging'
-                span.user-badge.badge-workout Logging
-              else if u.gymStatus === 'atGym'
-                span.user-badge.badge-atgym At Gym
+        .online-users-wrap
+          .online-users#onlineUsersList
+            each u in onlineUsers
+              .online-user
+                if u.pfpUrl
+                  img(src=u.pfpUrl alt=u.username width='32' height='32')
+                else
+                  img(src='/img/default-user.png' alt=u.username width='32' height='32')
+                span= u.username
+                if u.gymStatus === 'logging' && u.isAtGym
+                  span.user-badge.badge-workout Logging
+                  span.user-badge.badge-atgym At Gym
+                else if u.gymStatus === 'logging'
+                  span.user-badge.badge-workout Logging
+                else if u.gymStatus === 'atGym'
+                  span.user-badge.badge-atgym At Gym
+          .users-pagination
+            span.users-page-info#usersPageInfo
+            .users-page-btns
+              button.users-page-btn#usersPrev(type='button' disabled) ‹
+              button.users-page-btn#usersNext(type='button') ›
 
       //- Silent attendance confirmation
       p.attendance-logged#attendanceLogged
@@ -112,11 +120,16 @@ block content
       if frequencies.length === 0
         p No workout data available for this week.
       else
+        - const trainedItems = frequencies.filter(i => i.trained > 0)
+        if trainedItems.length === 0
+          p.muscles-empty All caught up — no muscles trained yet this week.
         ul.exercise-list
           each item in frequencies
-            li
+            - const isDone = item.trained >= item.target
+            - const isUntrained = item.trained === 0
+            li(class=isUntrained ? 'untrained' : '')
               span.muscle-name #{item.muscle}:
-              span.muscle-count #{item.trained} / #{item.target}
+              span(class='muscle-count' + (isDone ? ' done' : '')) #{item.trained} / #{item.target}
 
   // =========================
   // WORKOUTS THIS WEEK
@@ -142,6 +155,16 @@ block content
           a.card-link(href=url) #{item}
           button.info-btn(data-index=index title="More Info") i
 
+    //- Gym Congestion Prediction card
+    .card.card--congestion
+      .card-congestion-header
+        span.congestion-live-badge#congestionLive
+      h3 Gym Congestion
+      p.card-congestion-sub Predicted busyness from real check-in data
+      .card-actions
+        a.card-link(href='/congestion') View Predictions
+        button.info-btn(data-index=4 title="More Info") i
+
   // =========================
   // MODAL
   // =========================
@@ -156,3 +179,4 @@ block content
   script(src="/js/dashboard.js")
   script(src="/js/quoteBanner.js")
   script(src="/js/gymCheckin.js")
+  script(src="/js/onlineUsersPagination.js")

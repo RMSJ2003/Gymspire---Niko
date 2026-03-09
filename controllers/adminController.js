@@ -88,7 +88,7 @@ exports.getGymspireNowStatus = catchAsync(async (req, res, next) => {
   const onlineWorkoutLogs = await WorkoutLog.find({
     status: "ongoing",
     date: { $gte: startTime, $lt: now },
-  }).populate("userId", "username pfpUrl gymStatus");
+  }).populate("userId", "username pfpUrl gymStatus isAtGym");
 
   // Deduplicate by userId
   const onlineUsersMap = new Map();
@@ -99,7 +99,8 @@ exports.getGymspireNowStatus = catchAsync(async (req, res, next) => {
         _id: log.userId._id,
         username: log.userId.username,
         pfpUrl: log.userId.pfpUrl,
-        gymStatus: "logging", // actively logging → override with "logging"
+        gymStatus: "logging",
+        isAtGym: log.userId.isAtGym || false, // true = logging AND physically at gym
       });
     }
   });
@@ -111,7 +112,7 @@ exports.getGymspireNowStatus = catchAsync(async (req, res, next) => {
   const checkedInUsers = await User.find({
     gymStatus: "atGym",
     isAtGym: true,
-  }).select("username pfpUrl gymStatus");
+  }).select("username pfpUrl gymStatus isAtGym");
 
   checkedInUsers.forEach((u) => {
     if (!onlineUsersMap.has(u._id.toString())) {
@@ -119,7 +120,8 @@ exports.getGymspireNowStatus = catchAsync(async (req, res, next) => {
         _id: u._id,
         username: u.username,
         pfpUrl: u.pfpUrl,
-        gymStatus: "atGym", // present but not logging
+        gymStatus: "atGym",
+        isAtGym: true,
       });
     }
   });

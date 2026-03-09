@@ -1,36 +1,43 @@
-// ===== DATA =====
+// =========================
+// CREATE WORKOUT PLAN
+// Matches editWorkoutPlan UX exactly
+// =========================
+
 const exercises = window.exercises || [];
 
-// ✅ Multi-select: Set of selected exerciseIds
+// Multi-select: Set of selected exerciseIds
 let selectedSet = new Set();
 
-// DOM elements
+// ── DOM REFS ──────────────────────────────────────────────
 const targetGrid = document.getElementById("targetGrid");
 const targetModal = document.getElementById("targetModal");
 const closeTargetModal = document.getElementById("closeTargetModal");
 const targetTitle = document.getElementById("targetTitle");
 const targetExerciseList = document.getElementById("targetExerciseList");
-const form = document.querySelector("#createWorkoutPlanForm");
-const formMessage = document.querySelector("#formMessage");
 
 const modal = document.getElementById("exerciseModal");
 const closeModal = document.getElementById("closeModal");
+const modalExName = document.getElementById("modalExName");
 const modalGif = document.getElementById("modalGif");
 const modalInstructions = document.getElementById("modalInstructions");
+const toggleInstructions = document.getElementById("toggleInstructions");
 
-// ===== GROUP EXERCISES BY TARGET =====
+const form = document.querySelector("#createWorkoutPlanForm");
+const formMessage = document.querySelector("#formMessage");
+
+// ── GROUP BY TARGET ──────────────────────────────────────
 const grouped = {};
 exercises.forEach((ex, index) => {
   if (!grouped[ex.target]) grouped[ex.target] = [];
   grouped[ex.target].push({ ...ex, index });
 });
 
-// ===== CREATE TARGET CARDS =====
+// ── BUILD TARGET CARDS ───────────────────────────────────
 Object.keys(grouped).forEach((target) => {
   const card = document.createElement("div");
   card.className = "target-card";
   card.dataset.target = target;
-  card.innerHTML = `<span>${target}</span>`;
+  updateCardLabel(card, target);
   card.onclick = () => openTargetModal(target);
   targetGrid.appendChild(card);
 });
@@ -46,7 +53,7 @@ function updateCardLabel(card, target) {
   else card.classList.remove("active");
 }
 
-// ===== OPEN TARGET MODAL =====
+// ── OPEN TARGET MODAL ────────────────────────────────────
 function openTargetModal(target) {
   targetTitle.textContent = target;
   targetExerciseList.innerHTML = "";
@@ -60,16 +67,18 @@ function openTargetModal(target) {
     row.innerHTML = `
       <div class="exercise-left">
         <input type="checkbox" name="exercise-${target}" value="${ex.exerciseId}" ${isSelected ? "checked" : ""}>
-        <span class="exercise-name">${ex.name}</span>
+        <div class="exercise-info">
+          ${ex.gifURL ? `<img class="exercise-gif" src="${ex.gifURL}" alt="${ex.name}" loading="lazy">` : ""}
+          <span class="exercise-name">${ex.name}</span>
+        </div>
       </div>
-      <button class="info-btn" data-index="${ex.index}" type="button">i</button>
+      <button class="info-btn" data-index="${ex.index}" type="button" title="View instructions">i</button>
     `;
 
     const checkbox = row.querySelector("input");
 
     row.onclick = (e) => {
       if (e.target.classList.contains("info-btn")) return;
-
       if (selectedSet.has(ex.exerciseId)) {
         selectedSet.delete(ex.exerciseId);
         checkbox.checked = false;
@@ -79,7 +88,6 @@ function openTargetModal(target) {
         checkbox.checked = true;
         row.classList.add("selected");
       }
-
       const card = document.querySelector(`[data-target="${target}"]`);
       if (card) updateCardLabel(card, target);
     };
@@ -104,10 +112,53 @@ function openTargetModal(target) {
   targetModal.classList.remove("hidden");
 }
 
-// ===== CLOSE MODALS =====
+// ── INFO BUTTON → exercise info modal ────────────────────
+function attachInfoButtons() {
+  document.querySelectorAll(".info-btn").forEach((btn) => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const ex = exercises[btn.dataset.index];
+      if (!ex) return;
+
+      modalExName.textContent = ex.name;
+
+      if (ex.gifURL) {
+        modalGif.src = ex.gifURL;
+        modalGif.style.display = "block";
+      } else {
+        modalGif.style.display = "none";
+      }
+
+      const steps = ex.instructions || [];
+      modalInstructions.innerHTML = steps.length
+        ? "<ul>" + steps.map((s) => `<li>${s}</li>`).join("") + "</ul>"
+        : "<p>No instructions available.</p>";
+
+      modalInstructions.classList.add("hidden");
+      toggleInstructions.textContent = "Show Instructions";
+      toggleInstructions.classList.remove("open");
+
+      modal.classList.remove("hidden");
+    };
+  });
+}
+
+// ── TOGGLE INSTRUCTIONS ──────────────────────────────────
+toggleInstructions.addEventListener("click", () => {
+  const isHidden = modalInstructions.classList.toggle("hidden");
+  toggleInstructions.textContent = isHidden
+    ? "Show Instructions"
+    : "Hide Instructions";
+  toggleInstructions.classList.toggle("open", !isHidden);
+});
+
+// ── CLOSE MODALS ─────────────────────────────────────────
 closeTargetModal.onclick = () => targetModal.classList.add("hidden");
 closeModal.onclick = () => modal.classList.add("hidden");
 
+targetModal.onclick = (e) => {
+  if (e.target === targetModal) targetModal.classList.add("hidden");
+};
 modal.onclick = (e) => {
   if (e.target === modal) modal.classList.add("hidden");
 };
@@ -119,39 +170,18 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-// ===== INFO BUTTON =====
-function attachInfoButtons() {
-  document.querySelectorAll(".info-btn").forEach((btn) => {
-    btn.onclick = (e) => {
-      e.stopPropagation();
-
-      const ex = exercises[btn.dataset.index];
-      if (!ex) return;
-
-      modalGif.src = ex.gifURL || "";
-      modalGif.style.display = ex.gifURL ? "block" : "none";
-
-      modalInstructions.innerHTML =
-        "<h4>Instructions:</h4><ul>" +
-        ex.instructions.map((s) => `<li>${s}</li>`).join("") +
-        "</ul>";
-
-      modal.classList.remove("hidden");
-    };
-  });
-}
-
-// ===== FORM SUBMIT =====
+// ── FORM SUBMIT ──────────────────────────────────────────
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const exerciseIds = Array.from(selectedSet);
-
   if (exerciseIds.length === 0) {
     formMessage.textContent = "Please select at least one exercise.";
-    formMessage.style.color = "red";
+    formMessage.style.color = "var(--red)";
     return;
   }
+
+  formMessage.textContent = "";
 
   try {
     const res = await fetch("/api/v1/workout-plans", {
@@ -159,20 +189,20 @@ form.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ exerciseIds }),
     });
-
     const data = await res.json();
 
     if (data.status === "success") {
+      formMessage.style.color = "#16a34a";
       formMessage.textContent = "Workout plan created!";
-      formMessage.style.color = "green";
       setTimeout(() => {
         window.location.href = "/workoutPlan";
-      }, 600);
+      }, 700);
     } else {
-      formMessage.textContent = data.message;
+      formMessage.style.color = "var(--red)";
+      formMessage.textContent = data.message || "Something went wrong.";
     }
   } catch (err) {
-    formMessage.textContent = err.message;
-    formMessage.style.color = "red";
+    formMessage.style.color = "var(--red)";
+    formMessage.textContent = "Network error. Please try again.";
   }
 });

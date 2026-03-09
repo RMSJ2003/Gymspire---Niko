@@ -14,38 +14,43 @@ block content
     a.back-btn(href='javascript:history.back()') Back
 
   .page-header
-    .page-header-inner
-      if user.pfpUrl
-        img.profile-pic(src=user.pfpUrl alt="Profile Picture")
-      else
-        img.profile-pic(src="/img/default-user.png" alt="Default Profile")
-      .page-header-text
-        h1 Create Workout Plan
-        p.header-username #{user.username}
+    h1 Create Workout Plan
+    h2 #{currentUser.username}
 
-  .plan-wrapper
-    p.page-hint Select exercises — multiple per muscle allowed.
+  if currentUser.pfpUrl
+    img.profile-pic(src=currentUser.pfpUrl alt="Profile Picture")
+  else
+    img.profile-pic(src="/img/default-user.png" alt="Default Profile")
 
-    .target-grid#targetGrid
+  p.section-label Select exercises — multiple per muscle allowed
 
-    form#createWorkoutPlanForm.hidden
+  .target-grid#targetGrid
 
-    .update-section
-      p.form-message#formMessage
-      button(type="submit" form="createWorkoutPlanForm") ✅ Create Workout Plan
+  form#createWorkoutPlanForm.hidden
 
+  .update-section
+    p.form-message#formMessage
+    button(type="submit" form="createWorkoutPlanForm") Create Workout Plan
+
+  //- Target modal — exercise list for a muscle group
   .modal.hidden#targetModal
     .modal-content.large
       .modal-header
         h3#targetTitle
-        button#closeTargetModal(type="button") ×
-      .exercise-list#targetExerciseList
+        button#closeTargetModal(type="button" aria-label="Close") ×
+      .modal-body
+        .exercise-list#targetExerciseList
 
+  //- Exercise info modal — GIF + instructions
   .modal.hidden#exerciseModal
-    .modal-content
-      button#closeModal(type="button") ×
-      img#modalGif
-      div#modalInstructions
+    .modal-content.ex-info-modal
+      .modal-header
+        span.ex-modal-name#modalExName Exercise
+        button#closeModal(type="button" aria-label="Close") ×
+      .modal-body
+        img#modalGif(alt="Exercise demonstration" loading="lazy")
+        button#toggleInstructions(type="button") Show Instructions
+        div#modalInstructions.hidden
 
   script#exercisesData(type="application/json").
     !{JSON.stringify(exercises)}
