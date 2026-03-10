@@ -57,9 +57,9 @@ block content
                 td
                   .avatar-wrap
                     if u.pfpUrl
-                      img.profile-small(src=u.pfpUrl alt=u.username)
+                      img.profile-small(src=u.pfpUrl alt=u.username onerror="this.onerror=null;this.src='/img/default-user.png'")
                     else
-                      img.profile-small(src="/img/default-user.png" alt="Default")
+                      img.profile-small(src="/img/default-user.png" alt="Default" onerror="this.onerror=null;this.src='/img/default-user.png'")
                     span.status-dot(class=(u.gymStatus && u.gymStatus !== 'offline') ? 'online' : 'offline')
 
                 td
@@ -102,7 +102,7 @@ block content
   .attendance-drawer#attendanceDrawer
     .drawer-header
       .drawer-user-info
-        img#drawerPfp(src="/img/default-user.png" alt="User")
+        img#drawerPfp(src="/img/default-user.png" alt="User" onerror="this.onerror=null;this.src='/img/default-user.png'")
         .drawer-user-text
           h3#drawerUsername Loading...
           span#drawerSubtitle Gym Attendance History

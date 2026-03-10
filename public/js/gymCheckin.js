@@ -118,8 +118,14 @@
       ? "Logging workout ✓ · At Gym"
       : "Logging workout ✓";
 
-    checkoutRow.classList.add("show");
-    attendanceEl.classList.add("show");
+    // Only show checkout button if user physically checked in at the gym
+    if (isAtGym) {
+      checkoutRow.classList.add("show");
+      attendanceEl.classList.add("show");
+    } else {
+      checkoutRow.classList.remove("show");
+      attendanceEl.classList.remove("show");
+    }
 
     if (isoTime) {
       const d = new Date(isoTime);

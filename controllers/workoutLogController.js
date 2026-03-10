@@ -64,25 +64,23 @@ exports.createMySoloWorkoutLog = catchAsync(async (req, res, next) => {
     return next(new AppError(err.message, 409));
   }
 
-  // ── Rest rule passed — now safe to auto check-in ──
-  const now = new Date();
+  // ── Rest rule passed — update gymStatus to "logging" ──
+  // Only set isAtGym: true if user already has an active gym check-in
+  // (i.e. they physically checked in via geofencing first).
+  // Starting a workout without checking in should NOT mark them as "At Gym".
   const alreadyCheckedIn = await GymAttendance.findOne({
     user: req.user.id,
     checkoutTime: null,
   }).catch(() => null);
 
-  if (!alreadyCheckedIn) {
-    await GymAttendance.create({
-      user: req.user.id,
-      checkinTime: now,
-      source: "workout",
-    }).catch(() => {});
+  if (alreadyCheckedIn) {
+    // User is physically at the gym — mark as logging + at gym
     await User.findByIdAndUpdate(req.user.id, {
       isAtGym: true,
       gymStatus: "logging",
-      gymCheckinTime: now,
     });
   } else {
+    // User started workout remotely — only mark as logging, NOT at gym
     await User.findByIdAndUpdate(req.user.id, {
       gymStatus: "logging",
     });
@@ -179,23 +177,17 @@ exports.createMyChallengeWorkoutLog = catchAsync(async (req, res, next) => {
     return next(new AppError(err.message, 409));
   }
 
-  // ── Rest rule passed — now safe to auto check-in ──
-  const now = new Date();
+  // ── Rest rule passed — update gymStatus to "logging" ──
+  // Only set isAtGym: true if user already has an active gym check-in.
   const alreadyCheckedIn = await GymAttendance.findOne({
     user: req.user.id,
     checkoutTime: null,
   }).catch(() => null);
 
-  if (!alreadyCheckedIn) {
-    await GymAttendance.create({
-      user: req.user.id,
-      checkinTime: now,
-      source: "workout",
-    }).catch(() => {});
+  if (alreadyCheckedIn) {
     await User.findByIdAndUpdate(req.user.id, {
       isAtGym: true,
       gymStatus: "logging",
-      gymCheckinTime: now,
     });
   } else {
     await User.findByIdAndUpdate(req.user.id, {
