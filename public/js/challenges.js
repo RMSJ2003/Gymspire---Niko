@@ -100,6 +100,20 @@ joinButtons.forEach((btn) => {
 // ==============================
 const leaderboardButtons = document.querySelectorAll(".leaderboard-btn");
 
+// Returns the correct status badge HTML for a leaderboard row
+function buildStatusBadge(row) {
+  if (row.judgeStatus === "approved" && row.videoUrl) {
+    return `<span class="lb-badge lb-verified">✔ Verified</span>`;
+  }
+  if (row.judgeStatus === "incomplete") {
+    return `<span class="lb-badge lb-incomplete">✗ Incomplete</span>`;
+  }
+  if (row.videoUrl) {
+    return `<span class="lb-badge lb-pending">⏳ Pending</span>`;
+  }
+  return `<span class="lb-badge lb-no-video">No Video</span>`;
+}
+
 leaderboardButtons.forEach((btn) => {
   btn.addEventListener("click", async () => {
     const challengeId = btn.dataset.challengeId;
@@ -142,15 +156,7 @@ leaderboardButtons.forEach((btn) => {
             <td>#${startRank + i}</td>
             <td>${row.username}</td>
             <td>${row.strengthScore != null ? row.strengthScore.toFixed(2) : "—"}</td>
-            <td>
-              ${
-                row.judgeStatus === "approved" && row.videoUrl
-                  ? `<span class="lb-badge lb-verified">✔ Verified</span>`
-                  : row.videoUrl
-                    ? `<span class="lb-badge lb-pending">⏳ Pending</span>`
-                    : `<span class="lb-badge lb-no-video">No Video</span>`
-              }
-            </td>
+            <td>${buildStatusBadge(row)}</td>
           </tr>
         `,
           )
@@ -202,7 +208,6 @@ document.addEventListener("click", async (e) => {
         "You are not checked in at the gym. Check in first so your attendance is recorded.",
         "warning",
       );
-      // Small delay so toast is visible before redirect
       await new Promise((resolve) => setTimeout(resolve, 800));
     }
 

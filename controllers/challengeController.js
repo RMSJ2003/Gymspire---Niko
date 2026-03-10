@@ -89,27 +89,36 @@ exports.createChallenge = catchAsync(async (req, res, next) => {
     );
   }
 
-  // NOTE: Multiple exercises per muscle group are now allowed.
-  // Step 5 (duplicate muscle target check) has been intentionally removed.
+  // =========================
+  // 5) Validate NO duplicate muscle targets
+  // =========================
+  const targets = exercisesFromDb.map((ex) => ex.target);
+  const uniqueTargets = new Set(targets);
+
+  if (targets.length !== uniqueTargets.size) {
+    return next(
+      new AppError("Each muscle group can only have ONE exercise.", 400),
+    );
+  }
 
   // =========================
-  // 5) Generate join code
+  // 6) Generate join code
   // =========================
   const joinCode = generateJoinCode();
 
   // =========================
-  // 6) Create challenge (store exerciseId strings)
+  // 7) Create challenge (store exerciseId strings)
   // =========================
   const newChallenge = await Challenge.create({
     name: name.trim(),
     joinCode,
     startTime: start,
     endTime: end,
-    exercises: exerciseIds, // store string IDs
+    exercises: exerciseIds, // 🔥 store string IDs
   });
 
   // =========================
-  // 7) Send response
+  // 8) Send response
   // =========================
   res.status(201).json({
     status: "success",
@@ -199,68 +208,93 @@ exports.getLeaderboard = catchAsync(async (req, res, next) => {
   const logs = await WorkoutLog.find({
     challengeId: req.params.challengeId,
     status: "done",
+    judgeStatus: { $ne: "rejected" },
   })
     .populate("userId", "username")
     .sort({ strengthScore: -1 });
 
-  console.log("potaa");
-
-  console.log("Sample log fields:", JSON.stringify(logs[0], null, 2));
-
-  const leaderboard = logs.map((log, i) => ({
-    rank: i + 1,
-    username: log.userId?.username || "Unknown",
-    strengthScore: log.strengthScore ?? null,
-    videoUrl: log.videoUrl ?? null,
-    judgeStatus: log.judgeStatus ?? "pending",
-  }));
+  const leaderboard = logs.map((log, i) => {
+    const score = log.strengthScore ?? null;
+    const videoUrl = log.videoUrl ?? null;
+    const judgeStatus = log.judgeStatus ?? "pending";
+    const isIncomplete =
+      !videoUrl && (score === 0 || score === null) && judgeStatus === "pending";
+    return {
+      rank: i + 1,
+      username: log.userId?.username || "Unknown",
+      strengthScore: score,
+      videoUrl,
+      judgeStatus: isIncomplete ? "incomplete" : judgeStatus,
+    };
+  });
 
   res.status(200).json({ status: "success", data: leaderboard });
 });
-
 exports.acquireLeaderboard = catchAsync(async (req, res, next) => {
   const WorkoutLog = require("../models/workoutLogModel");
 
   const logs = await WorkoutLog.find({
     challengeId: req.params.challengeId,
     status: "done",
+    judgeStatus: { $ne: "rejected" },
   })
     .populate("userId", "username")
     .sort({ strengthScore: -1 });
 
-  const leaderboard = logs.map((log, i) => ({
-    rank: i + 1,
-    username: log.userId?.username || "Unknown",
-    strengthScore: log.strengthScore ?? null,
-    videoUrl: log.videoUrl ?? null,
-    judgeStatus: log.judgeStatus ?? "pending",
-  }));
+  const leaderboard = logs.map((log, i) => {
+    const score = log.strengthScore ?? null;
+    const videoUrl = log.videoUrl ?? null;
+    const judgeStatus = log.judgeStatus ?? "pending";
+    const isIncomplete =
+      !videoUrl && (score === 0 || score === null) && judgeStatus === "pending";
+    return {
+      rank: i + 1,
+      username: log.userId?.username || "Unknown",
+      strengthScore: score,
+      videoUrl,
+      judgeStatus: isIncomplete ? "incomplete" : judgeStatus,
+    };
+  });
 
   req.leaderboard = leaderboard;
-
   next();
 });
-
 exports.getChallenge = catchAsync(async (req, res, next) => {
+  // ================================
+  // STEP 1: Extract possible identifiers
+  // ================================
   const { joinCode, challengeId } = req.params;
   console.log("getchallenge");
 
+  // ================================
+  // STEP 2: Determine query source
+  // ================================
   let query;
 
   if (joinCode) {
-    query = { joinCode };
+    query = {
+      joinCode,
+    };
   } else if (challengeId) {
-    query = { _id: challengeId };
+    query = {
+      _id: challengeId,
+    };
   } else {
     return next(new AppError("Challenge identifier is required", 400));
   }
 
+  // ================================
+  // STEP 3: Fetch challenge
+  // ================================
   const challenge = await Challenge.findOne(query).populate("exerciseDetails");
 
   if (!challenge) {
     return next(new AppError("Challenge not found", 404));
   }
 
+  // ================================
+  // STEP 4: Attach to request
+  // ================================
   req.challenge = challenge;
 
   next();
@@ -287,12 +321,70 @@ exports.getAllChallenges = catchAsync(async (req, res, next) => {
   });
 });
 
+// exports.getLeaderboard = catchAsync(async (req, res, next) => {
+//   const { challengeId } = req.params;
+
+//   const leaderboard = await WorkoutLog.aggregate([
+//     // 1) Only this challenge
+//     {
+//       $match: {
+//         challengeId: new mongoose.Types.ObjectId(challengeId),
+//         status: "done",
+//         judgeStatus: "approved",
+//       },
+//     },
+
+//     // 2) Join user info
+//     {
+//       $lookup: {
+//         from: "users",
+//         localField: "userId",
+//         foreignField: "_id",
+//         as: "user",
+//       },
+//     },
+//     { $unwind: "$user" },
+
+//     // 3) Shape leaderboard row
+//     {
+//       $project: {
+//         _id: 0,
+//         userId: "$user._id",
+//         username: "$user.username",
+//         strengthScore: 1,
+//       },
+//     },
+
+//     // 4) Sort strongest first
+//     {
+//       $sort: { strengthScore: -1 },
+//     },
+
+//     // 5) Rank users
+//     {
+//       $setWindowFields: {
+//         sortBy: { strengthScore: -1 },
+//         output: {
+//           rank: { $rank: {} },
+//         },
+//       },
+//     },
+//   ]);
+
+//   res.status(200).json({
+//     status: "success",
+//     results: leaderboard.length,
+//     data: leaderboard,
+//   });
+// });
+
+// Without JSON
 exports.acquireAllChallenges = catchAsync(async (req, res, next) => {
   const challenges = await Challenge.find()
     .populate("exerciseDetails")
     .populate({
       path: "participants",
-      select: "username pfpUrl",
+      select: "username pfpUrl", // only send what UI needs
     });
 
   console.log("challenges: ", challenges);

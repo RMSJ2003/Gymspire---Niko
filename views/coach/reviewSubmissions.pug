@@ -27,9 +27,18 @@ block content
             .submission-user
               .user-avatar
                 if log.userId && log.userId.pfpUrl
-                  img(src=log.userId.pfpUrl alt="Profile Picture" style="width:48px;height:48px;border-radius:50%;object-fit:cover;display:block;")
+                  img(
+                    src=log.userId.pfpUrl
+                    alt="Profile Picture"
+                    style="width:48px;height:48px;border-radius:50%;object-fit:cover;display:block;"
+                    onerror="this.onerror=null;this.src='/img/default-user.png'"
+                  )
                 else
-                  | #{log.userId && log.userId.username ? log.userId.username[0].toUpperCase() : '?'}
+                  img(
+                    src="/img/default-user.png"
+                    alt="Profile Picture"
+                    style="width:48px;height:48px;border-radius:50%;object-fit:cover;display:block;"
+                  )
               .user-info
                 h3= log.userId && log.userId.username ? log.userId.username : 'Unknown User'
                 if log.judgeStatus === "approved"
