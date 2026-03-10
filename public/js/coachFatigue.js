@@ -113,6 +113,7 @@ function computeTrend(logs) {
 }
 
 // ── Status pill ───────────────────────────────────────────────────────
+// Factors in BOTH recency (days since last session) AND trend (improving/declining)
 function computeStatus(lastLog, logs) {
   if (!lastLog)
     return {
@@ -127,15 +128,34 @@ function computeStatus(lastLog, logs) {
     (Date.now() - new Date(lastLog.date)) / (1000 * 60 * 60 * 24),
   );
 
+  // Determine trend
+  const vol = (log) =>
+    log.totalVolume ?? (log.exercises ? log.exercises.length : 1);
+  const recent = vol(logs[0]);
+  const prev = vol(logs[1]);
+  const isImproving = recent > prev;
+  const isDeclining = recent < prev;
+
+  // Overdue — regardless of trend
+  if (diffDays > 5)
+    return {
+      statusHTML: `<span class="fatigue-status status-danger">🚨 Needs Attention</span>`,
+    };
+
+  // Active but declining
+  if (diffDays <= 2 && isDeclining)
+    return {
+      statusHTML: `<span class="fatigue-status status-warn">⚠️ Declining</span>`,
+    };
+
+  // Active and improving or stalled
   if (diffDays <= 2)
     return {
       statusHTML: `<span class="fatigue-status status-ok">✅ On Track</span>`,
     };
-  if (diffDays <= 5)
-    return {
-      statusHTML: `<span class="fatigue-status status-warn">⚠️ Check In</span>`,
-    };
+
+  // 3–5 days inactive
   return {
-    statusHTML: `<span class="fatigue-status status-danger">🚨 Needs Attention</span>`,
+    statusHTML: `<span class="fatigue-status status-warn">⚠️ Check In</span>`,
   };
 }

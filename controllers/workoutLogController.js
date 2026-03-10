@@ -13,6 +13,7 @@ const ensureNoOngoingWorkoutLog = require("../utils/ensureNoOngoingWorkoutLogs")
 const createDefaultSets = require("../utils/defaultWorkoutSets");
 const { enforceMuscleRest } = require("../services/restRule.service");
 const { closeAttendance } = require("./userController");
+const GymAttendance = require("../models/gymAttendanceModel");
 
 function computeStrengthScore(workoutLog) {
   let score = 0;
@@ -55,10 +56,36 @@ exports.createMySoloWorkoutLog = catchAsync(async (req, res, next) => {
   // enforceMuscleRest expects an array of muscle name strings
   const muscleNames = targets.map((t) => t.muscle);
 
+  // ── Enforce rest rule FIRST — before touching gymStatus ──
   try {
     enforceMuscleRest({ lastWorkoutLog, targets: muscleNames });
   } catch (err) {
+    // Rest rule failed — do NOT update gymStatus, just return error
     return next(new AppError(err.message, 409));
+  }
+
+  // ── Rest rule passed — now safe to auto check-in ──
+  const now = new Date();
+  const alreadyCheckedIn = await GymAttendance.findOne({
+    user: req.user.id,
+    checkoutTime: null,
+  }).catch(() => null);
+
+  if (!alreadyCheckedIn) {
+    await GymAttendance.create({
+      user: req.user.id,
+      checkinTime: now,
+      source: "workout",
+    }).catch(() => {});
+    await User.findByIdAndUpdate(req.user.id, {
+      isAtGym: true,
+      gymStatus: "logging",
+      gymCheckinTime: now,
+    });
+  } else {
+    await User.findByIdAndUpdate(req.user.id, {
+      gymStatus: "logging",
+    });
   }
 
   const planExercises = req.workoutPlan.exerciseDetails;
@@ -144,10 +171,36 @@ exports.createMyChallengeWorkoutLog = catchAsync(async (req, res, next) => {
 
   const challengeTargets = challengeExercises.map((ex) => ex.target);
 
+  // ── Enforce rest rule FIRST — before touching gymStatus ──
   try {
     enforceMuscleRest({ lastWorkoutLog, targets: challengeTargets });
   } catch (err) {
+    // Rest rule failed — do NOT update gymStatus, just return error
     return next(new AppError(err.message, 409));
+  }
+
+  // ── Rest rule passed — now safe to auto check-in ──
+  const now = new Date();
+  const alreadyCheckedIn = await GymAttendance.findOne({
+    user: req.user.id,
+    checkoutTime: null,
+  }).catch(() => null);
+
+  if (!alreadyCheckedIn) {
+    await GymAttendance.create({
+      user: req.user.id,
+      checkinTime: now,
+      source: "workout",
+    }).catch(() => {});
+    await User.findByIdAndUpdate(req.user.id, {
+      isAtGym: true,
+      gymStatus: "logging",
+      gymCheckinTime: now,
+    });
+  } else {
+    await User.findByIdAndUpdate(req.user.id, {
+      gymStatus: "logging",
+    });
   }
 
   const newChallengeWorkoutLog = await WorkoutLog.create({

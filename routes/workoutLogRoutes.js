@@ -7,27 +7,29 @@ const requireWorkoutPlan = require("../middlewares/requireWorkoutPlan");
 const userController = require("../controllers/userController");
 const autoFinishStaleWorkouts = require("../middlewares/authFinishStaleWorkouts");
 const upload = require("../middlewares/uploadVideo");
-const gymCheckinController = require("../controllers/gymCheckin.controller");
 const router = express.Router();
 
 router.use(authController.protect);
 
+// ── CHALLENGE WORKOUT ──
+// autoCheckin removed from middleware — now runs inside controller
+// AFTER enforceMuscleRest passes, to prevent stale gymStatus on error
 router
-  .route("/challenge/:challengeId") // We asked for challengeId to know where to add the log
+  .route("/challenge/:challengeId")
   .post(
     challengeController.getChallenge,
     requireActiveChallenge,
     autoFinishStaleWorkouts,
-    gymCheckinController.autoCheckin, // ← runs first, records attendance
     workoutLogController.createMyChallengeWorkoutLog,
-  ); // Create a challenge log (Start challenge)
+  );
 
+// ── SOLO WORKOUT ──
+// autoCheckin also handled inside createMySoloWorkoutLog controller
 router
   .route("/solo")
   .post(
     requireWorkoutPlan,
     autoFinishStaleWorkouts,
-    gymCheckinController.autoCheckin, // ← runs first, records attendance
     workoutLogController.createMySoloWorkoutLog,
   )
   .get(workoutLogController.getMyWorkoutLogs);
@@ -35,10 +37,6 @@ router
 router.get("/members", workoutLogController.getMembersWorkoutSummary);
 
 router.get("/:id", requireWorkoutPlan, workoutLogController.getMyWorkoutLog);
-
-// router
-//     .route('/:workoutLogId/exercises/:exerciseIndex/sets/:setNumber')
-//     .patch(workoutLogController.updateMyWorkoutSet);
 
 router.post(
   "/:workoutLogId/exercises/:exerciseIndex/sets",
