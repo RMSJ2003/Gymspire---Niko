@@ -18,9 +18,9 @@ block content
     h2 #{currentUser.username}
 
   if currentUser.pfpUrl
-    img.profile-pic(src=currentUser.pfpUrl alt="Profile Picture")
+    img.profile-pic(src=currentUser.pfpUrl alt="Profile Picture" onerror="this.onerror=null;this.src='/img/default-user.png'")
   else
-    img.profile-pic(src="/img/default-user.png" alt="Default Profile")
+    img.profile-pic(src="/img/default-user.png" alt="Default Profile" onerror="this.onerror=null;this.src='/img/default-user.png'")
 
   p.section-label Select exercises — multiple per muscle allowed
 

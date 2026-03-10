@@ -55,9 +55,9 @@ block content
       .hero-identity
         .hero-avatar-wrap
           if user.pfpUrl
-            img.hero-avatar(src=user.pfpUrl alt="Profile Picture")
+            img.hero-avatar(src=user.pfpUrl alt="Profile Picture" onerror="this.onerror=null;this.src='/img/default-user.png'")
           else
-            img.hero-avatar(src="/img/default-user.png" alt="Default Profile")
+            img.hero-avatar(src="/img/default-user.png" alt="Default Profile" onerror="this.onerror=null;this.src='/img/default-user.png'")
           - const isOngoing = log.status === "ongoing"
           span.hero-status-dot(class=isOngoing ? "dot-live" : "dot-done")
 
@@ -171,7 +171,7 @@ block content
         p Target: #{ex.target}
 
         if ex.gifURL
-          img(src=ex.gifURL alt=ex.name width="200")
+          img(src=ex.gifURL alt=ex.name width="200" onerror="this.onerror=null;this.src='/img/default-user.png'")
 
         if ex.set && ex.set.length
           table

@@ -30,9 +30,9 @@ block content
       p.hero__sub Let's get to work, #[strong #{user.username}]
       .avatar-wrap
         if user.pfpUrl
-          img.avatar(src=user.pfpUrl alt=user.username)
+          img.avatar(src=user.pfpUrl alt=user.username onerror="this.onerror=null;this.src='/img/default-user.png'")
         else
-          img.avatar(src="/img/default-user.png" alt="Default Profile")
+          img.avatar(src="/img/default-user.png" alt="Default Profile" onerror="this.onerror=null;this.src='/img/default-user.png'")
 
     //- STEP INDICATOR
     .steps

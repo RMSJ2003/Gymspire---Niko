@@ -22,9 +22,9 @@ block content
 
       .edit-avatar-wrap
         if currentUser.pfpUrl
-          img.edit-profile-pic#previewImg(src=currentUser.pfpUrl alt="Profile Picture")
+          img.edit-profile-pic#previewImg(src=currentUser.pfpUrl alt="Profile Picture" onerror="this.onerror=null;this.src='/img/default-user.png'")
         else
-          img.edit-profile-pic#previewImg(src="/img/default-user.png" alt="Default Profile")
+          img.edit-profile-pic#previewImg(src="/img/default-user.png" alt="Default Profile" onerror="this.onerror=null;this.src='/img/default-user.png'")
         label.avatar-change-btn(for="pfp")
           svg(xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24')
             path(d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z')

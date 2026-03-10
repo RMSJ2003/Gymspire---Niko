@@ -20,9 +20,9 @@ block content
   .page-header
     .page-header-inner
       if safeUser.pfpUrl
-        img.profile-pic(src=safeUser.pfpUrl alt="Profile Picture")
+        img.profile-pic(src=safeUser.pfpUrl alt="Profile Picture" onerror="this.onerror=null;this.src='/img/default-user.png'")
       else
-        img.profile-pic(src="/img/default-user.png" alt="Default Profile")
+        img.profile-pic(src="/img/default-user.png" alt="Default Profile" onerror="this.onerror=null;this.src='/img/default-user.png'")
       .page-header-text
         h1 Workout Plan
         p.header-username #{safeUser.username}
@@ -52,7 +52,7 @@ block content
           .exercise-card
             .exercise-card-top
               if exercise.gifURL
-                img.exercise-gif(src=exercise.gifURL alt=exercise.name)
+                img.exercise-gif(src=exercise.gifURL alt=exercise.name onerror="this.onerror=null;this.src='/img/default-user.png'")
               .exercise-info
                 h3= exercise.name || "Unnamed Exercise"
                 span.exercise-target= exercise.target || "N/A"

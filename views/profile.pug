@@ -19,9 +19,9 @@ block content
       h1 #{title}
 
       if user.pfpUrl
-        img.profile-pic(src=user.pfpUrl alt="Profile Picture")
+        img.profile-pic(src=user.pfpUrl alt="Profile Picture" onerror="this.onerror=null;this.src='/img/default-user.png'")
       else
-        img.profile-pic(src="/img/default-user.png" alt="Default Profile")
+        img.profile-pic(src="/img/default-user.png" alt="Default Profile" onerror="this.onerror=null;this.src='/img/default-user.png'")
 
       hr.profile-divider
 

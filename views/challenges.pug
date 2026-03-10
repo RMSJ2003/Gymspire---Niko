@@ -16,9 +16,9 @@ block content
   .page-header
     .page-header-inner
       if user.pfpUrl
-        img.profile-pic(src=user.pfpUrl alt="Profile Picture")
+        img.profile-pic(src=user.pfpUrl alt="Profile Picture" onerror="this.onerror=null;this.src='/img/default-user.png'")
       else
-        img.profile-pic(src="/img/default-user.png" alt="Default Profile")
+        img.profile-pic(src="/img/default-user.png" alt="Default Profile" onerror="this.onerror=null;this.src='/img/default-user.png'")
       .page-header-text
         h1 Challenges
         p.header-username #{user.username}
@@ -44,9 +44,9 @@ block content
               each p in challenge.participants
                 .participant
                   if p.pfpUrl
-                    img(src=p.pfpUrl alt=p.username title=p.username)
+                    img(src=p.pfpUrl alt=p.username title=p.username onerror="this.onerror=null;this.src='/img/default-user.png'")
                   else
-                    img(src="/img/default-user.png" alt=p.username title=p.username)
+                    img(src="/img/default-user.png" alt=p.username title=p.username onerror="this.onerror=null;this.src='/img/default-user.png'")
                   span= p.username
 
           - const alreadyJoined = challenge.participants.some(p => p._id.toString() === user._id.toString())
@@ -76,7 +76,7 @@ block content
                   .exercise-card
                     .exercise-card-top
                       if exercise.gifURL
-                        img.exercise-gif(src=exercise.gifURL alt=exercise.name)
+                        img.exercise-gif(src=exercise.gifURL alt=exercise.name onerror="this.onerror=null;this.src='/img/default-user.png'")
                       .exercise-info
                         h4= exercise.name
                         span.exercise-target= exercise.target

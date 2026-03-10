@@ -46,8 +46,8 @@ async function loadFatigueTable() {
 // ── Build a single <tr> ───────────────────────────────────────────────
 function buildRow(member) {
   const avatar = member.pfpUrl
-    ? `<img class="fatigue-avatar" src="${member.pfpUrl}" alt="${member.username}">`
-    : `<img class="fatigue-avatar" src="/img/default-user.png" alt="${member.username}">`;
+    ? `<img class="fatigue-avatar" src="${member.pfpUrl}" alt="${member.username}" onerror="this.onerror=null;this.src='/img/default-user.png'">`
+    : `<img class="fatigue-avatar" src="/img/default-user.png" alt="${member.username}" onerror="this.onerror=null;this.src='/img/default-user.png'">`;
 
   const logs = member.logs || [];
 
