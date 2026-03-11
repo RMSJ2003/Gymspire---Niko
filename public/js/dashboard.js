@@ -195,3 +195,18 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 });
+
+const hamburger = document.querySelector(".hamburger");
+const panel = document.querySelector(".panel");
+
+if (hamburger && panel) {
+  hamburger.addEventListener("click", () => {
+    panel.classList.toggle("open");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!panel.contains(e.target) && e.target !== hamburger) {
+      panel.classList.remove("open");
+    }
+  });
+}

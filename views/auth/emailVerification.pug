@@ -1,0 +1,226 @@
+extends ../base
+
+block styles
+  style.
+    @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700;800&display=swap");
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "DM Sans", Arial, sans-serif;
+      background: #1a1a1a;
+      color: #f4f4f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ev-page {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+
+    .ev-card {
+      background: #242424;
+      border-radius: 22px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.06);
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .ev-card__header {
+      background: linear-gradient(135deg, #d25353, #b11226);
+      padding: 1.6rem 2rem 1.4rem;
+    }
+    .ev-card__header .logo {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: 0.08em;
+      color: white;
+    }
+    .ev-card__header p {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.75);
+      margin-top: 2px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    .ev-card__body {
+      padding: 2.2rem 2rem 2.4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.1rem;
+    }
+
+    /* ── ICON CIRCLE ── */
+    .ev-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .ev-icon.loading {
+      background: rgba(210,83,83,0.12);
+      border: 2px solid rgba(210,83,83,0.25);
+    }
+    .ev-icon.success {
+      background: rgba(22,163,74,0.12);
+      border: 2px solid rgba(22,163,74,0.3);
+    }
+    .ev-icon.error {
+      background: rgba(210,83,83,0.12);
+      border: 2px solid rgba(210,83,83,0.3);
+    }
+    .ev-icon svg {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+    }
+
+    /* spinner */
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(210,83,83,0.2);
+      border-top-color: #d25353;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .ev-title {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1.7rem;
+      letter-spacing: 0.05em;
+      color: #f4f4f5;
+    }
+
+    .ev-message {
+      font-size: 0.88rem;
+      color: rgba(244,244,245,0.6);
+      line-height: 1.55;
+      max-width: 300px;
+    }
+
+    .ev-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 0.78rem 1.6rem;
+      border: none;
+      border-radius: 11px;
+      font-family: "DM Sans", sans-serif;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: filter 0.2s, transform 0.2s;
+      margin-top: 0.4rem;
+    }
+    .ev-btn:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+    .ev-btn.primary {
+      background: linear-gradient(135deg, #d25353, #b11226);
+      color: white;
+      box-shadow: 0 4px 18px rgba(177,18,38,0.3);
+    }
+    .ev-btn.ghost {
+      background: rgba(255,255,255,0.06);
+      color: rgba(244,244,245,0.75);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .ev-btn.ghost:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .ev-btn svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    .ev-divider {
+      width: 100%;
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+      margin: 0.2rem 0;
+    }
+
+    /* hidden by default */
+    .state { display: none; flex-direction: column; align-items: center; gap: 1.1rem; width: 100%; }
+    .state.active { display: flex; }
+
+    @media (max-width: 480px) {
+      .ev-card { border-radius: 16px; }
+      .ev-card__body { padding: 1.8rem 1.4rem 2rem; }
+    }
+
+block content
+  .ev-page
+    .ev-card
+      .ev-card__header
+        .logo GymSpire
+        p Email Verification
+
+      .ev-card__body
+
+        // Loading state
+        .state.active#stateLoading
+          .ev-icon.loading
+            .spinner
+          h2.ev-title Verifying...
+          p.ev-message Please wait while we verify your email address.
+
+        // Success state
+        .state#stateSuccess
+          .ev-icon.success
+            svg(xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke='#16a34a')
+              polyline(points='20 6 9 17 4 12')
+          h2.ev-title Email Verified!
+          p.ev-message#successMsg Your email has been successfully verified. You can now log in to GymSpire.
+          .ev-divider
+          a.ev-btn.primary(href='/login')
+            svg(xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24')
+              path(d='M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4')
+              polyline(points='10 17 15 12 10 7')
+              line(x1='15' y1='12' x2='3' y2='12')
+            span Go to Login
+
+        // Error state
+        .state#stateError
+          .ev-icon.error
+            svg(xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke='#d25353')
+              circle(cx='12' cy='12' r='10')
+              line(x1='12' y1='8' x2='12' y2='12')
+              line(x1='12' y1='16' x2='12.01' y2='16')
+          h2.ev-title Verification Failed
+          p.ev-message#errorMsg Your verification link is invalid or has expired. Request a new one below.
+          .ev-divider
+          a.ev-btn.primary(href='/requestEmailVerification')
+            svg(xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24')
+              polyline(points='23 4 23 10 17 10')
+              path(d='M20.49 15a9 9 0 1 1-2.12-9.36L23 10')
+            span Request New Link
+          a.ev-btn.ghost(href='/login') Back to Login
+
+block scripts
+  script(src='/js/emailVerificationView.js')

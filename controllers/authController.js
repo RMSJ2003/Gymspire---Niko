@@ -60,24 +60,39 @@ const fs = require("fs");
 const path = require("path");
 
 exports.signup = catchAsync(async (req, res, next) => {
+  const isXHR = req.xhr;
+
+  // ✅ Server-side iACADEMY email domain validation (works even with JS disabled)
+  const IACADEMY_REGEX = /^[^@]+@(iacademy\.ph|iacademy\.edu\.ph)$/i;
+  if (!IACADEMY_REGEX.test(req.body.email || "")) {
+    const msg =
+      "Only iACADEMY emails (@iacademy.ph or @iacademy.edu.ph) are allowed.";
+    if (!isXHR) {
+      return res.redirect(
+        `/signup?error=${encodeURIComponent(msg)}&email=${encodeURIComponent(req.body.email || "")}&username=${encodeURIComponent(req.body.username || "")}`,
+      );
+    }
+    return next(new AppError(msg, 400));
+  }
+
   const existingUser = await User.findOne({ email: req.body.email })
     .setOptions({ includeInactive: true })
     .select("+active");
 
   if (existingUser) {
-    if (existingUser.active === false) {
-      return next(
-        new AppError(
-          "Unable to create account. Please use a different email address.",
-          400,
-        ),
+    const msg =
+      existingUser.active === false
+        ? "Unable to create account. Please use a different email address."
+        : "Email already in use";
+
+    if (!isXHR) {
+      return res.redirect(
+        `/signup?error=${encodeURIComponent(msg)}&email=${encodeURIComponent(req.body.email || "")}&username=${encodeURIComponent(req.body.username || "")}`,
       );
     }
-
-    return next(new AppError("Email already in use", 400));
+    return next(new AppError(msg, 400));
   }
 
-  // 1️⃣ Create user FIRST (no photo yet)
   const newUser = await User.create({
     email: req.body.email,
     username: req.body.username,
@@ -85,11 +100,9 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
   });
 
-  // 2️⃣ If user uploaded a photo, save it using USER ID 🔥
   if (req.file) {
     const ext = req.file.mimetype.split("/")[1];
     const filename = `user-${newUser._id}.${ext}`;
-
     const filePath = path.join(
       __dirname,
       "..",
@@ -98,32 +111,39 @@ exports.signup = catchAsync(async (req, res, next) => {
       "users",
       filename,
     );
-
-    // 🔥 Write file manually
     await fs.promises.writeFile(filePath, req.file.buffer);
-    // 3️⃣ Update user with photo URL
     newUser.pfpUrl = `/img/users/${filename}`;
     await newUser.save({ validateBeforeSave: false });
   }
 
-  // 4️⃣ CREATE EMAIL VERIFICATION TOKEN
   const verificationToken = newUser.createEmailVerificationToken();
   await newUser.save({ validateBeforeSave: false });
 
-  // 5️⃣ SEND VERIFICATION EMAIL
   const verifyURL = `${req.protocol}://${req.get(
     "host",
-  )}/api/v1/auth/verify-email/${verificationToken}`;
+  )}/emailVerification?token=${verificationToken}`;
 
-  console.log("before sending email");
+  try {
+    await sendEmail({
+      to: newUser.email,
+      subject: "Verify your iACADEMY email",
+      message: `Click this link to verify your email:\n${verifyURL}\n\nThis link expires in 10 minutes.`,
+    });
+  } catch (err) {
+    // Even if email fails, account was created — don't block the user
+    console.error("Email send error:", err);
+  }
 
-  await sendEmail({
-    to: newUser.email,
-    subject: "Verify your iACADEMY email",
-    message: `Click this link to verify your email:\n${verifyURL}\n\nThis link expires in 10 minutes.`,
-  });
+  if (!isXHR) {
+    // No-JS path: redirect back to signup with a success message
+    return res.redirect(
+      `/signup?success=${encodeURIComponent(
+        "Account created! Check your iACADEMY email for the verification link.",
+      )}`,
+    );
+  }
 
-  // 6️⃣ DO NOT LOG THEM IN YET
+  // JS path: return JSON as before
   res.status(201).json({
     status: "success",
     message: "Account created. Please verify your email before logging in.",
@@ -570,9 +590,7 @@ exports.requestEmailVerification = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   // 5) Send verification email
-  const verificationURL = `${req.protocol}://${req.get(
-    "host",
-  )}/api/v1/auth/${user.active ? "verify-email" : "reactivate-account"}/${verificationToken}`;
+  const verificationURL = `${req.protocol}://${req.get("host")}/emailVerification?token=${verificationToken}`;
 
   await sendEmail({
     to: user.email,

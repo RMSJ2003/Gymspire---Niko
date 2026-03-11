@@ -59,9 +59,9 @@ block content
             each u in onlineUsers
               .online-user
                 if u.pfpUrl
-                  img(src=u.pfpUrl alt=u.username)
+                  img(src=u.pfpUrl alt=u.username width='32' height='32' onerror="this.onerror=null;this.src='/img/default-user.png'")
                 else
-                  img(src='/img/default-user.png' alt=u.username)
+                  img(src='/img/default-user.png' alt=u.username width='32' height='32' onerror="this.onerror=null;this.src='/img/default-user.png'")
                 span= u.username
                 if u.gymStatus === 'logging' && u.isAtGym
                   span.user-badge.badge-workout Logging

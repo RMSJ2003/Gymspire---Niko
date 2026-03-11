@@ -262,12 +262,22 @@ exports.deleteMe = catchAsync(async (req, res) => {
 exports.permanentDeleteMe = catchAsync(async (req, res) => {
   const userId = req.user.id;
 
+  // Remove user from all challenge participant lists
   await Challenge.updateMany(
     { participants: userId },
     { $pull: { participants: userId } },
   );
+
+  // Delete all workout logs (solo + challenge submissions)
   await WorkoutLog.deleteMany({ userId });
+
+  // Delete workout plan
   await WorkoutPlan.deleteMany({ userId });
+
+  // Delete all gym attendance records
+  await GymAttendance.deleteMany({ user: userId }); // ← note: field is "user" not "userId"
+
+  // Delete the user
   await User.findByIdAndDelete(userId);
 
   res.status(204).json({ status: "success", data: null });

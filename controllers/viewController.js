@@ -5,6 +5,14 @@ exports.signUp = catchAsync(async (req, res, next) => {
   res.status(200).render("signup", {
     title: "Sign Up",
     hideNavbar: false,
+    // Shown when JS is disabled and server redirects back with a message
+    errorMessage: req.query.error || null,
+    successMessage: req.query.success || null,
+    // Repopulate fields so user doesn't retype after an error
+    formValues: {
+      email: req.query.email || "",
+      username: req.query.username || "",
+    },
   });
 });
 
@@ -68,6 +76,12 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
 exports.requestEmailVerification = catchAsync(async (req, res, next) => {
   res.status(200).render("auth/requestEmailVerification", {
+    title: "Email Verification",
+  });
+});
+
+exports.emailVerification = catchAsync(async (req, res, next) => {
+  res.status(200).render("auth/emailVerification", {
     title: "Email Verification",
   });
 });

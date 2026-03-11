@@ -24,6 +24,13 @@ router.get(
 );
 
 router.get(
+  "/",
+  authController.isLoggedIn,
+  authController.redirectIfLoggedIn,
+  viewController.login,
+);
+
+router.get(
   "/login",
   authController.isLoggedIn,
   authController.redirectIfLoggedIn,
@@ -36,6 +43,7 @@ router.get(
   "/requestEmailVerification",
   viewController.requestEmailVerification,
 );
+router.get("/emailVerification", viewController.emailVerification);
 
 // router.use(authController.protect); // Do not put this here cuz it will
 // also protect the unknwon routes e.g. /sdafasdf then it will say

@@ -95,7 +95,7 @@ body {
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
-.nav-right:hover .panel,
+/* AFTER — click-only, no hover gap problem */
 .panel.open {
   transform: translateY(0);
   opacity: 1;

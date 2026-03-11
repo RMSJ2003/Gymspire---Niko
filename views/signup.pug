@@ -5,7 +5,14 @@ block styles
   link(rel="stylesheet" href="/css/signup.css")
 
 block content
-  form(id='signupForm' novalidate)
+  //- action + method + enctype enable no-JS form submission
+  //- novalidate is REMOVED so browser built-in validation works when JS is off
+  form(
+    id='signupForm'
+    action='/api/v1/auth/signup'
+    method='POST'
+    enctype='multipart/form-data'
+  )
 
     //- Logo
     .logo-wrapper
@@ -17,6 +24,17 @@ block content
     .logo-divider
 
     h2 Create Account
+
+    //- ── SERVER-SIDE ERROR (shown when JS is disabled) ──────────────
+    //- When JS is on, this is hidden and JS handles its own #formMessage
+    if errorMessage
+      p.form-message.server-error(style='color:#d25353;font-weight:700;margin-bottom:.5rem;')
+        = errorMessage
+
+    //- ── SUCCESS MESSAGE (shown when JS is disabled after redirect) ──
+    if successMessage
+      p.form-message.server-success(style='color:#16a34a;font-weight:700;margin-bottom:.5rem;')
+        = successMessage
 
     p.form-message#formMessage
 
@@ -30,11 +48,25 @@ block content
       input(type='file' name='pfp' id='pfp' accept='image/*')
 
     label(for='email') Email
-    input(type='email' name='email' id='email' required placeholder='you@iacademy.ph')
+    input(
+      type='email'
+      name='email'
+      id='email'
+      required
+      placeholder='you@iacademy.ph'
+      value=formValues && formValues.email ? formValues.email : ''
+    )
     small.form-error#emailError
 
     label(for='username') Username
-    input(type='text' name='username' id='username' required placeholder='Choose a username')
+    input(
+      type='text'
+      name='username'
+      id='username'
+      required
+      placeholder='Choose a username'
+      value=formValues && formValues.username ? formValues.username : ''
+    )
 
     label(for='password') Password
     input(type='password' name='password' id='password' required placeholder='••••••••')

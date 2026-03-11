@@ -7,7 +7,7 @@ document.getElementById("pfp").addEventListener("change", function () {
   reader.onload = (e) => {
     const img = document.getElementById("avatarImg");
     img.src = e.target.result;
-    img.classList.add("visible"); // ✅ CSS class, not inline style
+    img.classList.add("visible");
     document.getElementById("avatarPlaceholder").style.display = "none";
     document.getElementById("avatarPreview").style.border =
       "2.5px solid #d25353";
@@ -25,6 +25,12 @@ const agreeWaiverInput = document.querySelector("#agreeWaiver");
 const formMessage = document.querySelector("#formMessage");
 const submitBtn = document.querySelector("#submitBtn");
 const btnText = submitBtn.querySelector(".btn-text");
+
+// Hide server-side messages once JS kicks in — JS will handle its own
+const serverError = document.querySelector(".server-error");
+const serverSuccess = document.querySelector(".server-success");
+if (serverError) serverError.style.display = "none";
+if (serverSuccess) serverSuccess.style.display = "none";
 
 const IACADEMY_EMAIL_REGEX =
   /^[a-zA-Z0-9._%+-]+@(iacademy\.ph|iacademy\.edu\.ph)$/;
@@ -87,6 +93,8 @@ form.addEventListener("submit", async (e) => {
 
     const res = await fetch("/api/v1/auth/signup", {
       method: "POST",
+      // ✅ This header lets the server know it's a JS fetch, not a plain form submit
+      headers: { "X-Requested-With": "XMLHttpRequest" },
       body: formData,
     });
     const data = await res.json();
